@@ -20,5 +20,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['namespace' => 'Api'], function() {
     Route::prefix('order')->group(function() {
         Route::get('', 'OrderController@index')->name('api.order');
+        Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store');
+        Route::post('pick-box/{order}', 'OrderController@pickBox')->name('api.order.box');
+        Route::post('set-duration/{order}', 'OrderController@setDuration')->name('api.order.duration');
     });
 });
