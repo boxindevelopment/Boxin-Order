@@ -20,6 +20,7 @@ class CreateWarehousesTable extends Migration
             $table->string('lat', 225);
             $table->string('long', 225);
             $table->timestamps();
+            $table->softDeletes();
 
             $table
                 ->foreign('area_id')->references('id')->on('areas')

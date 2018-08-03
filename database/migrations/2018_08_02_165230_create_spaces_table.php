@@ -18,6 +18,7 @@ class CreateSpacesTable extends Migration
             $table->integer('warehouse_id')->unsigned();
             $table->string('name', 225);
             $table->timestamps();
+            $table->softDeletes();
 
             $table
                 ->foreign('warehouse_id')->references('id')->on('warehouses')

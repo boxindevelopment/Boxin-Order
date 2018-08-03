@@ -18,6 +18,7 @@ class CreateAreasTable extends Migration
             $table->integer('city_id')->unsigned();
             $table->string('name', 225);
             $table->timestamps();
+            $table->softDeletes();
 
             $table
                 ->foreign('city_id')->references('id')->on('cities')

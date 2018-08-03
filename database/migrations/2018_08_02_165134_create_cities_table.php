@@ -17,6 +17,7 @@ class CreateCitiesTable extends Migration
             $table->increments('id');
             $table->string('name', 225);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

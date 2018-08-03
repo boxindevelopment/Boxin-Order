@@ -24,6 +24,7 @@ class CreateBoxesTable extends Migration
             $table->double('price');
             $table->integer('status_id')->unsigned();
             $table->timestamps();
+            $table->softDeletes();
 
             $table
                 ->foreign('space_id')->references('id')->on('spaces')
