@@ -22,7 +22,7 @@ class Warehouse extends Model
         return $this->belongsTo('App\Entities\Area', 'area_id', 'id');
     }
 
-    public function spaces()
+    public function space()
     {
         return $this->hasMany('App\Entities\Space', 'warehouse_id', 'id');
     }

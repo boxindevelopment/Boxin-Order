@@ -14,17 +14,32 @@ class OrderResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'date' => $this->date->format('d-m-Y H:i:s'),
-            'duration' => $this->duration,
-            'total' => $this->total,
-            'user' => !empty($this->user) ? $this->user->name : null,
-            'area' => !empty($this->area) ? $this->area->name : null,
-            'space' => !empty($this->space) ? $this->space->name : null,
-            'box' => !empty($this->boxes) ? $this->boxes->name : null,
-            'box_qty' => $this->box_qty
+        if (!is_null($this->user_id)) {
+            $user = [
+                'id'        => $this->user->id,
+                'first_name'=> $this->user->first_name,
+                'last_name' => $this->user->last_name,
+                'email'     => $this->user->email,
+                'phone'     => $this->user->phone,
+            ];
+        }
+
+        if (!is_null($this->space_id)) {
+            $space = [
+                'id'    => $this->space->id,
+                'name'  => $this->space->name,
+            ];
+        }
+
+        $data = [
+            'id'        => $this->id,
+            'total'     => $this->total,
+            'user'      => $user,
+            'order_date'=> $this->created_at->format('Y-m-d'),
+            'status'    => $this->status->name,
+            'space'     => $space,
         ];
+
+        return $data;
     }
 }

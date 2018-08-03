@@ -5,11 +5,11 @@ namespace App\Entities;
 use App\Core\Model\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
-class City extends Model
+class TypeDuration extends Model
 {
     use Searchable;
 
-    protected $table = 'cities';
+    protected $table = 'types_of_duration';
 
     protected $fillable = [
         'name'
@@ -17,8 +17,8 @@ class City extends Model
 
     protected $searchable = ['id', 'name'];
 
-    public function area()
+    public function order_detail()
     {
-        return $this->hasMany('App\Entities\Area', 'city_id', 'id');
+        return $this->hasMany('App\Entities\OrderDetail', 'type_duration_id', 'id');
     }
 }

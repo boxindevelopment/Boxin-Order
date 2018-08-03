@@ -12,22 +12,16 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
-        'user_id', 'area_id', 'space_id', 'date', 'duration', 'box',
-        'box_qty', 'total', 'name'
+        'user_id', 'space_id', 'total', 'qty' 
     ];
 
-    protected $casts = [
-        'date' => 'datetime'
-    ];
+    // protected $casts = [
+    //     'date' => 'datetime'
+    // ];
 
     public function user()
     {
         return $this->belongsTo('App\Entities\User', 'user_id', 'id');
-    }
-
-    public function area()
-    {
-        return $this->belongsTo('App\Entities\Area', 'area_id', 'id');
     }
 
     public function space()
@@ -35,13 +29,19 @@ class Order extends Model
         return $this->belongsTo('App\Entities\Space', 'space_id', 'id');
     }
 
-    public function boxes()
+    public function status()
     {
-        return $this->belongsTo('App\Entities\Box', 'box', 'id');
+        return $this->belongsTo('App\Entities\Status', 'status_id', 'id');
     }
 
-    public function details()
+    public function order_detail()
     {
         return $this->hasMany('App\Entities\OrderDetail', 'order_id', 'id');
     }
+
+    public function pickup_order()
+    {
+        return $this->hasMany('App\Entities\PickupOrder', 'order_id', 'id');
+    }
+
 }

@@ -22,8 +22,19 @@ class Space extends Model
         return $this->belongsTo('App\Entities\Warehouse', 'warehouse_id', 'id');
     }
 
-    public function rooms()
+    public function room()
     {
         return $this->hasMany('App\Entities\Room', 'space_id', 'id');
     }
+
+    public function box()
+    {
+        return $this->hasMany('App\Entities\Box', 'space_id', 'id');
+    }
+
+    public function order_detail()
+    {
+        return $this->hasMany('App\Entities\OrderDetail', 'room_or_box_id', 'id');
+    }
+
 }
