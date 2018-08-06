@@ -33,8 +33,11 @@ class CreatePickupOrdersTable extends Migration
                 ->foreign('order_id')->references('id')->on('orders')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
-                ->foreign('status_id')->references('id')->on('status')
+                ->foreign('type_pickup_id')->references('id')->on('types_of_pickup')
                 ->onUpdate('cascade')->onDelete('cascade');
+            $table
+                ->foreign('status_id')->references('id')->on('status');
+                
         });
     }
 
