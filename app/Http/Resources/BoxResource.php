@@ -14,19 +14,11 @@ class BoxResource extends JsonResource
      */
     public function toArray($request)
     {
-        if (!is_null($this->type_size_id)) {
-            $type_size = [
-                'id'                  => $this->type_size->id,
-                'name'                => $this->type_size->name,
-            ];
-        } 
 
         $data = [
             'id'                => $this->id,
-            'name'              => $this->name,
-            'size'              => $this->size,
             'available'         => $this->available,
-            'type_size'         => $type_size,
+            'types_of_size'     => new TypeSizeResource($this->type_size),
         ];
 
         return $data;

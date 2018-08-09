@@ -12,8 +12,8 @@ class Types_Of_Pickup_TableSeeder extends Seeder
     public function run()
     {
         DB::table('types_of_pickup')->insert([
-            ['name' => 'Pick up delivery box'],
-            ['name' => 'Pick up box on warehouse'],
+            ['id' => 1, 'name' => 'Pick up delivery box'],
+            ['id' => 2, 'name' => 'Pick up box on warehouse'],
         ]);
     }
 }

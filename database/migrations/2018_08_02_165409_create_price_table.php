@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePriceBoxTable extends Migration
+class CreatePriceTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,18 +13,22 @@ class CreatePriceBoxTable extends Migration
      */
     public function up()
     {
-        Schema::create('price_box', function (Blueprint $table) {
+        Schema::create('prices', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('type_size_id')->unsigned();
-            $table->integer('type_duration_id')->unsigned();
+            $table->integer('types_of_box_room_id')->unsigned();
+            $table->integer('types_of_size_id')->unsigned();
+            $table->integer('types_of_duration_id')->unsigned();
             $table->integer('price');
             $table->timestamps();
 
             $table
-                ->foreign('type_size_id')->references('id')->on('types_of_size')
+                ->foreign('types_of_box_room_id')->references('id')->on('types_of_box_room')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
-                ->foreign('type_duration_id')->references('id')->on('types_of_duration')
+                ->foreign('types_of_size_id')->references('id')->on('types_of_size')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table
+                ->foreign('types_of_duration_id')->references('id')->on('types_of_duration')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
     }

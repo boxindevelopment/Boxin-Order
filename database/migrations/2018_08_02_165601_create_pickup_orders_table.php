@@ -16,14 +16,14 @@ class CreatePickupOrdersTable extends Migration
         Schema::create('pickup_orders', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('order_id')->unsigned();
-            $table->integer('type_pickup_id')->unsigned();
+            $table->integer('types_of_pickup_id')->unsigned();
             $table->text('address')->nullable();
-            $table->string('latitude', 225);
-            $table->string('longitude', 225);
+            $table->string('latitude', 225)->nullable();
+            $table->string('longitude', 225)->nullable();
             $table->date('date');
             $table->time('time');
             $table->text('note')->nullable();
-            $table->integer('pickup_fee')->default(0);
+            $table->integer('pickup_fee');
             $table->string('driver_name', 50)->nullable();
             $table->string('driver_phone', 50)->nullable();
             $table->integer('status_id')->default(10)->unsigned();
@@ -31,6 +31,9 @@ class CreatePickupOrdersTable extends Migration
 
             $table
                 ->foreign('order_id')->references('id')->on('orders')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table
+                ->foreign('types_of_pickup_id')->references('id')->on('types_of_pickup')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
                 ->foreign('status_id')->references('id')->on('status')

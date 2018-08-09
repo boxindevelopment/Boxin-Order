@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Entities\OrderDetailBox;
-use App\Entities\OrderDetail;
+use App\Model\OrderDetailBox;
+use App\Model\OrderDetail;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderDetailBoxResource;
 use Illuminate\Http\Request;
@@ -113,7 +113,6 @@ class OrderDetailBoxController extends Controller
         
         $validator = \Validator::make($request->all(), [
             'item_box_id'       => 'required',
-            'item_image'        => 'image|mimes:jpeg,png,jpg',
         ]);
 
         if($validator->fails()) {
@@ -125,6 +124,7 @@ class OrderDetailBoxController extends Controller
 
         try {
             $id     = $request->item_box_id;
+            $item_image = $request->item_image;
             $item   = OrderDetailBox::findOrFail($id); 
             
             $dataItem           = DB::table('order_detail_boxes')->where('id', $id)->get();
@@ -132,18 +132,20 @@ class OrderDetailBoxController extends Controller
 
             $data               = $request->all();
             if($item){
-                if ($request->hasFile('item_image')) {
-                    $image_path = "/images/detail_item_box/{$getImage}";
-                    if ($request->file('item_image')->isValid()) {
-                        if (file_exists(public_path().$image_path)) {
-                            unlink(public_path().$image_path);
+                if($item_image){
+                    if ($request->hasFile('item_image')) {
+                        $image_path = "/images/detail_item_box/{$getImage}";
+                        if ($request->file('item_image')->isValid()) {
+                            if (file_exists(public_path().$image_path)) {
+                                unlink(public_path().$image_path);
+                            }
+                            $getimageName = time().'.'.$request->item_image->getClientOriginalExtension();
+                            $image = $request->item_image->move(public_path('images/detail_item_box'), $getimageName);
+                
                         }
-                        $getimageName = time().'.'.$request->item_image->getClientOriginalExtension();
-                        $image = $request->item_image->move(public_path('images/detail_item_box'), $getimageName);
-            
                     }
+                    $data["item_image"]     = $getimageName != '' ? $getimageName : $getImage; 
                 }
-                $data["item_image"]     = $getimageName;
                 $data["item_name"]      = $request->item_name;
                 $data["note"]           = $request->note;
                 $item->fill($data)->save();

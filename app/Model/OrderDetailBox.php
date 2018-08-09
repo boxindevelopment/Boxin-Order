@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Entities;
+namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,7 +14,7 @@ class OrderDetailBox extends Model
 
     public function order_detail()
     {
-        return $this->belongsTo('App\Entities\OrderDetail', 'order_detail_id', 'id');
+        return $this->belongsTo('App\Model\OrderDetail', 'order_detail_id', 'id');
     }
 
     public function getUrlAttribute()

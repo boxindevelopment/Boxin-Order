@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Entities;
+namespace App\Model;
 
-use App\Core\Model\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
 class City extends Model
 {
-    use Searchable;
 
     protected $table = 'cities';
 
@@ -19,6 +17,6 @@ class City extends Model
 
     public function area()
     {
-        return $this->hasMany('App\Entities\Area', 'city_id', 'id');
+        return $this->hasMany('App\Model\Area', 'city_id', 'id');
     }
 }
