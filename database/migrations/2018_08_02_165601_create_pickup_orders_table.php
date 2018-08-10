@@ -28,6 +28,7 @@ class CreatePickupOrdersTable extends Migration
             $table->string('driver_phone', 50)->nullable();
             $table->integer('status_id')->default(10)->unsigned();
             $table->timestamps();
+            $table->softDeletes();
 
             $table
                 ->foreign('order_id')->references('id')->on('orders')
@@ -38,8 +39,6 @@ class CreatePickupOrdersTable extends Migration
             $table
                 ->foreign('status_id')->references('id')->on('status')
                 ->onUpdate('cascade')->onDelete('cascade');
-            $table
-                ->foreign('status_id')->references('id')->on('status');
                 
         });
     }
