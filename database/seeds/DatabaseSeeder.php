@@ -16,5 +16,6 @@ class DatabaseSeeder extends Seeder
         $this->call(Types_Of_Duration_TableSeeder::class);
         $this->call(Types_Of_Pickup_TableSeeder::class);
         $this->call(Types_Of_Size_TableSeeder::class);
+        $this->call(Prices_TableSeeder::class);
     }
 }
