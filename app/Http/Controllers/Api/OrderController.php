@@ -17,81 +17,51 @@ use DB;
 
 class OrderController extends Controller
 {
+    public function chooseProduct(){
+        $choose = Price::select('types_of_box_room.name', DB::raw('MIN(price) as min'), DB::raw('MAX(price) as max'), 'types_of_duration.alias')
+            ->leftJoin('types_of_box_room', 'types_of_box_room.id', '=', 'prices.types_of_box_room_id')
+            ->leftJoin('types_of_duration', 'types_of_duration.id', '=', 'prices.types_of_duration_id')
+            ->where('prices.types_of_size_id', '4')
+            ->get();
+            
+        $choose2 = Price::select('types_of_box_room.name', DB::raw('MIN(price) as min'), DB::raw('MAX(price) as max'), 'types_of_duration.alias')
+            ->leftJoin('types_of_box_room', 'types_of_box_room.id', '=', 'prices.types_of_box_room_id')
+            ->leftJoin('types_of_duration', 'types_of_duration.id', '=', 'prices.types_of_duration_id')
+            ->where('prices.types_of_size_id', '1')
+            ->get();
+            
+        $arr1           = array();
+        $arr1['name']   = $choose[0]->name;
+        $arr1['min']    = $choose[0]->min;
+        $arr1['max']    = $choose[0]->max;
+        $arr1['time']   = $choose[0]->alias;
+
+        $arr2 = array();
+        $arr2['name']   = $choose2[0]->name;
+        $arr2['min']    = $choose2[0]->min;
+        $arr2['max']    = $choose2[0]->max;
+        $arr2['time']   = $choose2[0]->alias;
+
+        if(count($choose) != 0) {
+        
+            return response()->json([
+                'status'    => true,
+                'data_box'  => $arr1, 
+                'data_room' => $arr2
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
+        ]);
+    }
+
     public function getById($order_detail_id)
     {
         $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('datediff(order_details.end_date, order_details.start_date) as total_time'), DB::raw('datediff(current_date(),order_details.start_date) as selisih'))
             ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
             ->where('order_details.id', $order_detail_id)
-            ->get();
-
-        if(count($orders) != 0) {
-            $data = OrderDetailResource::collection($orders);
-
-            return response()->json([
-                'status' => true,
-                'data' => $data
-            ]);
-        }
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Data not found'
-        ]);
-    }
-
-    public function my_box($user_id)
-    {
-        $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('datediff(order_details.end_date, order_details.start_date) as total_time'), DB::raw('datediff(current_date(),order_details.start_date) as selisih'))
-            ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
-            ->where('user_id', $user_id)
-            ->where('order_details.status_id', '=', 3)
-            ->get();
-
-        if(count($orders) != 0) {
-            $data = OrderDetailResource::collection($orders);
-
-            return response()->json([
-                'status' => true,
-                'data' => $data
-            ]);
-        }
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Data not found'
-        ]);
-    }
-
-    public function my_box_history($user_id)
-    {
-        $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('datediff(order_details.end_date, order_details.start_date) as total_time'), DB::raw('datediff(current_date(),order_details.start_date) as selisih'))
-            ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
-            ->where('user_id', $user_id)
-            ->where('order_details.status_id', '=', 11)
-            ->get();
-
-        if(count($orders) != 0) {
-            $data = OrderDetailResource::collection($orders);
-
-            return response()->json([
-                'status' => true,
-                'data' => $data
-            ]);
-        }
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Data not found'
-        ]);
-    }
-
-    public function my_deliveries($user_id)
-    {
-        $orders = OrderDetail::select('order_details.*', DB::raw('orders.user_id as user_id'), DB::raw('datediff(order_details.end_date, order_details.start_date) as total_time'), DB::raw('datediff(current_date(),order_details.start_date) as selisih'))
-            ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
-            ->where('user_id', $user_id)
-            ->where('order_details.status_id', '!=', 3)
-            ->where('order_details.status_id', '!=', 11)
             ->get();
 
         if(count($orders) != 0) {

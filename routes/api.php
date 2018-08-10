@@ -32,10 +32,13 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('order')->group(function() {
-        Route::get('my-box/{user_id}', 'OrderController@my_box')->name('api.order.my_box');
-        Route::get('my-deliveries/{user_id}', 'OrderController@my_deliveries')->name('api.order.my_deliveries');
-        Route::get('my-box-history/{user_id}', 'OrderController@my_box_history')->name('api.order.my_box_history');
+        
 
+        Route::get('my-box/{user_id}', 'OrderDetailController@my_box')->name('api.order.my_box');
+        Route::get('my-deliveries/{user_id}', 'OrderDetailController@my_deliveries')->name('api.order.my_deliveries');
+        Route::get('my-box-history/{user_id}', 'OrderDetailController@my_box_history')->name('api.order.my_box_history');
+
+        Route::get('list-choose', 'OrderController@chooseProduct')->name('api.order.chooseProduct');
         Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}', 'OrderController@getPrice')->name('api.order.getPrice');
 
         Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store');
