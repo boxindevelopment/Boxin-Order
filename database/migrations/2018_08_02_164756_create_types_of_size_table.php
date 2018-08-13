@@ -17,6 +17,7 @@ class CreateTypesOfSizeTable extends Migration
             $table->increments('id');
             $table->integer('types_of_box_room_id')->unsigned();
             $table->string('name', 50);
+            $table->integer('code');
             $table->timestamps();
 
             $table

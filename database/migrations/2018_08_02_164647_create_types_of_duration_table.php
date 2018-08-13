@@ -17,6 +17,7 @@ class CreateTypesOfDurationTable extends Migration
             $table->increments('id');
             $table->string('name', 50);
             $table->string('alias', 50);
+            $table->integer('code');
             $table->timestamps();
         });
     }

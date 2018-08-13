@@ -16,6 +16,7 @@ class CreateTypesOfPickupTable extends Migration
         Schema::create('types_of_pickup', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 50);
+            $table->integer('code');
             $table->timestamps();
         });
     }
