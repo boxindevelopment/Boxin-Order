@@ -25,8 +25,7 @@ class CreatePriceTable extends Migration
                 ->foreign('types_of_box_room_id')->references('id')->on('types_of_box_room')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
-                ->foreign('types_of_size_id')->references('id')->on('types_of_size')
-                ->onUpdate('cascade')->onDelete('cascade');
+                ->foreign('types_of_size_id')->references('id')->on('types_of_size');
             $table
                 ->foreign('types_of_duration_id')->references('id')->on('types_of_duration')
                 ->onUpdate('cascade')->onDelete('cascade');

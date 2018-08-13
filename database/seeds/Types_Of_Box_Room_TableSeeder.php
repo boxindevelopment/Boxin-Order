@@ -12,8 +12,8 @@ class Types_Of_Box_Room_TableSeeder extends Seeder
     public function run()
     {
         DB::table('types_of_box_room')->insert([
-            ['id' => 1, 'name' => 'box'],
-            ['id' => 2, 'name' => 'room'],
+            ['name' => 'box'],
+            ['name' => 'room'],
         ]);
     }
 }

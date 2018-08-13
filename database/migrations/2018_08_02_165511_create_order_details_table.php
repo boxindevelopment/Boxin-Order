@@ -38,11 +38,9 @@ class CreateOrderDetailsTable extends Migration
                 ->foreign('types_of_duration_id')->references('id')->on('types_of_duration')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
-                ->foreign('types_of_size_id')->references('id')->on('types_of_size')
-                ->onUpdate('cascade')->onDelete('cascade');
+                ->foreign('types_of_size_id')->references('id')->on('types_of_size');
             $table
-                ->foreign('status_id')->references('id')->on('status')
-                ->onUpdate('cascade')->onDelete('cascade');
+                ->foreign('status_id')->references('id')->on('status');
         });
     }
 

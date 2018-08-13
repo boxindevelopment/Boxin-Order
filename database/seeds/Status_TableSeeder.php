@@ -2,6 +2,7 @@
 
 use App\Entities\Status;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class Status_TableSeeder extends Seeder
 {
@@ -12,18 +13,16 @@ class Status_TableSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('status')->insert([
-            ['id' => 1, 'name' => 'On the way to you'],
-            ['id' => 2, 'name' => 'Upcoming'],
-            ['id' => 3, 'name' => 'Stored'],
-            ['id' => 4, 'name' => 'Success'],
-            ['id' => 5, 'name' => 'Failed'],
-            ['id' => 6, 'name' => 'Approved'],
-            ['id' => 7, 'name' => 'Rejected'],
-            ['id' => 8, 'name' => 'Fill'],
-            ['id' => 9, 'name' => 'Empty'],
-            ['id' => 10, 'name' => 'Pending'],
-            ['id' => 11, 'name' => 'Finished'],
-        ]);
+        DB::table('status')->insert(['name' => 'On the way to you']);
+        DB::table('status')->insert(['name' => 'Upcoming']);
+        DB::table('status')->insert(['name' => 'Stored']);
+        DB::table('status')->insert(['name' => 'Success']);
+        DB::table('status')->insert(['name' => 'Failed']);
+        DB::table('status')->insert(['name' => 'Approved']);
+        DB::table('status')->insert(['name' => 'Rejected']);
+        DB::table('status')->insert(['name' => 'Fill']);
+        DB::table('status')->insert(['name' => 'Empty']);
+        DB::table('status')->insert(['name' => 'Pending']);
+        DB::table('status')->insert(['name' => 'Finished']);
     }
 }
