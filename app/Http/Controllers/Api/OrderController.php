@@ -22,14 +22,18 @@ class OrderController extends Controller
             ->leftJoin('types_of_box_room', 'types_of_box_room.id', '=', 'prices.types_of_box_room_id')
             ->leftJoin('types_of_duration', 'types_of_duration.id', '=', 'prices.types_of_duration_id')
             ->where('prices.types_of_size_id', '4')
+            ->groupBy('types_of_box_room.name')
+            ->groupBy('types_of_duration.alias')
             ->get();
-            
+
         $choose2 = Price::select('types_of_box_room.name', DB::raw('MIN(price) as min'), DB::raw('MAX(price) as max'), 'types_of_duration.alias')
             ->leftJoin('types_of_box_room', 'types_of_box_room.id', '=', 'prices.types_of_box_room_id')
             ->leftJoin('types_of_duration', 'types_of_duration.id', '=', 'prices.types_of_duration_id')
             ->where('prices.types_of_size_id', '1')
+            ->groupBy('types_of_box_room.name')
+            ->groupBy('types_of_duration.alias')
             ->get();
-            
+
         $arr1           = array();
         $arr1['name']   = $choose[0]->name;
         $arr1['min']    = $choose[0]->min;
@@ -43,10 +47,10 @@ class OrderController extends Controller
         $arr2['time']   = $choose2[0]->alias;
 
         if(count($choose) != 0) {
-        
+
             return response()->json([
                 'status'    => true,
-                'data_box'  => $arr1, 
+                'data_box'  => $arr1,
                 'data_room' => $arr2
             ]);
         }
@@ -103,7 +107,7 @@ class OrderController extends Controller
 
     public function startStoring(Request $request)
     {
-        
+
         $validator = \Validator::make($request->all(), [
             'user_id' => 'required',
             'space_id' => 'required',
@@ -138,19 +142,19 @@ class OrderController extends Controller
                     $order_detail->types_of_size_id       = $data['types_of_size_id'.$a];
                     $order_detail->duration               = $data['duration'.$a];
                     $order_detail->start_date             = Carbon::now()->toDateString();
-                    
+
                     // daily
-                    if ($order_detail->types_of_duration_id == 1 || $order_detail->types_of_duration_id == '1') { 
+                    if ($order_detail->types_of_duration_id == 1 || $order_detail->types_of_duration_id == '1') {
                         $order_detail->end_date     = date('Y-m-d', strtotime('+'.$order_detail->duration.' days', strtotime($order_detail->start_date)));
 
-                    } 
+                    }
                     // weekly
-                    else if ($order_detail->types_of_duration_id == 2 || $order_detail->types_of_duration_id == '2') { 
+                    else if ($order_detail->types_of_duration_id == 2 || $order_detail->types_of_duration_id == '2') {
                         $end_date                   = $order_detail->duration*7;
                         $order_detail->end_date     = date('Y-m-d', strtotime('+'.$end_date.' days', strtotime($order_detail->start_date)));
-                    } 
+                    }
                     // monthly
-                    else if ($order_detail->types_of_duration_id == 3 || $order_detail->types_of_duration_id == '3') { 
+                    else if ($order_detail->types_of_duration_id == 3 || $order_detail->types_of_duration_id == '3') {
                         $order_detail->end_date     = date('Y-m-d', strtotime('+'.$order_detail->duration.' month', strtotime($order_detail->start_date)));
                     }
 
@@ -171,7 +175,7 @@ class OrderController extends Controller
                             //change status box to fill
                             DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 8]);
                         }
-                        
+
                         // get price box
                         $price = Price::select('price')
                                 ->where('types_of_box_room_id', $order_detail->types_of_box_room_id)
@@ -187,10 +191,10 @@ class OrderController extends Controller
                                 'status' =>false,
                                 'message' => 'Not found price box.'
                             ]);
-                        }                                                
+                        }
                     }
 
-                    
+
                     // order room
                     if ($order_detail->types_of_box_room_id == 2 || $order_detail->types_of_box_room_id == "2") {
                         $type = 'room';
@@ -201,7 +205,7 @@ class OrderController extends Controller
                                 ->orderBy('id')
                                 ->limit(1)
                                 ->get();
-                                
+
                         if(isset($room)){
                             $room_or_box_id = $room[0]->id;
                             //change status room to fill
@@ -223,9 +227,9 @@ class OrderController extends Controller
                                 'status' =>false,
                                 'message' => 'Not found price room.'
                             ]);
-                        }     
-                    } 
-                    
+                        }
+                    }
+
                     $order_detail->name           = 'New '. $type .' '. $a;
                     $order_detail->room_or_box_id = $room_or_box_id;
                     $order_detail->amount         = $amount;
@@ -243,7 +247,7 @@ class OrderController extends Controller
                     'message' => 'Not found order count.'
                 ]);
             }
-            
+
         } catch (\Exception $e) {
             // delete order when order_detail failed to create
             DB::table('orders')->where('id', $order->id)->delete();
@@ -258,12 +262,12 @@ class OrderController extends Controller
             'message' => 'Create order success.',
             'data' => new OrderResource($order)
         ]);
-        
+
     }
 
     public function update(Request $request)
     {
-        
+
         $validator = \Validator::make($request->all(), [
             'order_detail_id'   => 'required',
             'name'              => 'required',
@@ -278,15 +282,15 @@ class OrderController extends Controller
 
         try {
             $id         = $request->order_detail_id;
-            $order      = OrderDetail::findOrFail($id); 
+            $order      = OrderDetail::findOrFail($id);
             $data       = $request->all();
             if($order){
                 $data["name"]           = $request->name;
                 $order->fill($data)->save();
-            }         
-            
+            }
+
         } catch (\Exception $e) {
-            
+
             return response()->json([
                 'status' =>false,
                 'message' => $e->getMessage()
@@ -298,7 +302,7 @@ class OrderController extends Controller
             'message' => 'Update name order detail success.',
             'data' => $order
         ]);
-        
+
     }
 
 }
