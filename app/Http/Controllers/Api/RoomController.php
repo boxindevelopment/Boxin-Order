@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
-use App\Entities\Room;
-use App\Entities\PriceRoom;
+use App\Model\Room;
+use App\Model\PriceRoom;
 use App\Http\Resources\RoomResource;
 use App\Http\Resources\PriceRoomResource;
 
@@ -15,10 +15,10 @@ class RoomController extends Controller
 
     public function getRoomBySpace($space_id){
 
-        $rooms = Room::select('*', DB::raw('COUNT(type_size_id) as available'))
+        $rooms = Room::select('*', DB::raw('COUNT(types_of_size_id) as available'))
                 ->where('status_id', 9)
                 ->where('space_id', $space_id)
-                ->groupBy('type_size_id')
+                ->groupBy('types_of_size_id')
                 ->get();
 
         if(count($rooms) != 0) {

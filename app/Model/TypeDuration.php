@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Entities;
+namespace App\Model;
 
-use App\Core\Model\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
 class TypeDuration extends Model
 {
-    use Searchable;
 
     protected $table = 'types_of_duration';
 
@@ -19,6 +17,6 @@ class TypeDuration extends Model
 
     public function order_detail()
     {
-        return $this->hasMany('App\Entities\OrderDetail', 'type_duration_id', 'id');
+        return $this->hasMany('App\Model\OrderDetail', 'types_of_duration_id', 'id');
     }
 }

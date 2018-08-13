@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateRoomsTable extends Migration
+class CreatePaymentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,23 +13,21 @@ class CreateRoomsTable extends Migration
      */
     public function up()
     {
-        Schema::create('rooms', function (Blueprint $table) {
+        Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('space_id')->unsigned();
-            $table->integer('types_of_size_id')->unsigned();
-            $table->string('name', 225);
+            $table->integer('order_id')->unsigned();
+            $table->integer('user_id')->unsigned();
+            $table->string('payment_type', 50);
+            $table->string('payment_credit_card_id', 225)->nullable();
+            $table->integer('amount');
             $table->integer('status_id')->unsigned();
             $table->timestamps();
-            $table->softDeletes();
 
             $table
-                ->foreign('space_id')->references('id')->on('spaces')
+                ->foreign('order_id')->references('id')->on('orders')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
-                ->foreign('types_of_size_id')->references('id')->on('types_of_size')
-                ->onUpdate('cascade')->onDelete('cascade');
-            $table
-                ->foreign('status_id')->references('id')->on('status')
+                ->foreign('user_id')->references('id')->on('users')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
     }
@@ -41,6 +39,6 @@ class CreateRoomsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rooms');
+        Schema::dropIfExists('payments');
     }
 }

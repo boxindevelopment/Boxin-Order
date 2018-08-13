@@ -14,15 +14,6 @@ class OrderDetailResource extends JsonResource
      */
     public function toArray($request)
     {
-        if (!is_null($this->user_id)) {
-            $user = [
-                'id'        => $this->order->user->id,
-                'first_name'=> $this->order->user->first_name,
-                'last_name' => $this->order->user->last_name,
-                'email'     => $this->order->user->email,
-                'phone'     => $this->order->user->phone,
-            ];
-        }
 
         if (!is_null($this->order_id)) {
             $order = [
@@ -31,17 +22,18 @@ class OrderDetailResource extends JsonResource
             ];
         }
 
-        if (!is_null($this->type_size_id)) {
+        if (!is_null($this->types_of_size_id)) {
             $type_size = [
                 'id'        => $this->type_size->id,
                 'name'      => $this->type_size->name,
+                'size'      => $this->type_size->size
             ];
         }
 
-        if (!is_null($this->type_duration_id)) {
+        if (!is_null($this->types_of_duration_id)) {
             $difference = $this->selisih + 1;
             if($difference >= $this->total_time){
-                $difference = $total_time;
+                $difference = $this->total_time;
             }else{
                 $difference = $difference;
             }
@@ -51,24 +43,30 @@ class OrderDetailResource extends JsonResource
                 'total_time'        => $this->total_time,
                 'duration_storing'  => $this->duration,
                 'name'              => $this->type_duration->name,
+                'alias'             => $this->type_duration->alias,
             ];
         }
 
         $location = [
+            'city_id'   => $this->order->space->warehouse->area->city->id, 
             'city'      => $this->order->space->warehouse->area->city->name,
-            'areas'     => $this->order->space->warehouse->area->name,
+            'area_id'   => $this->order->space->warehouse->area->id,
+            'area'      => $this->order->space->warehouse->area->name,
+            'warehouse_id' => $this->order->space->warehouse->id,
             'warehouse' => $this->order->space->warehouse->name,
+            'space_id'  => $this->order->space->id,
             'space'     => $this->order->space->name,
         ];
 
         $data = [
             'id'        => $this->id,
             'name'      => $this->name,
-            'type'      => $this->type,
-            'order_date'=> $this->start_date,
-            'status'    => $this->order->status->name,
-            'type_size' => $type_size,
-            'user'      => $user,
+            'amount'    => $this->amount,
+            'start_date'=> $this->start_date,
+            'end_date'  => $this->end_date,
+            'status'    => $this->status->name,
+            'types_of_box_room_id'  => new TypeBoxRoomResource($this->type_size),
+            'types_of_size'         => new TypeSizeResource($this->type_size),
             'order'     => $order,
             'location'  => $location,
             'duration'  => $duration,

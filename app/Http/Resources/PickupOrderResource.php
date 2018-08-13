@@ -31,7 +31,7 @@ class PickupOrderResource extends JsonResource
             ];
         }
 
-        if (!is_null($this->type_pickup_id)) {
+        if (!is_null($this->types_of_pickup_id)) {
             $type_pickup = [
                 'id'    => $this->type_pickup->id,
                 'name'  => $this->type_pickup->name,
@@ -51,9 +51,9 @@ class PickupOrderResource extends JsonResource
             'driver_phone'      => $this->driver_phone,
             'user'              => $user,
             'order_date'        => $this->order->created_at->format('Y-m-d'),
-            'pickup_order_date' => $this->created_at->format('Y-m-d'),
+            'created_date'      => $this->created_at->format('Y-m-d'),
             'status'            => $this->status->name,
-            'type_pickup'       => $type_pickup,
+            'type_pickup'       => new TypePickUpResource($this->type_pickup),
         ];
 
         return $data;

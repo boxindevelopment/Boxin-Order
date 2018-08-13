@@ -12,9 +12,9 @@ class Types_Of_Duration_TableSeeder extends Seeder
     public function run()
     {
         DB::table('types_of_duration')->insert([
-            ['name' => 'Daily'],
-            ['name' => 'Weekly'],
-            ['name' => 'Monthly'],
+            ['id' => 1, 'name' => 'Daily', 'alias' => 'day'],
+            ['id' => 2, 'name' => 'Weekly', 'alias' => 'week'],
+            ['id' => 3, 'name' => 'Monthly', 'alias' => 'month'],
         ]);
     }
 }

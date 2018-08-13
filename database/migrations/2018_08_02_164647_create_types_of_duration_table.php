@@ -16,6 +16,7 @@ class CreateTypesOfDurationTable extends Migration
         Schema::create('types_of_duration', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name', 50);
+            $table->string('alias', 50);
             $table->timestamps();
         });
     }

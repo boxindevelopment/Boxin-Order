@@ -16,25 +16,32 @@ class CreateOrderDetailsTable extends Migration
         Schema::create('order_details', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('order_id')->unsigned();
-            $table->integer('type_duration_id')->unsigned();
+            $table->integer('types_of_box_room_id')->unsigned();
+            $table->integer('types_of_duration_id')->unsigned();
             $table->integer('room_or_box_id');
-            $table->string('type', 10);
-            $table->integer('type_size_id')->unsigned();
+            $table->integer('types_of_size_id')->unsigned();
             $table->string('name', 225);
             $table->integer('duration');
             $table->integer('amount');
             $table->date('start_date');
             $table->date('end_date');
+            $table->integer('status_id')->default(10)->unsigned();
             $table->timestamps();
 
             $table
                 ->foreign('order_id')->references('id')->on('orders')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
-                ->foreign('type_duration_id')->references('id')->on('types_of_duration')
+                ->foreign('types_of_box_room_id')->references('id')->on('types_of_box_room')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
-                ->foreign('type_size_id')->references('id')->on('types_of_size')
+                ->foreign('types_of_duration_id')->references('id')->on('types_of_duration')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table
+                ->foreign('types_of_size_id')->references('id')->on('types_of_size')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table
+                ->foreign('status_id')->references('id')->on('status')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
     }

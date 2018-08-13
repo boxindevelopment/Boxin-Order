@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Entities;
+namespace App\Model;
 
-use App\Core\Model\Searchable;
 use Illuminate\Database\Eloquent\Model;
 
 class Warehouse extends Model
 {
-    use Searchable;
 
     protected $table = 'warehouses';
 
@@ -19,11 +17,11 @@ class Warehouse extends Model
 
     public function area()
     {
-        return $this->belongsTo('App\Entities\Area', 'area_id', 'id');
+        return $this->belongsTo('App\Model\Area', 'area_id', 'id');
     }
 
     public function space()
     {
-        return $this->hasMany('App\Entities\Space', 'warehouse_id', 'id');
+        return $this->hasMany('App\Model\Space', 'warehouse_id', 'id');
     }
 }
