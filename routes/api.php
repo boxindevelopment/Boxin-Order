@@ -32,9 +32,9 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('order')->group(function() {
-        
 
-        Route::get('my-box/{user_id}', 'OrderDetailController@my_box')->name('api.order.my_box');
+
+        Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
         Route::get('my-deliveries/{user_id}', 'OrderDetailController@my_deliveries')->name('api.order.my_deliveries');
         Route::get('my-box-history/{user_id}', 'OrderDetailController@my_box_history')->name('api.order.my_box_history');
 
