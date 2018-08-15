@@ -15,7 +15,7 @@ class RoomController extends Controller
 
     public function getRoomBySpace($space_id){
 
-        $rooms = Room::select('*', DB::raw('COUNT(types_of_size_id) as available'))
+        $rooms = Room::select('types_of_size_id', DB::raw('COUNT(types_of_size_id) as available'))
                 ->where('status_id', 9)
                 ->where('space_id', $space_id)
                 ->groupBy('types_of_size_id')
