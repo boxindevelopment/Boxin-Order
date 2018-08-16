@@ -12,7 +12,7 @@ class Order extends Model
     protected $table = 'orders';
 
     protected $fillable = [
-        'user_id', 'space_id', 'total', 'qty', 'status_id' 
+        'user_id', 'space_id', 'total', 'qty', 'status_id'
     ];
 
     public function user()
@@ -32,12 +32,12 @@ class Order extends Model
 
     public function order_detail()
     {
-        return $this->hasMany('App\Model\OrderDetail', 'order_id', 'id');
+        return $this->hasMany('App\Model\OrderDetail', 'order_id');
     }
 
     public function pickup_order()
     {
-        return $this->hasMany('App\Model\PickupOrder', 'order_id', 'id');
+        return $this->hasOne('App\Model\PickupOrder', 'order_id');
     }
 
 }

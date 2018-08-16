@@ -27,6 +27,7 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('pickup')->group(function() {
+        Route::get('price', 'PickupOrderController@getPrice')->name('api.pickup.getPrice');
         Route::get('type', 'PickupOrderController@getType')->name('api.pickup.getType');
         Route::post('start-pickup', 'PickupOrderController@startPickUp')->name('api.pickup.startPickUp');
     });
@@ -42,6 +43,7 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}', 'OrderController@getPrice')->name('api.order.getPrice');
 
         Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store')->middleware('auth:api');
+        Route::get('find/{id}', 'OrderController@getOrder')->name('api.order.getOrder');
         Route::get('{order_detail_id}', 'OrderController@getById')->name('api.order.getById');
         Route::post('update', 'OrderController@update')->name('api.order.update');
 

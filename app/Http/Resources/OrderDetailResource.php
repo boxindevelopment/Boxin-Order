@@ -48,7 +48,7 @@ class OrderDetailResource extends JsonResource
         }
 
         $location = [
-            'city_id'   => $this->order->space->warehouse->area->city->id, 
+            'city_id'   => $this->order->space->warehouse->area->city->id,
             'city'      => $this->order->space->warehouse->area->city->name,
             'area_id'   => $this->order->space->warehouse->area->id,
             'area'      => $this->order->space->warehouse->area->name,
