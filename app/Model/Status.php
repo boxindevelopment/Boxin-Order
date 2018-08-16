@@ -9,6 +9,12 @@ class Status extends Model
 
     protected $table = 'status';
 
+    const ON_THE_WAY_TO_YOU = 2;
+    const UPCOMMING         = 3;
+    const STORED            = 4;
+    const SUCCESS           = 5;
+    const FAILED            = 6;
+
     protected $fillable = [
         'name'
     ];
@@ -24,7 +30,7 @@ class Status extends Model
     {
         return $this->hasMany('App\Model\PickupOrder', 'status_id', 'id');
     }
-    
+
     public function detail_order()
     {
         return $this->hasMany('App\Model\DetailOrder', 'status_id', 'id');
@@ -34,5 +40,5 @@ class Status extends Model
     {
         return $this->hasMany('App\Model\Payment', 'status_id', 'id');
     }
-    
+
 }

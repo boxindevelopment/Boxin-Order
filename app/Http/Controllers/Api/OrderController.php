@@ -108,8 +108,9 @@ class OrderController extends Controller
     public function startStoring(Request $request)
     {
 
+        $user = $request->user();
+
         $validator = \Validator::make($request->all(), [
-            'user_id' => 'required',
             'space_id' => 'required',
             'order_count' => 'required',
         ]);
@@ -121,12 +122,13 @@ class OrderController extends Controller
             ]);
         }
 
-        try {
+        // try {
             $data               = $request->all();
             $order              = new Order;
-            $order->user_id     = $request->user_id;
+            $order->user_id     = $user->id;
             $order->space_id    = $request->space_id;
             $order->status_id   = 10;
+            $order->total       = 0;
             $order->qty         = $data['order_count'];
             $order->save();
 
@@ -158,12 +160,13 @@ class OrderController extends Controller
                         $order_detail->end_date     = date('Y-m-d', strtotime('+'.$order_detail->duration.' month', strtotime($order_detail->start_date)));
                     }
 
+
                     // order box
                     if ($order_detail->types_of_box_room_id == 1 || $order_detail->types_of_box_room_id == "1") {
                         $type = 'box';
 
                         // get box
-                        $box = Box::where('status_id', 9)
+                        $box = Box::where('status_id', 10)
                                 ->where('space_id', $order->space_id)
                                 ->where('types_of_size_id', $order_detail->types_of_size_id)
                                 ->orderBy('id')
@@ -199,7 +202,7 @@ class OrderController extends Controller
                     if ($order_detail->types_of_box_room_id == 2 || $order_detail->types_of_box_room_id == "2") {
                         $type = 'room';
                         // get room
-                        $room = Room::where('status_id', 9)
+                        $room = Room::where('status_id', 10)
                                 ->where('space_id', $order->space_id)
                                 ->where('types_of_size_id', $order_detail->types_of_size_id)
                                 ->orderBy('id')
@@ -226,7 +229,7 @@ class OrderController extends Controller
                             return response()->json([
                                 'status' =>false,
                                 'message' => 'Not found price room.'
-                            ]);
+                            ], 401);
                         }
                     }
 
@@ -237,6 +240,7 @@ class OrderController extends Controller
                     $total += $order_detail->amount;
                     $order_detail->save();
                 }
+                
                 //update total order
                 $total_amount += $total;
                 DB::table('orders')->where('id', $order->id)->update(['total' => $total_amount]);
@@ -245,17 +249,17 @@ class OrderController extends Controller
                 return response()->json([
                     'status' =>false,
                     'message' => 'Not found order count.'
-                ]);
+                ], 401);
             }
 
-        } catch (\Exception $e) {
-            // delete order when order_detail failed to create
-            DB::table('orders')->where('id', $order->id)->delete();
-            return response()->json([
-                'status' =>false,
-                'message' => $e->getMessage()
-            ]);
-        }
+        // } catch (\Exception $e) {
+        //     // delete order when order_detail failed to create
+        //     DB::table('orders')->where('id', $order->id)->delete();
+        //     return response()->json([
+        //         'status' =>false,
+        //         'message' => $e->getMessage()
+        //     ], 401);
+        // }
 
         return response()->json([
             'status' => true,

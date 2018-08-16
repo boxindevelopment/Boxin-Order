@@ -41,7 +41,7 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('list-choose', 'OrderController@chooseProduct')->name('api.order.chooseProduct');
         Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}', 'OrderController@getPrice')->name('api.order.getPrice');
 
-        Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store');
+        Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store')->middleware('auth:api');
         Route::get('{order_detail_id}', 'OrderController@getById')->name('api.order.getById');
         Route::post('update', 'OrderController@update')->name('api.order.update');
 
