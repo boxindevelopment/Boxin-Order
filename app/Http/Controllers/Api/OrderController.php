@@ -173,7 +173,7 @@ class OrderController extends Controller
                                 ->limit(1)
                                 ->get();
 
-                        if($box){
+                        if(isset($box[0]->id)){
                             $room_or_box_id = $box[0]->id;
                             //change status box to fill
                             DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 9]);
@@ -209,7 +209,7 @@ class OrderController extends Controller
                                 ->limit(1)
                                 ->get();
 
-                        if($room){
+                        if(isset($room[0]->id)){
                             $room_or_box_id = $room[0]->id;
                             //change status room to fill
                             DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 9]);
