@@ -189,7 +189,7 @@ class OrderController extends Controller
                             $amount = ($price[0]->price)*$order_detail->duration;
                         }else{
                             // change status room to empty when order failed to create
-                            DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 9]);
+                            DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 10]);
                             return response()->json([
                                 'status' =>false,
                                 'message' => 'Not found price box.'
@@ -225,7 +225,7 @@ class OrderController extends Controller
                             $amount = ($price[0]->price)*$order_detail->duration;
                         }else{
                             // change status room to empty when order failed to create
-                            DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 9]);
+                            DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 10]);
                             return response()->json([
                                 'status' =>false,
                                 'message' => 'Not found price room.'
