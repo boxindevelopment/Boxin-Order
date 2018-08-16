@@ -176,7 +176,7 @@ class OrderController extends Controller
                         if(isset($box)){
                             $room_or_box_id = $box[0]->id;
                             //change status box to fill
-                            DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 8]);
+                            DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 9]);
                         }
 
                         // get price box
@@ -240,7 +240,7 @@ class OrderController extends Controller
                     $total += $order_detail->amount;
                     $order_detail->save();
                 }
-                
+
                 //update total order
                 $total_amount += $total;
                 DB::table('orders')->where('id', $order->id)->update(['total' => $total_amount]);
