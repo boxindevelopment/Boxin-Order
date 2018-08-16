@@ -14,6 +14,11 @@ class Status extends Model
     const STORED            = 4;
     const SUCCESS           = 5;
     const FAILED            = 6;
+    const FAILED            = 6;
+    const FAILED            = 6;
+    const FAILED            = 6;
+    const FAILED            = 6;
+    const FAILED            = 6;
 
     protected $fillable = [
         'name'

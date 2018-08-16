@@ -173,7 +173,7 @@ class OrderController extends Controller
                                 ->limit(1)
                                 ->get();
 
-                        if(isset($box)){
+                        if($box){
                             $room_or_box_id = $box[0]->id;
                             //change status box to fill
                             DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 9]);
@@ -185,7 +185,7 @@ class OrderController extends Controller
                                 ->where('types_of_size_id', $order_detail->types_of_size_id)
                                 ->get();
 
-                        if(isset($price)){
+                        if($price){
                             $amount = ($price[0]->price)*$order_detail->duration;
                         }else{
                             // change status room to empty when order failed to create
@@ -209,10 +209,10 @@ class OrderController extends Controller
                                 ->limit(1)
                                 ->get();
 
-                        if(isset($room)){
+                        if($room){
                             $room_or_box_id = $room[0]->id;
                             //change status room to fill
-                            DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 8]);
+                            DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 9]);
                         }
 
                         // get price room
@@ -221,7 +221,7 @@ class OrderController extends Controller
                                 ->where('types_of_size_id', $order_detail->types_of_size_id)
                                 ->get();
 
-                        if(isset($price)){
+                        if($price){
                             $amount = ($price[0]->price)*$order_detail->duration;
                         }else{
                             // change status room to empty when order failed to create
