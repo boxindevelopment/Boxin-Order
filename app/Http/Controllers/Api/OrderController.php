@@ -15,41 +15,30 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\BoxRepository;
 use App\Repositories\Contracts\RoomRepository;
+use App\Repositories\Contracts\PriceRepository;
 use DB;
 
 class OrderController extends Controller
 {
     protected $rooms;
 
-    public function __construct(BoxRepository $boxes, RoomRepository $rooms)
+    public function __construct(BoxRepository $boxes, RoomRepository $rooms, PriceRepository $price)
     {
         $this->boxes = $boxes;
         $this->rooms = $rooms;
+        $this->price = $price;
     }
 
 
     public function chooseProduct(){
-        $choose = Price::select('types_of_box_room.name', DB::raw('MIN(price) as min'), DB::raw('MAX(price) as max'), 'types_of_duration.alias')
-            ->leftJoin('types_of_box_room', 'types_of_box_room.id', '=', 'prices.types_of_box_room_id')
-            ->leftJoin('types_of_duration', 'types_of_duration.id', '=', 'prices.types_of_duration_id')
-            ->where('prices.types_of_size_id', '4')
-            ->groupBy('types_of_box_room.name')
-            ->groupBy('types_of_duration.alias')
-            ->get();
-
-        $choose2 = Price::select('types_of_box_room.name', DB::raw('MIN(price) as min'), DB::raw('MAX(price) as max'), 'types_of_duration.alias')
-            ->leftJoin('types_of_box_room', 'types_of_box_room.id', '=', 'prices.types_of_box_room_id')
-            ->leftJoin('types_of_duration', 'types_of_duration.id', '=', 'prices.types_of_duration_id')
-            ->where('prices.types_of_size_id', '1')
-            ->groupBy('types_of_box_room.name')
-            ->groupBy('types_of_duration.alias')
-            ->get();
+        $choose1 = $this->price->getChooseProduct(1,1);
+        $choose2 = $this->price->getChooseProduct(2,1);
 
         $arr1           = array();
-        $arr1['name']   = $choose[0]->name;
-        $arr1['min']    = $choose[0]->min;
-        $arr1['max']    = $choose[0]->max;
-        $arr1['time']   = $choose[0]->alias;
+        $arr1['name']   = $choose1[0]->name;
+        $arr1['min']    = $choose1[0]->min;
+        $arr1['max']    = $choose1[0]->max;
+        $arr1['time']   = $choose1[0]->alias;
 
         $arr2 = array();
         $arr2['name']   = $choose2[0]->name;
@@ -57,7 +46,7 @@ class OrderController extends Controller
         $arr2['max']    = $choose2[0]->max;
         $arr2['time']   = $choose2[0]->alias;
 
-        if(count($choose) != 0) {
+        if(count($choose1) > 0) {
 
             return response()->json([
                 'status'    => true,
@@ -94,11 +83,9 @@ class OrderController extends Controller
 
     public function getPrice($types_of_box_room_id, $types_of_size_id)
     {
-        $prices = Price::where('types_of_box_room_id', $types_of_box_room_id)
-                ->where('types_of_size_id', $types_of_size_id)
-                ->get();
-
-        if(count($prices) != 0) {
+        $prices = $this->price->getPrice($types_of_box_room_id, $types_of_size_id);
+        
+        if(count($prices) > 0) {
             $data = PriceResource::collection($prices);
 
             return response()->json([

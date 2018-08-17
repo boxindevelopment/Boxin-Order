@@ -8,24 +8,24 @@ use App\Http\Resources\OrderDetailResource;
 use Illuminate\Http\Request;
 use App\Http\Resources\AuthResource;
 use DB;
+use App\Repositories\Contracts\OrderDetailRepository;
 
 class OrderDetailController extends Controller
 {
+    protected $orderDetail;
+
+    public function __construct(OrderDetailRepository $orderDetail)
+    {
+        $this->orderDetail = $orderDetail;
+    }
 
     public function my_box(Request $request)
     {
-        $user = $request->user();
-
-        $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('datediff("Day", order_details.end_date, order_details.start_date) as total_time'), DB::raw('datediff("Day", GETDATE(),order_details.start_date) as selisih'))
-            ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
-            ->where('user_id', $user->id)
-            ->where('order_details.status_id', '=', 4)
-            ->get();
-
+        $user   = $request->user();
+        $orders = $this->orderDetail->getMyBox($user->id); 
 
         if(count($orders) > 0) {
             $data = OrderDetailResource::collection($orders);
-
             return response()->json([
                 'status' => true,
                 'data' => $data
@@ -40,17 +40,11 @@ class OrderDetailController extends Controller
 
     public function my_box_history(Request $request)
     {
-        $user = $request->user();
+        $user   = $request->user();
+        $orders = $this->orderDetail->getMyBoxHistory($user->id); 
 
-        $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('datediff("Day", order_details.end_date, order_details.start_date) as total_time'), DB::raw('datediff("Day", GETDATE(),order_details.start_date) as selisih'))
-            ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
-            ->where('user_id', $user->id)
-            ->where('order_details.status_id', '=', 12)
-            ->get();
-
-        if(count($orders) != 0) {
+        if(count($orders) > 0) {
             $data = OrderDetailResource::collection($orders);
-
             return response()->json([
                 'status' => true,
                 'data' => $data
@@ -65,18 +59,11 @@ class OrderDetailController extends Controller
 
     public function my_deliveries(Request $request)
     {
-        $user = $request->user();
-
-        $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('DATEDIFF(day, order_details.end_date, order_details.start_date) as total_time'), DB::raw('DATEDIFF(day, GETDATE(), order_details.start_date) as selisih'))
-            ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
-            ->where('user_id', $user->id)
-            ->where('order_details.status_id', '!=', 4)
-            ->where('order_details.status_id', '!=', 12)
-            ->get();
+        $user   = $request->user();
+        $orders = $this->orderDetail->getMyDeliveries($user->id); 
 
         if(count($orders) > 0) {
             $data = OrderDetailResource::collection($orders);
-
             return response()->json([
                 'status' => true,
                 'data' => $data
@@ -89,16 +76,12 @@ class OrderDetailController extends Controller
         ]);
     }
 
-    public function getById(Request $request, $order_detail_id)
+    public function getById($order_detail_id)
     {
-        $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('DATEDIFF(day, order_details.end_date, order_details.start_date) as total_time'), DB::raw('DATEDIFF(day, GETDATE(), order_details.start_date) as selisih'))
-            ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
-            ->where('order_details.id', $order_detail_id)
-            ->get();
+        $orders = $this->orderDetail->getById($order_detail_id);
 
         if(count($orders) > 0) {
             $data = OrderDetailResource::collection($orders);
-
             return response()->json([
                 'status' => true,
                 'data' => $data
