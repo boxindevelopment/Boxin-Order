@@ -89,4 +89,26 @@ class OrderDetailController extends Controller
         ]);
     }
 
+    public function getById(Request $request, $order_detail_id)
+    {
+        $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('DATEDIFF(day, order_details.end_date, order_details.start_date) as total_time'), DB::raw('DATEDIFF(day, GETDATE(), order_details.start_date) as selisih'))
+            ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
+            ->where('order_details.id', $order_detail_id)
+            ->get();
+
+        if(count($orders) > 0) {
+            $data = OrderDetailResource::collection($orders);
+
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
+        ]);
+    }
+
 }

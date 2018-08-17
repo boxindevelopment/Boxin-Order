@@ -37,14 +37,14 @@ Route::group(['namespace' => 'Api'], function() {
 
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
         Route::get('my-deliveries', 'OrderDetailController@my_deliveries')->name('api.order.my_deliveries')->middleware('auth:api');
-        Route::get('my-box-history', 'OrderDetailController@my_box_history')->name('api.order.my_box_history')->middleware('auth:api');
+        Route::get('my-box-history', 'OrderDetailController@my_box_history')->name('api.order.my_box_history')->middleware('auth:api');        
+        Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
 
         Route::get('list-choose', 'OrderController@chooseProduct')->name('api.order.chooseProduct');
         Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}', 'OrderController@getPrice')->name('api.order.getPrice');
 
         Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store')->middleware('auth:api');
         Route::get('find/{id}', 'OrderController@getOrder')->name('api.order.getOrder');
-        Route::get('{order_detail_id}', 'OrderController@getById')->name('api.order.getById');
         Route::post('update', 'OrderController@update')->name('api.order.update');
 
         Route::post('start-item-box','OrderDetailBoxController@startDetailItemBox')->name('api.order.startDetailItemBox');
@@ -55,6 +55,6 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('payment')->group(function() {
-        Route::post('start-payment', 'PaymentController@startPayment')->name('api.payment.startPayment');
+        Route::post('start-payment', 'PaymentController@startPayment')->name('api.payment.startPayment')->middleware('auth:api');
     });
 });

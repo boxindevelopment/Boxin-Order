@@ -17,11 +17,10 @@ class PaymentResource extends JsonResource
 
         $data = [
             'id'                => $this->id,
-            'date_time'         => $this->date_time, 
+            'payment_date'      => $this->created_at->format('Y-m-d H:i:s'), 
             'payment_type'      => $this->payment_type, 
             'payment_credit_card_id' => $this->payment_credit_card_id, 
             'amount'            => $this->amount, 
-            'status_payment'    => $this->status_payment, 
             'status_id'         => $this->status->name,
             'user'              => new UserResource($this->user),
         ];

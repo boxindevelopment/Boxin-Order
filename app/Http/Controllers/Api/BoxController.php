@@ -6,20 +6,24 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use DB;
 use App\Model\Box;
+use App\Model\TypeSize;
 use App\Http\Resources\BoxResource;
+use App\Repositories\Contracts\BoxRepository;
 
 class BoxController extends Controller
 {
+    protected $boxes;
+
+    public function __construct(BoxRepository $boxes)
+    {
+        $this->boxes = $boxes;
+    }
 
     public function getBoxBySpace($space_id){
 
-        $boxes = Box::select('types_of_size_id', DB::raw('COUNT(types_of_size_id) as available'))
-                ->where('status_id', 10)
-                ->where('space_id', $space_id)
-                ->groupBy('types_of_size_id')
-                ->get();
-
-        if(count($boxes) != 0) {
+        $boxes = $this->boxes->getBySpace($space_id); 
+        
+        if(count($boxes) > 0) {
             $data = BoxResource::collection($boxes);
 
             return response()->json([

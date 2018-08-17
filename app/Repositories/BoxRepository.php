@@ -58,6 +58,18 @@ class BoxRepository implements BoxRepositoryInterface
 
     }
 
+    public function getBySpace($space_id)
+    {
+        $box = $this->model->select('types_of_size_id', DB::raw('COUNT(types_of_size_id) as available'))
+                ->where('status_id', 10)
+                ->where('space_id', $space_id)
+                ->groupBy('types_of_size_id')
+                ->get();
+
+        return $box;
+
+    }
+
     public function findPaginate($args = [])
     {
         // Set default args
