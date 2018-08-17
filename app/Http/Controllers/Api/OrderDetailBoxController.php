@@ -10,11 +10,18 @@ use Illuminate\Http\Request;
 use DB;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-USE File;
+use File;
+use App\Repositories\Contracts\OrderDetailBoxRepository;
 
 class OrderDetailBoxController extends Controller
 {
-    
+    protected $order_detail_box;
+
+    public function __construct(OrderDetailBoxRepository $order_detail_box)
+    {
+        $this->order_detail_box = $order_detail_box;
+    }
+
     public function startDetailItemBox(Request $request)
     {
         
@@ -66,12 +73,9 @@ class OrderDetailBoxController extends Controller
 
     public function getItemByOrderDetailId($order_detail_id)
     {
-        $orders = OrderDetailBox::select('order_detail_boxes.*')
-            ->leftJoin('order_details', 'order_details.id', '=', 'order_detail_boxes.order_detail_id')
-            ->where('order_detail_boxes.order_detail_id', $order_detail_id)
-            ->get();
-
-        if(count($orders) != 0) {
+        $orders = $this->order_detail_box->getItemByOrderDetailId($order_detail_id);
+        
+        if(count($orders) > 0) {
             $data = OrderDetailBoxResource::collection($orders);
 
             return response()->json([
@@ -88,12 +92,9 @@ class OrderDetailBoxController extends Controller
 
     public function getItemById($item_box_id)
     {
-        $orders = OrderDetailBox::select('order_detail_boxes.*')
-            ->leftJoin('order_details', 'order_details.id', '=', 'order_detail_boxes.order_detail_id')
-            ->where('order_detail_boxes.id', $item_box_id)
-            ->get();
+        $orders = $this->order_detail_box->getItemById($item_box_id);
 
-        if(count($orders) != 0) {
+        if(count($orders) > 0) {
             $data = OrderDetailBoxResource::collection($orders);
 
             return response()->json([
@@ -123,14 +124,14 @@ class OrderDetailBoxController extends Controller
         }
 
         try {
-            $id     = $request->item_box_id;
+            $id         = $request->item_box_id;
             $item_image = $request->item_image;
-            $item   = OrderDetailBox::findOrFail($id); 
+            $item       = OrderDetailBox::findOrFail($id); 
             
-            $dataItem           = DB::table('order_detail_boxes')->where('id', $id)->get();
-            $getImage           = $dataItem[0]->item_image;
+            $dataItem   = $this->order_detail_box->getById($id);
+            $getImage   = $dataItem[0]->item_image;
 
-            $data               = $request->all();
+            $data       = $request->all();
             if($item){
                 if($item_image){
                     if ($request->hasFile('item_image')) {
@@ -174,7 +175,7 @@ class OrderDetailBoxController extends Controller
             $id     = $item_box_id;
             $item   = OrderDetailBox::findOrFail($id); 
             
-            $dataItem           = DB::table('order_detail_boxes')->where('id', $id)->get();
+            $dataItem           = $this->order_detail_box->getById($id);
             $getImage           = $dataItem[0]->item_image;
 
             if($item){

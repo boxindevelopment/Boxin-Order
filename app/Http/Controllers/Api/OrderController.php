@@ -21,6 +21,8 @@ use DB;
 class OrderController extends Controller
 {
     protected $rooms;
+    protected $boxes;
+    protected $price;
 
     public function __construct(BoxRepository $boxes, RoomRepository $rooms, PriceRepository $price)
     {
@@ -84,7 +86,7 @@ class OrderController extends Controller
     public function getPrice($types_of_box_room_id, $types_of_size_id)
     {
         $prices = $this->price->getPrice($types_of_box_room_id, $types_of_size_id);
-        
+
         if(count($prices) > 0) {
             $data = PriceResource::collection($prices);
 
@@ -216,10 +218,7 @@ class OrderController extends Controller
                     }
 
                     // get price box
-                    $price = Price::select('price')
-                            ->where('types_of_box_room_id', $order_detail->types_of_box_room_id)
-                            ->where('types_of_size_id', $order_detail->types_of_size_id)
-                            ->get();
+                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id);
 
                     if($price){
                         $amount = ($price[0]->price)*$order_detail->duration;
@@ -247,10 +246,7 @@ class OrderController extends Controller
                     }
 
                     // get price room
-                    $price = Price::select('price')
-                            ->where('types_of_box_room_id', $order_detail->types_of_box_room_id)
-                            ->where('types_of_size_id', $order_detail->types_of_size_id)
-                            ->get();
+                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id);
 
                     if($price){
                         $amount = ($price[0]->price)*$order_detail->duration;

@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderDetailResource;
 use Illuminate\Http\Request;
 use App\Http\Resources\AuthResource;
-use DB;
 use App\Repositories\Contracts\OrderDetailRepository;
 
 class OrderDetailController extends Controller

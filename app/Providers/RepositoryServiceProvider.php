@@ -26,6 +26,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Repositories\Contracts\BoxRepository', 'App\Repositories\BoxRepository');
         $this->app->bind('App\Repositories\Contracts\RoomRepository', 'App\Repositories\RoomRepository');
         $this->app->bind('App\Repositories\Contracts\OrderDetailRepository', 'App\Repositories\OrderDetailRepository');
+        $this->app->bind('App\Repositories\Contracts\OrderDetailBoxRepository', 'App\Repositories\OrderDetailBoxRepository');
         $this->app->bind('App\Repositories\Contracts\PriceRepository', 'App\Repositories\PriceRepository');
     }
 }
