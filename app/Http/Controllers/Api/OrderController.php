@@ -203,7 +203,7 @@ class OrderController extends Controller
             $order              = new Order;
             $order->user_id     = $user->id;
             $order->space_id    = $request->space_id;
-            $order->status_id   = 10;
+            $order->status_id   = 11;
             $order->total       = 0;
             $order->qty         = $data['order_count'];
             $order->save();
@@ -214,7 +214,7 @@ class OrderController extends Controller
             for ($a = 1; $a <= $data['order_count']; $a++) {
                 $order_detail                         = new OrderDetail;
                 $order_detail->order_id               = $order->id;
-                $order_detail->status_id              = 10;
+                $order_detail->status_id              = 11;
                 $order_detail->types_of_duration_id   = $data['types_of_duration_id'.$a];
                 $order_detail->types_of_box_room_id   = $data['types_of_box_room_id'.$a];
                 $order_detail->types_of_size_id       = $data['types_of_size_id'.$a];

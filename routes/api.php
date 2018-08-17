@@ -36,8 +36,8 @@ Route::group(['namespace' => 'Api'], function() {
 
 
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
-        Route::get('my-deliveries/{user_id}', 'OrderDetailController@my_deliveries')->name('api.order.my_deliveries');
-        Route::get('my-box-history/{user_id}', 'OrderDetailController@my_box_history')->name('api.order.my_box_history');
+        Route::get('my-deliveries', 'OrderDetailController@my_deliveries')->name('api.order.my_deliveries')->middleware('auth:api');
+        Route::get('my-box-history', 'OrderDetailController@my_box_history')->name('api.order.my_box_history')->middleware('auth:api');
 
         Route::get('list-choose', 'OrderController@chooseProduct')->name('api.order.chooseProduct');
         Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}', 'OrderController@getPrice')->name('api.order.getPrice');
