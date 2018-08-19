@@ -52,6 +52,7 @@ class RoomRepository implements RoomRepositoryInterface
             $query->take($args['length']);
         }
 
+        $query->where('deleted_at', NULL);
         $room = $query->get();
 
         return $room;
@@ -63,6 +64,7 @@ class RoomRepository implements RoomRepositoryInterface
         $room = $this->model->select('types_of_size_id', DB::raw('COUNT(types_of_size_id) as available'))
                 ->where('status_id', 10)
                 ->where('space_id', $space_id)
+                ->where('deleted_at', NULL)
                 ->groupBy('types_of_size_id')
                 ->get();
 
