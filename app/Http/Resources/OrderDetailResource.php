@@ -31,7 +31,7 @@ class OrderDetailResource extends JsonResource
         }
 
         if (!is_null($this->types_of_duration_id)) {
-            $difference = $this->selisih + 1;
+            $difference = $this->selisih;
             if($difference >= $this->total_time){
                 $difference = $this->total_time;
             }else{
@@ -39,7 +39,7 @@ class OrderDetailResource extends JsonResource
             }
             $duration = [
                 'id'                => $this->type_duration->id,
-                'count_time'        => $difference,
+                'count_time'        => $this->selisih,
                 'total_time'        => $this->total_time,
                 'duration_storing'  => $this->duration,
                 'name'              => $this->type_duration->name,

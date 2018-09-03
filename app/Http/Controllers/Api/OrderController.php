@@ -175,6 +175,9 @@ class OrderController extends Controller
             $order->qty         = $data['order_count'];
             $order->save();
 
+            $pickup                 = new PickupOrder;
+            $pickup->date           = $request->date;
+
             $total = 0;
             $total_amount = 0;
 
@@ -186,7 +189,7 @@ class OrderController extends Controller
                 $order_detail->types_of_box_room_id   = $data['types_of_box_room_id'.$a];
                 $order_detail->types_of_size_id       = $data['types_of_size_id'.$a];
                 $order_detail->duration               = $data['duration'.$a];
-                $order_detail->start_date             = Carbon::now()->toDateString();
+                $order_detail->start_date             = $pickup->date;
 
                 // daily
                 if ($order_detail->types_of_duration_id == 1 || $order_detail->types_of_duration_id == '1') {
@@ -268,13 +271,12 @@ class OrderController extends Controller
                 $order_detail->save();
             }
 
-            $pickup                 = new PickupOrder;
+            
             $pickup->order_id       = $order->id;
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
             $pickup->address        = $request->address;
             $pickup->longitude      = $request->longitude;
-            $pickup->latitude       = $request->latitude;
-            $pickup->date           = $request->date;
+            $pickup->latitude       = $request->latitude;            
             $pickup->time           = $request->time;
             $pickup->note           = $request->note;
             $pickup->pickup_fee     = $request->pickup_fee;
