@@ -8,6 +8,7 @@ use App\Http\Resources\OrderDetailResource;
 use Illuminate\Http\Request;
 use App\Http\Resources\AuthResource;
 use App\Repositories\Contracts\OrderDetailRepository;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class OrderDetailController extends Controller
 {
@@ -59,14 +60,12 @@ class OrderDetailController extends Controller
     public function my_deliveries(Request $request)
     {
         $user   = $request->user();
-        $orders = $this->orderDetail->getMyDeliveries($user->id); 
-
+        $orders = $this->orderDetail->getMyDeliveries($user->id);
+        
         if(count($orders) > 0) {
             $data = OrderDetailResource::collection($orders);
-            return response()->json([
-                'status' => true,
-                'data' => $data
-            ]);
+
+            return $orders->toArray();
         }
 
         return response()->json([

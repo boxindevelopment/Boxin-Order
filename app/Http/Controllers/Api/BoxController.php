@@ -8,6 +8,8 @@ use DB;
 use App\Model\Box;
 use App\Model\TypeSize;
 use App\Http\Resources\BoxResource;
+
+use App\Http\Resources\PriceResource;
 use App\Repositories\Contracts\BoxRepository;
 
 class BoxController extends Controller
@@ -32,6 +34,26 @@ class BoxController extends Controller
             ]);
         }
 
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
+        ]);
+
+    }
+
+    public function getBox($duration){
+
+        $boxes = $this->boxes->getBox($duration); 
+
+        if(count($boxes) > 0) {
+            $data =PriceResource::collection($boxes);
+
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        }
+        
         return response()->json([
             'status' => false,
             'message' => 'Data not found'

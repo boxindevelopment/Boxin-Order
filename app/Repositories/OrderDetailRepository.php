@@ -59,7 +59,7 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
             ->where('user_id', $user_id)
             ->where('order_details.status_id', '!=', 4)
             ->where('order_details.status_id', '!=', 12)
-            ->get();
+            ->paginate(2);
         return $orders;
 
     }

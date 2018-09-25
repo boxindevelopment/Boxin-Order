@@ -5,14 +5,17 @@ namespace App\Repositories;
 use App\Model\Box;
 use App\Repositories\Contracts\BoxRepository as BoxRepositoryInterface;
 use DB;
+use App\Model\Price;
 
 class BoxRepository implements BoxRepositoryInterface
 {
     protected $model;
+    protected $price;
 
-    public function __construct(Box $model)
+    public function __construct(Box $model, Price $price)
     {
         $this->model = $model;
+        $this->price = $price;
     }
 
     public function findOrFail($id)
@@ -70,6 +73,19 @@ class BoxRepository implements BoxRepositoryInterface
 
         return $box;
 
+    }
+
+    public function getBox($duration)
+    {
+        $box = $this->price->select('prices.*', DB::raw('prices.price as price'), DB::raw('types_of_size.name as size_name'), DB::raw('types_of_size.size as size'), DB::raw('types_of_duration.name as duration_name'), DB::raw('types_of_duration.alias as duration_alias'))
+                ->leftJoin('types_of_size', 'types_of_size.id', '=', 'prices.types_of_size_id')
+                ->leftJoin('types_of_duration', 'types_of_duration.id', '=', 'prices.types_of_duration_id')
+                ->where('prices.types_of_box_room_id', 1)
+                ->where('types_of_size.types_of_box_room_id', 1)
+                ->where('types_of_duration.id', $duration)
+                ->get();
+
+        return $box;
     }
 
     public function findPaginate($args = [])

@@ -20,6 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['namespace' => 'Api'], function() {
     Route::prefix('box')->group(function() {
         Route::get('list-box/{space_id}', 'BoxController@getBoxBySpace')->name('api.box.getBoxBySpace');
+        Route::get('list/{duration}', 'BoxController@getBox')->name('api.box.getBox');
     });
 
     Route::prefix('room')->group(function() {
