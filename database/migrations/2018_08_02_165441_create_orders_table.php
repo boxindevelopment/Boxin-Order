@@ -19,7 +19,7 @@ class CreateOrdersTable extends Migration
             $table->integer('space_id')->unsigned();
             $table->integer('qty');
             $table->integer('total');
-            $table->integer('status_id')->default(10)->unsigned();
+            $table->integer('status_id')->unsigned();
             $table->timestamps();
 
             $table

@@ -33,6 +33,11 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('start-pickup', 'PickupOrderController@startPickUp')->name('api.pickup.startPickUp');
     });
 
+    Route::prefix('return')->group(function() {
+        Route::get('price', 'ReturnBoxController@getPrice')->name('api.return.getPrice');
+        Route::post('start-return', 'ReturnBoxController@startReturnBox')->name('api.return.startReturnBox')->middleware('auth:api');
+    });
+
     Route::prefix('order')->group(function() {
 
 

@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreatePickupOrdersTable extends Migration
+class CreateReturnBoxesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreatePickupOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('pickup_orders', function (Blueprint $table) {
+        Schema::create('return_boxes', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('order_id')->unsigned();
+            $table->integer('order_detail_id')->unsigned();
             $table->integer('types_of_pickup_id')->unsigned();
             $table->text('address')->nullable();
             $table->string('latitude', 225)->nullable();
@@ -23,7 +23,7 @@ class CreatePickupOrdersTable extends Migration
             $table->date('date');
             $table->time('time');
             $table->text('note')->nullable();
-            $table->integer('pickup_fee');
+            $table->integer('deliver_fee');
             $table->string('driver_name', 50)->nullable();
             $table->string('driver_phone', 50)->nullable();
             $table->integer('status_id')->unsigned();
@@ -31,14 +31,13 @@ class CreatePickupOrdersTable extends Migration
             $table->softDeletes();
 
             $table
-                ->foreign('order_id')->references('id')->on('orders')
+                ->foreign('order_detail_id')->references('id')->on('order_details')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
                 ->foreign('types_of_pickup_id')->references('id')->on('types_of_pickup')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
                 ->foreign('status_id')->references('id')->on('status');
-
         });
     }
 
@@ -49,6 +48,6 @@ class CreatePickupOrdersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pickup_orders');
+        Schema::dropIfExists('return_boxes');
     }
 }

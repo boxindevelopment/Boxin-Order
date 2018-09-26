@@ -25,7 +25,7 @@ class CreateOrderDetailsTable extends Migration
             $table->integer('amount');
             $table->date('start_date');
             $table->date('end_date');
-            $table->integer('status_id')->default(10)->unsigned();
+            $table->integer('status_id')->unsigned();
             $table->timestamps();
 
             $table
