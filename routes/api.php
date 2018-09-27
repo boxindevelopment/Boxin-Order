@@ -17,7 +17,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::group(['prefix' => 'api', 'namespace' => 'Api', 'middleware' => ['api']], function() {
+Route::group(['namespace' => 'Api'], function() {
     Route::prefix('box')->group(function() {
         Route::get('list-box/{space_id}', 'BoxController@getBoxBySpace')->name('api.box.getBoxBySpace');
         Route::get('list/{duration}', 'BoxController@getBox')->name('api.box.getBox');
