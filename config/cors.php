@@ -18,5 +18,6 @@ return [
     'allowedMethods' => ['*'],
     'exposedHeaders' => [],
     'maxAge' => 0,
+    'hosts' => [],
 
 ];
