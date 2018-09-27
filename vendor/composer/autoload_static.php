@@ -22,9 +22,9 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
         '40360c0b9b437e69bcbb7f1349ce029e' => __DIR__ . '/..' . '/zendframework/zend-diactoros/src/functions/parse_cookie_header.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
-        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         'f0906e6318348a765ffb6eb24e0d0938' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Foundation/helpers.php',
         '58571171fd5812e6e447dce228f52f4d' => __DIR__ . '/..' . '/laravel/framework/src/Illuminate/Support/helpers.php',
+        '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
         'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
         '801c31d8ed748cfa537fa45402288c95' => __DIR__ . '/..' . '/psy/psysh/src/functions.php',
@@ -135,8 +135,13 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
             'Cron\\' => 5,
             'Carbon\\' => 7,
         ),
+        'B' => 
+        array (
+            'Barryvdh\\Cors\\' => 14,
+        ),
         'A' => 
         array (
+            'Asm89\\Stack\\' => 12,
             'App\\' => 4,
         ),
     );
@@ -356,6 +361,14 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
         array (
             0 => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon',
         ),
+        'Barryvdh\\Cors\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/barryvdh/laravel-cors/src',
+        ),
+        'Asm89\\Stack\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/asm89/stack-cors/src/Asm89/Stack',
+        ),
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/app',
@@ -432,6 +445,7 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
         'App\\Http\\Resources\\PaymentResource' => __DIR__ . '/../..' . '/app/Http/Resources/PaymentResource.php',
         'App\\Http\\Resources\\PickupOrderResource' => __DIR__ . '/../..' . '/app/Http/Resources/PickupOrderResource.php',
         'App\\Http\\Resources\\PriceResource' => __DIR__ . '/../..' . '/app/Http/Resources/PriceResource.php',
+        'App\\Http\\Resources\\ReturnBoxesResource' => __DIR__ . '/../..' . '/app/Http/Resources/ReturnBoxesResource.php',
         'App\\Http\\Resources\\RoomResource' => __DIR__ . '/../..' . '/app/Http/Resources/RoomResource.php',
         'App\\Http\\Resources\\SpaceResource' => __DIR__ . '/../..' . '/app/Http/Resources/SpaceResource.php',
         'App\\Http\\Resources\\TypeBoxRoomResource' => __DIR__ . '/../..' . '/app/Http/Resources/TypeBoxRoomResource.php',
@@ -477,6 +491,12 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
         'App\\Repositories\\PriceRepository' => __DIR__ . '/../..' . '/app/Repositories/PriceRepository.php',
         'App\\Repositories\\RoomRepository' => __DIR__ . '/../..' . '/app/Repositories/RoomRepository.php',
         'App\\Repositories\\WarehouseRepository' => __DIR__ . '/../..' . '/app/Repositories/WarehouseRepository.php',
+        'Asm89\\Stack\\Cors' => __DIR__ . '/..' . '/asm89/stack-cors/src/Asm89/Stack/Cors.php',
+        'Asm89\\Stack\\CorsService' => __DIR__ . '/..' . '/asm89/stack-cors/src/Asm89/Stack/CorsService.php',
+        'Barryvdh\\Cors\\HandleCors' => __DIR__ . '/..' . '/barryvdh/laravel-cors/src/HandleCors.php',
+        'Barryvdh\\Cors\\HandlePreflight' => __DIR__ . '/..' . '/barryvdh/laravel-cors/src/HandlePreflight.php',
+        'Barryvdh\\Cors\\LumenServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-cors/src/LumenServiceProvider.php',
+        'Barryvdh\\Cors\\ServiceProvider' => __DIR__ . '/..' . '/barryvdh/laravel-cors/src/ServiceProvider.php',
         'Carbon\\Carbon' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Carbon.php',
         'Carbon\\CarbonInterval' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/CarbonInterval.php',
         'Carbon\\Exceptions\\InvalidDateException' => __DIR__ . '/..' . '/nesbot/carbon/src/Carbon/Exceptions/InvalidDateException.php',
