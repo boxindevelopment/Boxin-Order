@@ -185,6 +185,7 @@ class OrderDetailBoxController extends Controller
                 $image_path = "/images/detail_item_box/{$getImage}";
                 if (file_exists(public_path().$image_path)) {
                     unlink(public_path().$image_path);
+                    Storage::delete(public_path().$image_path);
                 }
                 $item->delete();
             }
