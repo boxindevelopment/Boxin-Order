@@ -137,8 +137,11 @@ class OrderDetailBoxController extends Controller
                     if ($request->hasFile('item_image')) {
                         $image_path = "/images/detail_item_box/{$getImage}";
                         if ($request->file('item_image')->isValid()) {
-                            if (file_exists(public_path().$image_path)) {
-                                unlink(public_path().$image_path);
+                            if($getImage != null || $getImage != 'NULL'){
+                                if (file_exists(public_path().$image_path)) {
+                                   unlink(public_path().$image_path);
+                                   Storage::delete(public_path().$image_path);
+                                }
                             }
                             $getimageName = time().'.'.$request->item_image->getClientOriginalExtension();
                             $image = $request->item_image->move(public_path('images/detail_item_box'), $getimageName);
