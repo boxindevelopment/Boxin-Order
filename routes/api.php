@@ -57,7 +57,7 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('list-item-box/{order_detail_id}', 'OrderDetailBoxController@getItemByOrderDetailId')->name('api.order.getItemByOrderDetailId');
         Route::get('item-box/{id}', 'OrderDetailBoxController@getItemById')->name('api.order.getItemById');
         Route::post('item-box/update', 'OrderDetailBoxController@updateItem')->name('api.order.updateItem');
-        Route::delete('item-box/{id}/del', 'OrderDetailBoxController@destroy')->name('api.order.destroy');
+        Route::get('item-box/{id}/del', 'OrderDetailBoxController@destroy')->name('api.order.destroy');
     });
 
     Route::prefix('payment')->group(function() {
