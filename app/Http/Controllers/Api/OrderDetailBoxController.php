@@ -90,9 +90,9 @@ class OrderDetailBoxController extends Controller
         ]);
     }
 
-    public function getItemById($item_box_id)
+    public function getItemById($id)
     {
-        $orders = $this->order_detail_box->getItemById($item_box_id);
+        $orders = $this->order_detail_box->getItemById($id);
 
         if(count($orders) > 0) {
             $data = OrderDetailBoxResource::collection($orders);
@@ -171,16 +171,14 @@ class OrderDetailBoxController extends Controller
         
     }
 
-    public function deleteItem($item_box_id)
+    public function deleteItem($id)
     {
 
         try {
-            $id     = $item_box_id;
             $item   = OrderDetailBox::findOrFail($id); 
             
             $dataItem           = $this->order_detail_box->getById($id);
             $getImage           = $dataItem[0]->item_image;
-
             if($item){
                 $image_path = "/images/detail_item_box/{$getImage}";
                 if (file_exists(public_path().$image_path)) {

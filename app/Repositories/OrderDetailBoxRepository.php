@@ -39,11 +39,11 @@ class OrderDetailBoxRepository implements OrderDetailBoxRepositoryInterface
         return $orders;
     }
 
-    public function getItemById($item_box_id)
+    public function getItemById($id)
     {
         $orders = OrderDetailBox::select('order_detail_boxes.*')
             ->leftJoin('order_details', 'order_details.id', '=', 'order_detail_boxes.order_detail_id')
-            ->where('order_detail_boxes.id', $item_box_id)
+            ->where('order_detail_boxes.id', $id)
             ->get();
         return $orders;
     }
