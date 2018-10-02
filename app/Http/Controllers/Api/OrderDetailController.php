@@ -65,7 +65,11 @@ class OrderDetailController extends Controller
         if(count($orders) > 0) {
             $data = OrderDetailResource::collection($orders);
 
-            return $orders->toArray();
+            // return $orders->toArray();
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
         }
 
         return response()->json([
