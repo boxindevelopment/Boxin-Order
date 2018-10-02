@@ -171,36 +171,38 @@ class OrderDetailBoxController extends Controller
         
     }
 
-    public function deleteItem($id)
+    public function destroy($id)
     {
 
+        $item   = $this->order_detail_box->find($id); 
+        if (!$item) {
+            return response()->json(['message' => 'Item box not found'], 404);
+        }
         try {
-            $item   = OrderDetailBox::findOrFail($id); 
-            
+
             $dataItem           = $this->order_detail_box->getById($id);
             $getImage           = $dataItem[0]->item_image;
-            if($item){
-                $image_path = "/images/detail_item_box/{$getImage}";
-                if (file_exists(public_path().$image_path)) {
-                    unlink(public_path().$image_path);
-                    Storage::delete(public_path().$image_path);
-                }
-                $item->delete();
+            $image_path = "/images/detail_item_box/{$getImage}";
+            if (file_exists(public_path().$image_path)) {
+                unlink(public_path().$image_path);
+                Storage::delete(public_path().$image_path);
+            }
+            $hapus = OrderDetailBox::where('id', $id)->delete();
+            if($hapus){
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Delete detail item box success.',
+                    'data' => new OrderDetailBoxResource($item)
+                ]);
             }
             
         } catch (\Exception $e) {
             
             return response()->json([
                 'status' =>false,
-                'message' => $e->getMessage()
+                'message' => '$e->getMessage()'
             ]);
         }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Delete detail item box success.',
-            'data' => new OrderDetailBoxResource($item)
-        ]);
         
     }
 
