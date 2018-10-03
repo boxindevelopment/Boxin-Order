@@ -63,4 +63,22 @@ Route::group(['namespace' => 'Api'], function() {
     Route::prefix('payment')->group(function() {
         Route::post('start-payment', 'PaymentController@startPayment')->name('api.payment.startPayment')->middleware('auth:api');
     });
+
+    // midtrans
+    // Route::get('/vtweb', 'PagesController@vtweb');
+
+    Route::get('/vtdirect', 'VtdirectController@vtdirect');
+    Route::post('/vtdirect', 'VtdirectController@checkout_process');
+
+    Route::get('/vt_transaction', 'TransactionController@transaction');
+    Route::post('/vt_transaction', 'TransactionController@transaction_process');
+
+    Route::post('/vt_notif', 'VtwebController@notification');
+
+    Route::get('/snap', 'SnapController@snap');
+    Route::get('/snaptoken', 'SnapController@token');
+    Route::post('/snapfinish', 'SnapController@finish');
+
 });
+
+
