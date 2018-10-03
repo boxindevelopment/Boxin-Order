@@ -73,7 +73,7 @@ Route::group(['namespace' => 'Api'], function() {
     Route::get('/vt_transaction', 'TransactionController@transaction');
     Route::post('/vt_transaction', 'TransactionController@transaction_process');
 
-    Route::post('/vt_notif', 'VtwebController@notification');
+    Route::post('/vt_notif', 'SnapController@notification');
 
     Route::get('/snap', 'SnapController@snap');
     Route::get('/snaptoken', 'SnapController@token');

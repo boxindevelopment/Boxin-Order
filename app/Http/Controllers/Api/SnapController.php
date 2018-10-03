@@ -134,7 +134,7 @@ class SnapController extends Controller
 
         error_log(print_r($result,TRUE));
 
-        /*
+        
         $transaction = $notif->transaction_status;
         $type = $notif->payment_type;
         $order_id = $notif->order_id;
@@ -165,7 +165,7 @@ class SnapController extends Controller
           else if ($transaction == 'deny') {
           // TODO set payment status in merchant's database to 'Denied'
           echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is denied.";
-        }*/
+        }
    
     }
 }    
