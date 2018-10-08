@@ -25,62 +25,13 @@ class ReturnBoxController extends Controller
         $this->warehouse = $warehouse;
     }
 
-    public function getPrice(Request $request)
-    {
-        $validator = \Validator::make($request->all(), [
-            'order_detail_id'   => 'required',
-            'longitude'         => 'required',
-            'latitude'          => 'required'
-        ]);
-
-        if($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()
-            ]);
-        }
-        //get space_id
-        $order = Order::select('orders.*')->leftJoin('order_details', 'order_details.order_id', '=', 'orders.id')->where('order_details.id', $request->order_detail_id)->first();
-
-        //get price
-        $price      = Setting::where('name', 'like', '%price_distance%')->first();
-        $price      = $price->value;
-
-        //get lat long warehouse
-        $warehouse = $this->warehouse->getLatLong($order->space_id);
-        
-        $latitude1  = $request->latitude;
-        $longitude1 = $request->longitude;
-        $latitude2  = $warehouse[0]->lat;
-        $longitude2 = $warehouse[0]->long;
-
-        // <cara 1>
-        $theta    = $longitude1 - $longitude2;
-        $distance = (sin(deg2rad($latitude1)) * sin(deg2rad($latitude2)))  + (cos(deg2rad($latitude1)) * cos(deg2rad($latitude2)) * cos(deg2rad($theta)));
-        $distance = acos($distance);
-        $distance = rad2deg($distance);
-        $distance = $distance * 60 * 1.1515; //Mi
-        // $distance = $distance * 1.609344; //Km
-        $deliver_fee = round($distance,2) * $price;
-        // <end cara 1>
-
-        return response()->json([
-            'status' => true,
-            'price'  => $deliver_fee
-        ]);
-
-    }
-
     public function startReturnBox(Request $request)
     {
 
         $user = $request->user();
         
         $validator = \Validator::make($request->all(), [
-            'order_detail_id'   => 'required',
-            'types_of_pickup_id'=> 'required',
-            'date'              => 'required',
-            'time'              => 'required',
+            'return_count'      => 'required',
         ]);
 
         if($validator->fails()) {
@@ -91,25 +42,48 @@ class ReturnBoxController extends Controller
         }
 
         $data = $request->all();
+        if(isset($data['return_count'])) {
+            for ($a = 1; $a <= $data['return_count']; $a++) {
+
+                $validator = \Validator::make($request->all(), [
+                    'order_detail_id'.$a    => 'required',
+                    'types_of_pickup_id'.$a => 'required',
+                    'date'.$a               => 'required',
+                    'time'.$a               => 'required',
+                ]);
+
+                if($validator->fails()) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => $validator->errors()
+                    ]);
+                }
+            }
+        } else {
+            return response()->json([
+                'status' =>false,
+                'message' => 'Not found return count.'
+            ], 401);
+        }
 
         try {
+            for ($a = 1; $a <= $data['return_count']; $a++) {
+                $return                         = new ReturnBoxes;
+                $return->types_of_pickup_id     = $data['types_of_pickup_id'.$a];
+                $return->date                   = $data['date'.$a];
+                $return->time                   = $data['time'.$a];
+                $return->note                   = $data['note'.$a];
+                $return->status_id              = 11;
+                $return->address                = $data['address'.$a];
+                $return->order_detail_id        = $data['order_detail_id'.$a];
+                $return->longitude              = $data['longitude'.$a];
+                $return->latitude               = $data['latitude'.$a];        
+                $return->deliver_fee            = 0;
+                $return->save();
 
-            $return                         = new ReturnBoxes;
-            $return->types_of_pickup_id     = $data['types_of_pickup_id'];
-            $return->date                   = $data['date'];
-            $return->time                   = $data['time'];
-            $return->note                   = $data['note'];
-            $return->status_id              = 11;
-            $return->address                = $data['address'];
-            $return->order_detail_id        = $data['order_detail_id'];
-            $return->longitude              = $data['longitude'];
-            $return->latitude               = $data['latitude'];        
-            $return->deliver_fee            = $data['deliver_fee'];
-            $return->save();
-
-            //update status order detail to
-            DB::table('order_details')->where('id', $return->order_detail_id)->update(['status_id' => 11]);
-
+                //update status order detail to
+                DB::table('order_details')->where('id', $return->order_detail_id)->update(['status_id' => 11]);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'status' =>false,
@@ -121,46 +95,6 @@ class ReturnBoxController extends Controller
             'status' => true,
             'message' => 'Create return box success.',
             'data' => new ReturnBoxesResource($return)
-        ]);
-
-    }
-
-    public function update(Request $request)
-    {
-
-        $validator = \Validator::make($request->all(), [
-            'order_detail_id'   => 'required',
-            'name'              => 'required',
-        ]);
-
-        if($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()
-            ]);
-        }
-
-        try {
-            $id         = $request->order_detail_id;
-            $order      = OrderDetail::findOrFail($id);
-            $data       = $request->all();
-            if($order){
-                $data["name"]           = $request->name;
-                $order->fill($data)->save();
-            }
-
-        } catch (\Exception $e) {
-
-            return response()->json([
-                'status' =>false,
-                'message' => $e->getMessage()
-            ]);
-        }
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Update name order detail success.',
-            'data' => $order
         ]);
 
     }
