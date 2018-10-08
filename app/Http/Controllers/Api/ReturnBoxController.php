@@ -47,9 +47,9 @@ class ReturnBoxController extends Controller
 
                 $validator = \Validator::make($request->all(), [
                     'order_detail_id'.$a    => 'required',
-                    'types_of_pickup_id'.$a => 'required',
-                    'date'.$a               => 'required',
-                    'time'.$a               => 'required',
+                    // 'types_of_pickup_id'.$a => 'required',
+                    // 'date'.$a               => 'required',
+                    // 'time'.$a               => 'required',
                 ]);
 
                 if($validator->fails()) {
@@ -69,15 +69,15 @@ class ReturnBoxController extends Controller
         try {
             for ($a = 1; $a <= $data['return_count']; $a++) {
                 $return                         = new ReturnBoxes;
-                $return->types_of_pickup_id     = $data['types_of_pickup_id'.$a];
-                $return->date                   = $data['date'.$a];
-                $return->time                   = $data['time'.$a];
-                $return->note                   = $data['note'.$a];
+                $return->types_of_pickup_id     = $data['types_of_pickup_id'];
+                $return->date                   = $data['date'];
+                $return->time                   = $data['time'];
+                $return->note                   = $data['note'];
                 $return->status_id              = 11;
-                $return->address                = $data['address'.$a];
+                $return->address                = $data['address'];
                 $return->order_detail_id        = $data['order_detail_id'.$a];
-                $return->longitude              = $data['longitude'.$a];
-                $return->latitude               = $data['latitude'.$a];        
+                $return->longitude              = $data['longitude'];
+                $return->latitude               = $data['latitude'];        
                 $return->deliver_fee            = 0;
                 $return->save();
 
