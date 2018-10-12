@@ -54,6 +54,7 @@ class PickupOrderResource extends JsonResource
             'created_date'      => $this->created_at->format('Y-m-d'),
             'status'            => $this->status->name,
             'type_pickup'       => new TypePickUpResource($this->type_pickup),
+            'time_pickup'       => $this->time_pickup,
         ];
 
         return $data;

@@ -14,8 +14,7 @@ class PickupOrder extends Model
     protected $hidden = ['created_at', 'updated_at'];
 
     protected $fillable = [
-        'order_id', 'types_of_pickup_id', 'address', 'longitute', 'latitude', 'date',
-        'time', 'note', 'status_id', 'pickup_fee', 'driver_name', 'driver_phone'
+        'order_id', 'types_of_pickup_id', 'address', 'longitute', 'latitude', 'date', 'time', 'note', 'status_id', 'pickup_fee', 'driver_name', 'driver_phone', 'time_pickup'
     ];
 
     public function order()

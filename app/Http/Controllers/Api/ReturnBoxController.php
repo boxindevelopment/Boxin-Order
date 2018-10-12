@@ -72,6 +72,7 @@ class ReturnBoxController extends Controller
                 $return->types_of_pickup_id     = $data['types_of_pickup_id'];
                 $return->date                   = $data['date'];
                 $return->time                   = $data['time'];
+                $return->time_pickup            = $data['time_pickup'];
                 $return->note                   = $data['note'];
                 $return->status_id              = 11;
                 $return->address                = $data['address'];

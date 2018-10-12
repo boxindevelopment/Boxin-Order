@@ -278,6 +278,7 @@ class OrderController extends Controller
             $pickup->longitude      = $request->longitude;
             $pickup->latitude       = $request->latitude;            
             $pickup->time           = $request->time;
+            $pickup->time_pickup    = $request->time_pickup;
             $pickup->note           = $request->note;
             $pickup->pickup_fee     = $request->pickup_fee;
             $pickup->status_id      = 11;
