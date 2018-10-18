@@ -20,41 +20,22 @@ class OrderDetailController extends Controller
     }
 
     public function my_box(Request $request)
-    {
+    {   
         $user   = $request->user();
-        $orders = $this->orderDetail->getMyBox($user->id); 
+        $params = array();
+        $params['user_id'] = $user->id;
+        $params['limit']   = intval($request->limit);
+        $orders = $this->orderDetail->findPaginate($params);
 
-        if(count($orders) > 0) {
-            $data = OrderDetailResource::collection($orders);
-            return response()->json([
-                'status' => true,
-                'data' => $data
-            ]);
+        if(($orders)) {
+            foreach ($orders as $k => $v) {
+                $orders[$k] = $v->toSearchableArray();
+            }
+        } else {
+            return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
         }
 
-        return response()->json([
-            'status' => false,
-            'message' => 'Data not found'
-        ]);
-    }
-
-    public function my_box_history(Request $request)
-    {
-        $user   = $request->user();
-        $orders = $this->orderDetail->getMyBoxHistory($user->id); 
-
-        if(count($orders) > 0) {
-            $data = OrderDetailResource::collection($orders);
-            return response()->json([
-                'status' => true,
-                'data' => $data
-            ]);
-        }
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Data not found'
-        ]);
+        return response()->json($orders);
     }
 
     public function my_deliveries(Request $request)

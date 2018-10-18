@@ -99,7 +99,6 @@ class BoxRepository implements BoxRepositoryInterface
 
         $query = $this->model->with('categories', 'itemPrice.units')->select('items.*', DB::raw('(SELECT SUM(`in`) - SUM(`out`) as stock FROM `item_stocks` WHERE `item`=`items`.`id`) AS stock'));
 
-
         if (!in_array('category', $args)) {
             if (isset($args['category'])) {
                 if($args['category']){
