@@ -36,13 +36,13 @@ Route::group(['namespace' => 'Api'], function() {
     Route::prefix('return')->group(function() {
         Route::get('price', 'ReturnBoxController@getPrice')->name('api.return.getPrice');
         Route::post('start-return', 'ReturnBoxController@startReturnBox')->name('api.return.startReturnBox')->middleware('auth:api');
+        Route::get('my-deliveries', 'ReturnBoxController@my_deliveries')->name('api.order.my_deliveries')->middleware('auth:api');
     });
 
     Route::prefix('order')->group(function() {
 
 
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
-        Route::get('my-deliveries', 'OrderDetailController@my_deliveries')->name('api.order.my_deliveries')->middleware('auth:api');
         Route::get('my-box-history', 'OrderDetailController@my_box_history')->name('api.order.my_box_history')->middleware('auth:api');        
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
 

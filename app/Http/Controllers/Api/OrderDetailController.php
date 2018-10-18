@@ -25,9 +25,9 @@ class OrderDetailController extends Controller
         $params = array();
         $params['user_id'] = $user->id;
         $params['limit']   = intval($request->limit);
-        $orders = $this->orderDetail->findPaginate($params);
+        $orders = $this->orderDetail->findPaginateMyBox($params);
 
-        if(($orders)) {
+        if($orders) {
             foreach ($orders as $k => $v) {
                 $orders[$k] = $v->toSearchableArray();
             }
@@ -36,27 +36,6 @@ class OrderDetailController extends Controller
         }
 
         return response()->json($orders);
-    }
-
-    public function my_deliveries(Request $request)
-    {
-        $user   = $request->user();
-        $orders = $this->orderDetail->getMyDeliveries($user->id);
-        
-        if(count($orders) > 0) {
-            $data = OrderDetailResource::collection($orders);
-
-            // return $orders->toArray();
-            return response()->json([
-                'status' => true,
-                'data' => $data
-            ]);
-        }
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Data not found'
-        ]);
     }
 
     public function getById($order_detail_id)

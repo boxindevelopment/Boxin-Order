@@ -14,20 +14,19 @@ use App\Http\Resources\ReturnBoxesResource;
 use Illuminate\Http\Request;
 use DB;
 use App\Model\Setting;
-use App\Repositories\Contracts\WarehouseRepository;
+use App\Repositories\Contracts\ReturnBoxRepository;
 
 class ReturnBoxController extends Controller
 {
-    protected $warehouse;
+    protected $repository;
 
-    public function __construct(WarehouseRepository $warehouse)
+    public function __construct(ReturnBoxRepository $repository)
     {
-        $this->warehouse = $warehouse;
+        $this->repository = $repository;
     }
 
     public function startReturnBox(Request $request)
     {
-
         $user = $request->user();
         
         $validator = \Validator::make($request->all(), [
@@ -35,10 +34,7 @@ class ReturnBoxController extends Controller
         ]);
 
         if($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()
-            ]);
+            return response()->json(['status' => false, 'message' => $validator->errors()], 304);
         }
 
         $data = $request->all();
@@ -47,23 +43,14 @@ class ReturnBoxController extends Controller
 
                 $validator = \Validator::make($request->all(), [
                     'order_detail_id'.$a    => 'required',
-                    // 'types_of_pickup_id'.$a => 'required',
-                    // 'date'.$a               => 'required',
-                    // 'time'.$a               => 'required',
                 ]);
 
                 if($validator->fails()) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => $validator->errors()
-                    ]);
+                    return response()->json(['status' => false, 'message' => $validator->errors()], 304);
                 }
             }
         } else {
-            return response()->json([
-                'status' =>false,
-                'message' => 'Not found return count.'
-            ], 401);
+            return response()->json(['status' =>false, 'message' => 'Not found return count.'], 401);
         }
 
         try {
@@ -86,18 +73,30 @@ class ReturnBoxController extends Controller
                 DB::table('order_details')->where('id', $return->order_detail_id)->update(['status_id' => 11]);
             }
         } catch (\Exception $e) {
-            return response()->json([
-                'status' =>false,
-                'message' => $e->getMessage()
-            ], 401);
+            return response()->json([ 'status' =>false, 'message' => $e->getMessage()], 401);
         }
 
-        return response()->json([
-            'status' => true,
-            'message' => 'Create return box success.',
-            'data' => new ReturnBoxesResource($return)
-        ]);
+        return response()->json(['status' => true, 'message' => 'Create return box success.', 'data' => new ReturnBoxesResource($return)]);
 
+    }
+
+    public function my_deliveries(Request $request)
+    {
+        $user   = $request->user();
+        $params = array();
+        $params['user_id'] = $user->id;
+        $params['limit']   = intval($request->limit);
+        $data  = $this->repository->findPaginate($params);
+        
+        if($data) {
+            foreach ($data as $k => $v) {
+                $data[$k] = $v->toSearchableArray();
+            }
+        } else {
+            return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
+        }
+
+        return response()->json($data);
     }
 
 }
