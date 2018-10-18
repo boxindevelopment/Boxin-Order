@@ -29,6 +29,8 @@ class ReturnBoxes extends Model
 
     public function toSearchableArray()
     {
+        $url = 'https://boxin-dev-webbackend.azurewebsites.net/';
+
         if (!is_null($this->order_detail_id)) {
             if (!is_null($this->types_of_duration_id)) {
                 $difference = $this->selisih;
@@ -44,6 +46,15 @@ class ReturnBoxes extends Model
                     'duration_storing'  => $this->duration,
                     'name'              => $this->order_detail->type_duration->name,
                     'alias'             => $this->order_detail->type_duration->alias,
+                ];
+            }
+
+            if(!is_null($this->order_detail->types_of_size_id)){
+                $type_size = [
+                    'id'        => $this->order_detail->type_size->id,
+                    'name'      => $this->order_detail->type_size->name,
+                    'size'      => $this->order_detail->type_size->size,
+                    'image'     => is_null($this->order_detail->type_size->image) ? null : $url.'images/types_of_size'.'/'.$this->order_detail->type_size->image,
                 ];
             }
 
@@ -66,7 +77,7 @@ class ReturnBoxes extends Model
                 'end_date'  => $this->order_detail->end_date,
                 // 'status'    => $this->order_detail->status->name,
                 'types_of_box_room_id'  => $this->order_detail->types_of_box_room_id,
-                'types_of_size_id'      => $this->order_detail->types_of_size_id,
+                'types_of_size_id'      => $type_size,
                 'location'  => $location,
                 'duration'  => $duration,
             ];

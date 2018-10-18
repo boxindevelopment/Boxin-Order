@@ -54,6 +54,8 @@ class OrderDetail extends Model
 
     public function toSearchableArray()
     {
+        $url = 'https://boxin-dev-webbackend.azurewebsites.net/';
+        
         if (!is_null($this->order_id)) {
             $order = [
                 'id'        => $this->order->id,
@@ -65,7 +67,8 @@ class OrderDetail extends Model
             $type_size = [
                 'id'        => $this->type_size->id,
                 'name'      => $this->type_size->name,
-                'size'      => $this->type_size->size
+                'size'      => $this->type_size->size,
+                'image'     => is_null($this->type_size->image) ? null : $url.'images/types_of_size'.'/'.$this->type_size->image,
             ];
         }
 
