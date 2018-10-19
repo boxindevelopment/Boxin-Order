@@ -61,11 +61,11 @@ class RoomRepository implements RoomRepositoryInterface
 
     public function getBySpace($space_id)
     {
-        $room = $this->model->select('id', 'types_of_size_id', DB::raw('COUNT(types_of_size_id) as available'))
+        $room = $this->model->select('types_of_size_id', DB::raw('COUNT(types_of_size_id) as available'))
                 ->where('status_id', 10)
                 ->where('space_id', $space_id)
                 ->where('deleted_at', NULL)
-                ->groupBy('types_of_size_id', 'id')
+                ->groupBy('types_of_size_id')
                 ->get();
 
         return $room;
