@@ -206,4 +206,57 @@ class OrderDetailBoxController extends Controller
         
     }
 
+    public function deleteMultiple(Request $request)
+    {
+        $validator = \Validator::make($request->all(), [
+            'delete_count' => 'required',
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([ 'status' => false, 'message' => $validator->errors()]);
+        }
+
+        $data = $request->all();
+        if(isset($data['delete_count'])) {
+            for ($a = 1; $a <= $data['delete_count']; $a++) {
+
+                $validator = \Validator::make($request->all(), [
+                    'detail_box_id'.$a => 'required',
+                ]);
+
+                if($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()]);
+                }
+
+                $item   = $this->order_detail_box->find($data['detail_box_id'.$a]); 
+                if (!$item) {
+                    return response()->json(['status' => false, 'message' => 'Item box not found'], 401);
+                }
+            }
+        } else {
+            return response()->json(['status' =>false, 'message' => 'Not found delete count.'], 401);
+        }
+
+        try{
+            for ($a = 1; $a <= $data['delete_count']; $a++) {
+                $dataItem           = $this->order_detail_box->getById($data['detail_box_id'.$a]);
+                $getImage           = $dataItem[0]->item_image;
+                $image_path = "/images/detail_item_box/{$getImage}";
+                if (file_exists(public_path().$image_path)) {
+                    unlink(public_path().$image_path);
+                    Storage::delete(public_path().$image_path);
+                }
+                $hapus = OrderDetailBox::where('id', $data['detail_box_id'.$a])->delete();
+            }
+
+        } catch (\Exception $e) {
+            return response()->json(['status' =>false, 'message' => $e->getMessage()], 401);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Delete detail item box success.',
+        ]);
+    }
+
 }
