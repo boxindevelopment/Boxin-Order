@@ -83,9 +83,9 @@ class OrderController extends Controller
     }
 
 
-    public function getPrice($types_of_box_room_id, $types_of_size_id)
+    public function getPriceCity($types_of_box_room_id, $types_of_size_id, $city_id)
     {
-        $prices = $this->price->getPrice($types_of_box_room_id, $types_of_size_id);
+        $prices = $this->price->getPrice($types_of_box_room_id, $types_of_size_id, $city_id);
 
         if(count($prices) > 0) {
             $data = PriceResource::collection($prices);
@@ -114,6 +114,7 @@ class OrderController extends Controller
             'types_of_pickup_id'=> 'required',
             'date'              => 'required',
             'time'              => 'required',
+            'total'             => 'required',
         ]);
 
         if($validator->fails()) {
@@ -132,6 +133,7 @@ class OrderController extends Controller
                     'types_of_box_room_id'.$a => 'required',
                     'types_of_duration_id'.$a => 'required',
                     'duration'.$a => 'required',
+                    'amount'.$a => 'required',
                 ]);
 
                 if($validator->fails()) {
@@ -178,6 +180,7 @@ class OrderController extends Controller
             $pickup                 = new PickupOrder;
             $pickup->date           = $request->date;
 
+            $amount = 0;
             $total = 0;
             $total_amount = 0;
 
@@ -221,10 +224,10 @@ class OrderController extends Controller
                     }
 
                     // get price box
-                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id);
+                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id);
 
                     if($price){
-                        $amount = ($price[0]->price)*$order_detail->duration;
+                        $amount = $price->price*$order_detail->duration;
                     }else{
                         // change status room to empty when order failed to create
                         DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 10]);
@@ -249,10 +252,10 @@ class OrderController extends Controller
                     }
 
                     // get price room
-                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id);
+                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id);
 
                     if($price){
-                        $amount = ($price[0]->price)*$order_detail->duration;
+                        $amount = $price->price*$order_detail->duration;
                     }else{
                         // change status room to empty when order failed to create
                         DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 10]);
@@ -280,7 +283,7 @@ class OrderController extends Controller
             $pickup->time           = $request->time;
             $pickup->time_pickup    = $request->time_pickup;
             $pickup->note           = $request->note;
-            $pickup->pickup_fee     = $request->pickup_fee;
+            $pickup->pickup_fee     = 0;
             $pickup->status_id      = 11;
             $pickup->save();
 

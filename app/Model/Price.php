@@ -9,7 +9,7 @@ class Price extends Model
     protected $table = 'prices';
 
     protected $fillable = [
-        'types_of_box_room_id', 'types_of_size_id', 'types_of_duration_id', 'price', 
+        'types_of_box_room_id', 'types_of_size_id', 'types_of_duration_id', 'price', 'city_id'
     ];
 
     public function type_box_room()

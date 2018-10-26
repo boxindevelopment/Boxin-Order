@@ -45,11 +45,23 @@ class PriceRepository implements PriceRepositoryInterface
 
     }
 
-    public function getPrice($types_of_box_room_id, $types_of_size_id)
+    public function getPriceCity($types_of_box_room_id, $types_of_size_id, $city_id)
     {
         $price =  Price::where('types_of_box_room_id', $types_of_box_room_id)
             ->where('types_of_size_id', $types_of_size_id)
+            ->where('city_id', $city_id)
             ->get();
+
+        return $price;
+
+    }
+
+    public function getPrice($types_of_box_room_id, $types_of_size_id, $types_of_duration_id)
+    {
+        $price =  Price::where('types_of_box_room_id', $types_of_box_room_id)
+            ->where('types_of_size_id', $types_of_size_id)
+            ->where('types_of_duration_id', $types_of_duration_id)
+            ->first();
 
         return $price;
 
@@ -62,12 +74,7 @@ class PriceRepository implements PriceRepositoryInterface
 
     public function update(Price $price, $data)
     {
-        try{
-            return $price->update($data);
-        }
-        catch(\Exception $e){
-           return $e->getMessage();
-        }
+        return $price->update($data);
     }
 
     public function delete(Price $price)
