@@ -85,7 +85,7 @@ class OrderController extends Controller
 
     public function getPriceCity($types_of_box_room_id, $types_of_size_id, $city_id)
     {
-        $prices = $this->price->getPrice($types_of_box_room_id, $types_of_size_id, $city_id);
+        $prices = $this->price->getPriceCity($types_of_box_room_id, $types_of_size_id, $city_id);
 
         if(count($prices) > 0) {
             $data = PriceResource::collection($prices);
