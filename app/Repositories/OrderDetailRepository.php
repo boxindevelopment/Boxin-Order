@@ -30,22 +30,9 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         return $this->model->get();
     }
 
-    public function getMyDeliveries($user_id)
-    {
-        $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('datediff("Day", order_details.start_date, order_details.end_date) as total_time'), DB::raw('datediff("Day", order_details.start_date, GETDATE()) as selisih'))
-            ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
-            ->where('user_id', $user_id)
-            ->where('order_details.status_id', '!=', 4)
-            ->where('order_details.status_id', '!=', 12)
-            // ->paginate(2);
-            ->get();
-        return $orders;
-
-    }
-
     public function getById($order_detail_id)
     {
-        $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('DATEDIFF(day, order_details.end_date, order_details.start_date) as total_time'), DB::raw('DATEDIFF(day, GETDATE(), order_details.start_date) as selisih'))
+        $orders = OrderDetail::select('order_details.*', DB::raw('orders.status_id as status_id'), DB::raw('orders.user_id as user_id'), DB::raw('DATEDIFF(day, order_details.start_date, order_details.end_date) as total_time'), DB::raw('DATEDIFF(day, order_details.start_date, GETDATE()) as selisih'))
             ->leftJoin('orders', 'orders.id', '=', 'order_details.order_id')
             ->where('order_details.id', $order_detail_id)
             ->get();

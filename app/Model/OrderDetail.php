@@ -9,7 +9,7 @@ class OrderDetail extends Model
     protected $table = 'order_details';
 
     protected $fillable = [
-        'order_id', 'types_of_duration_id', 'room_or_box_id', 'types_of_box_room_id', 'types_of_size_id', 'name', 'duration', 'amount', 'start_date', 'end_date', 'status_id', 'is_returned', 'status_payment'
+        'order_id', 'types_of_duration_id', 'room_or_box_id', 'types_of_box_room_id', 'types_of_size_id', 'name', 'duration', 'amount', 'start_date', 'end_date', 'status_id', 'is_returned',
     ];
 
     public function order()
@@ -97,6 +97,26 @@ class OrderDetail extends Model
             ];
         }
 
+        if(!is_null($this->order->pickup_order)){
+            if($this->order->pickup_order->type_pickup->id == 1){
+                $pickup = [
+                    'pickup_id'         => $this->order->pickup_order->id,
+                    'address'           => $this->order->pickup_order->address,
+                    'date'              => $this->order->pickup_order->date,
+                    'note'              => $this->order->pickup_order->note,
+                    'pickup_fee'        => intval($this->order->pickup_order->pickup_fee),
+                    'driver_name'       => $this->order->pickup_order->driver_name,
+                    'driver_phone'      => $this->order->pickup_order->driver_phone,              
+                    'time_pickup'       => $this->order->pickup_order->time_pickup,
+                    'type_pickup_id'    => $this->order->pickup_order->type_pickup->id,
+                    'type_pickup_name'  => $this->order->pickup_order->type_pickup->name,
+                ];
+            }else{
+                $pickup = null;
+            }
+            
+        }
+
         $location = [
             'city_id'   => $this->order->space->warehouse->area->city->id,
             'city'      => $this->order->space->warehouse->area->city->name,
@@ -120,6 +140,7 @@ class OrderDetail extends Model
             'order'     => $order,
             'location'  => $location,
             'duration'  => $duration,
+            'pickup'    => $pickup,
         ];
 
         return $data;
