@@ -51,7 +51,7 @@ class ReturnBoxController extends Controller
         try {
             for ($a = 1; $a <= $data['return_count']; $a++) {
                 $return                         = new ReturnBoxes;
-                $return->types_of_pickup_id     = $data['types_of_pickup_id'.$a];
+                $return->types_of_pickup_id     = $data['types_of_pickup_id'];
                 $return->date                   = $data['date'.$a];
                 $return->time                   = $data['time'.$a];
                 $return->time_pickup            = $data['time_pickup'.$a];

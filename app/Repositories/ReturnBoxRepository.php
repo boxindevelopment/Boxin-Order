@@ -38,7 +38,10 @@ class ReturnBoxRepository implements ReturnBoxRepositoryInterface
         ], $args);
         
         $query = $this->model->query();
-        $query->select('return_boxes.id','return_boxes.order_detail_id','return_boxes.types_of_pickup_id','return_boxes.address','return_boxes.longitude','return_boxes.latitude','return_boxes.date','return_boxes.note','return_boxes.status_id', 'return_boxes.time_pickup', 'return_boxes.created_at', 'order_details.types_of_duration_id', 'order_details.room_or_box_id', 'order_details.types_of_box_room_id', 'order_details.types_of_size_id',  'order_details.name', 'order_details.amount',  'order_details.duration',  'order_details.start_date', 'order_details.end_date', DB::raw('orders.user_id as user_id'), DB::raw('datediff("Day", order_details.end_date, order_details.start_date) as total_time'), DB::raw('datediff("Day", GETDATE(),order_details.start_date) as selisih'));
+        $query->select('return_boxes.id','return_boxes.order_detail_id','return_boxes.types_of_pickup_id','return_boxes.address','return_boxes.longitude','return_boxes.latitude','return_boxes.date','return_boxes.note','return_boxes.status_id', 'return_boxes.time_pickup', 'return_boxes.created_at', 'order_details.types_of_duration_id', 'order_details.room_or_box_id', 'order_details.types_of_box_room_id', 'order_details.types_of_size_id',  'order_details.name', 'order_details.amount',  'order_details.duration',  'order_details.start_date', 'order_details.end_date', 
+            DB::raw('orders.user_id as user_id'), 
+            DB::raw('DATEDIFF(day, order_details.start_date, order_details.end_date) as total_time'), 
+            DB::raw('DATEDIFF(day, order_details.start_date, GETDATE()) as selisih'));
         $query->leftJoin('order_details', 'order_details.id', '=', 'return_boxes.order_detail_id');
         $query->leftJoin('orders', 'orders.id', '=', 'order_details.order_id');
         $query->where('user_id', $args['user_id']);

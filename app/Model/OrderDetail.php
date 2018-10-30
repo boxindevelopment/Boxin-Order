@@ -81,14 +81,15 @@ class OrderDetail extends Model
 
         if (!is_null($this->types_of_duration_id)) {
             $difference = $this->selisih;
+            if($difference <= 0){
+                $difference = 0;
+            }
             if($difference >= $this->total_time){
                 $difference = $this->total_time;
-            }else{
-                $difference = $difference;
             }
             $duration = [
                 'id'                => $this->type_duration->id,
-                'count_time'        => $this->selisih,
+                'count_time'        => $difference,
                 'total_time'        => $this->total_time,
                 'duration_storing'  => $this->duration,
                 'name'              => $this->type_duration->name,
