@@ -69,7 +69,9 @@ class OrderDetailResource extends JsonResource
             'types_of_size'         => new TypeSizeResource($this->type_size),
             'order'     => $order,
             'location'  => $location,
-            'duration'  => $duration,
+            'duration'  => $duration,            
+            'is_returned'   => $this->is_returned,
+            'status_payment'=> $this->status_payment,
         ];
 
         return $data;

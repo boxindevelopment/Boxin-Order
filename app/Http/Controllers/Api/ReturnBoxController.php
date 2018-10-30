@@ -3,12 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Model\ReturnBoxes;
-use App\Model\Order;
-use App\Model\Room;
-use App\Model\Box;
 use App\Model\OrderDetail;
-use App\Model\Price;
-use App\Model\PickupOrder;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReturnBoxesResource;
 use Illuminate\Http\Request;
@@ -56,22 +51,27 @@ class ReturnBoxController extends Controller
         try {
             for ($a = 1; $a <= $data['return_count']; $a++) {
                 $return                         = new ReturnBoxes;
-                $return->types_of_pickup_id     = $data['types_of_pickup_id'];
-                $return->date                   = $data['date'];
-                $return->time                   = $data['time'];
-                $return->time_pickup            = $data['time_pickup'];
-                $return->note                   = $data['note'];
+                $return->types_of_pickup_id     = $data['types_of_pickup_id'.$a];
+                $return->date                   = $data['date'.$a];
+                $return->time                   = $data['time'.$a];
+                $return->time_pickup            = $data['time_pickup'.$a];
+                $return->note                   = $data['note'.$a];
                 $return->status_id              = 11;
-                $return->address                = $data['address'];
+                $return->address                = $data['address'.$a];
                 $return->order_detail_id        = $data['order_detail_id'.$a];
-                $return->longitude              = $data['longitude'];
-                $return->latitude               = $data['latitude'];        
+                $return->longitude              = $data['longitude'.$a];
+                $return->latitude               = $data['latitude'.$a];        
                 $return->deliver_fee            = 0;
                 $return->save();
 
                 //update status order detail to
-                DB::table('order_details')->where('id', $return->order_detail_id)->update(['status_id' => 11]);
+                $order      = OrderDetail::findOrFail($return->order_detail_id);
+                if($order){
+                    $data1["is_returned"]        = 1;       
+                    $order->fill($data1)->save();
+                }
             }
+
         } catch (\Exception $e) {
             return response()->json([ 'status' =>false, 'message' => $e->getMessage()], 401);
         }

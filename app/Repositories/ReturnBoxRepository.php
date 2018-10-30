@@ -42,11 +42,11 @@ class ReturnBoxRepository implements ReturnBoxRepositoryInterface
         $query->leftJoin('order_details', 'order_details.id', '=', 'return_boxes.order_detail_id');
         $query->leftJoin('orders', 'orders.id', '=', 'order_details.order_id');
         $query->where('user_id', $args['user_id']);
-        $query->where(function ($q) {
-            $q->where('return_boxes.status_id', '=', 2) // on delivery
-                ->orWhere('return_boxes.status_id', '=', 11) // pending                
-                ->orWhere('return_boxes.status_id', '=', 12); // finished
-        }); 
+        // $query->where(function ($q) {
+        //     $q->where('return_boxes.status_id', '=', 2) // on delivery
+        //         ->orWhere('return_boxes.status_id', '=', 11) // pending                
+        //         ->orWhere('return_boxes.status_id', '=', 12); // finished
+        // }); 
 
         $query->orderBy('return_boxes.id', 'DESC');
 

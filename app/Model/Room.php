@@ -9,7 +9,7 @@ class Room extends Model
     protected $table = 'rooms';
 
     protected $fillable = [
-        'space_id', 'name', 'types_of_size_id', 
+        'space_id', 'name', 'types_of_size_id', 'id_name'
     ];
 
     public function space()

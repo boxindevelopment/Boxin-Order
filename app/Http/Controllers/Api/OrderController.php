@@ -31,7 +31,6 @@ class OrderController extends Controller
         $this->price = $price;
     }
 
-
     public function chooseProduct(){
         $choose1 = $this->price->getChooseProduct(1,1);
         $choose2 = $this->price->getChooseProduct(2,1);
@@ -114,7 +113,6 @@ class OrderController extends Controller
             'types_of_pickup_id'=> 'required',
             'date'              => 'required',
             'time'              => 'required',
-            'total'             => 'required',
         ]);
 
         if($validator->fails()) {
@@ -133,7 +131,6 @@ class OrderController extends Controller
                     'types_of_box_room_id'.$a => 'required',
                     'types_of_duration_id'.$a => 'required',
                     'duration'.$a => 'required',
-                    'amount'.$a => 'required',
                 ]);
 
                 if($validator->fails()) {
@@ -142,24 +139,6 @@ class OrderController extends Controller
                         'message' => $validator->errors()
                     ]);
                 }
-                // if ($data['types_of_duration_id'.$a] == 1){
-                //     $boxes = $this->boxes->getData(['status_id' => 10, 'space_id' => $request->space_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
-                //     if(count($boxes) <= 0){
-                //         return response()->json([
-                //             'status' =>false,
-                //             'message' => 'Not found box status Empty.'
-                //         ], 401);
-                //     }
-                // }
-                // if ($data['types_of_duration_id'.$a] == 2){
-                //     $rooms = $this->rooms->getData(['status_id' => 10, 'space_id' => $request->space_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
-                //     if(count($rooms) <= 0){
-                //         return response()->json([
-                //             'status' =>false,
-                //             'message' => 'Not found room status Empty.'
-                //         ], 401);
-                //     }
-                // }
             }
         } else {
             return response()->json([
