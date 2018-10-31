@@ -40,7 +40,6 @@ class PriceRepository implements PriceRepositoryInterface
             ->groupBy('types_of_box_room.name')
             ->groupBy('types_of_duration.alias')
             ->first();
-            dd($price);
 
         return $price;
 

@@ -36,18 +36,18 @@ class OrderController extends Controller
         $choose2 = $this->price->getChooseProduct(2,1);
 
         $arr1           = array();
-        $arr1['name']   = $choose1[0]->name;
-        $arr1['min']    = $choose1[0]->min;
-        $arr1['max']    = $choose1[0]->max;
-        $arr1['time']   = $choose1[0]->alias;
+        $arr1['name']   = $choose1->name;
+        $arr1['min']    = $choose1->min;
+        $arr1['max']    = $choose1->max;
+        $arr1['time']   = $choose1->alias;
 
         $arr2 = array();
-        $arr2['name']   = $choose2[0]->name;
-        $arr2['min']    = $choose2[0]->min;
-        $arr2['max']    = $choose2[0]->max;
-        $arr2['time']   = $choose2[0]->alias;
+        $arr2['name']   = $choose2->name;
+        $arr2['min']    = $choose2->min;
+        $arr2['max']    = $choose2->max;
+        $arr2['time']   = $choose2->alias;
 
-        if(count($choose1) > 0) {
+        if(($choose1)) {
 
             return response()->json([
                 'status'    => true,
