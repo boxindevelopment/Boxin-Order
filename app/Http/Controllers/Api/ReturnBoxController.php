@@ -52,15 +52,15 @@ class ReturnBoxController extends Controller
             for ($a = 1; $a <= $data['return_count']; $a++) {
                 $return                         = new ReturnBoxes;
                 $return->types_of_pickup_id     = $data['types_of_pickup_id'];
-                $return->date                   = $data['date'.$a];
-                $return->time                   = $data['time'.$a];
-                $return->time_pickup            = $data['time_pickup'.$a];
-                $return->note                   = $data['note'.$a];
+                $return->date                   = $data['date'];
+                $return->time                   = $data['time'];
+                $return->time_pickup            = $data['time_pickup'];
+                $return->note                   = $data['note'];
                 $return->status_id              = 11;
-                $return->address                = $data['address'.$a];
+                $return->address                = $data['address'];
                 $return->order_detail_id        = $data['order_detail_id'.$a];
-                $return->longitude              = $data['longitude'.$a];
-                $return->latitude               = $data['latitude'.$a];        
+                $return->longitude              = $data['longitude'];
+                $return->latitude               = $data['latitude'];        
                 $return->deliver_fee            = 0;
                 $return->save();
 

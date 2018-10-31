@@ -48,7 +48,6 @@ class OrderController extends Controller
         $arr2['time']   = $choose2->alias;
 
         if(($choose1)) {
-
             return response()->json([
                 'status'    => true,
                 'data_box'  => $arr1,
@@ -162,6 +161,7 @@ class OrderController extends Controller
             $amount = 0;
             $total = 0;
             $total_amount = 0;
+            $id_name = '';
 
             for ($a = 1; $a <= $data['order_count']; $a++) {
                 $order_detail                         = new OrderDetail;
@@ -197,6 +197,7 @@ class OrderController extends Controller
                     $boxes = $this->boxes->getData(['status_id' => 10, 'space_id' => $request->space_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
 
                     if(isset($boxes[0]->id)){
+                        $id_name = $boxes[0]->id_name;
                         $room_or_box_id = $boxes[0]->id;
                         //change status box to fill
                         DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 9]);
@@ -217,7 +218,6 @@ class OrderController extends Controller
                     }
                 }
 
-
                 // order room
                 if ($order_detail->types_of_box_room_id == 2 || $order_detail->types_of_box_room_id == "2") {
                     $type = 'room';
@@ -225,6 +225,7 @@ class OrderController extends Controller
                     $rooms = $this->rooms->getData(['status_id' => 10, 'space_id' => $request->space_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
 
                     if(isset($rooms[0]->id)){
+                        $id_name = $rooms[0]->id_name;
                         $room_or_box_id = $rooms[0]->id;
                         //change status room to fill
                         DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 9]);
@@ -248,9 +249,16 @@ class OrderController extends Controller
                 $order_detail->name           = 'New '. $type .' '. $a;
                 $order_detail->room_or_box_id = $room_or_box_id;
                 $order_detail->amount         = $amount;
+                $order_detail->id_name        = $amount;
 
                 $total += $order_detail->amount;
                 $order_detail->save();
+
+                $find      = OrderDetail::findOrFail($order_detail->id);
+                if($find){
+                    $update["id_name"]           = $id_name.$order_detail->id;
+                    $find->fill($update)->save();
+                }
             }
 
             
