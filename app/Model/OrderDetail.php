@@ -9,7 +9,7 @@ class OrderDetail extends Model
     protected $table = 'order_details';
 
     protected $fillable = [
-        'order_id', 'types_of_duration_id', 'room_or_box_id', 'types_of_box_room_id', 'types_of_size_id', 'name', 'duration', 'amount', 'start_date', 'end_date', 'status_id', 'is_returned',
+        'order_id', 'types_of_duration_id', 'room_or_box_id', 'types_of_box_room_id', 'types_of_size_id', 'name', 'duration', 'amount', 'start_date', 'end_date', 'status_id', 'is_returned', 'id_name'
     ];
 
     public function order()
@@ -96,10 +96,12 @@ class OrderDetail extends Model
                 'alias'             => $this->type_duration->alias,
             ];
         }
-
+        
+        $pick_up = null;
         if(!is_null($this->order->pickup_order)){
+            
             if($this->order->pickup_order->type_pickup->id == 1){
-                $pickup = [
+                $pick_up = [
                     'pickup_id'         => $this->order->pickup_order->id,
                     'address'           => $this->order->pickup_order->address,
                     'date'              => $this->order->pickup_order->date,
@@ -111,9 +113,7 @@ class OrderDetail extends Model
                     'type_pickup_id'    => $this->order->pickup_order->type_pickup->id,
                     'type_pickup_name'  => $this->order->pickup_order->type_pickup->name,
                 ];
-            }else{
-                $pickup = null;
-            }
+            } 
             
         }
 
@@ -129,7 +129,8 @@ class OrderDetail extends Model
         ];
 
         $data = [
-            'id'        => $this->id,
+            'id'        => $this->id,            
+            'code'      => $this->id_name,
             'name'      => $this->name,
             'amount'    => $this->amount,
             'start_date'=> $this->start_date,
@@ -140,7 +141,7 @@ class OrderDetail extends Model
             'order'     => $order,
             'location'  => $location,
             'duration'  => $duration,
-            'pickup'    => $pickup,
+            'pickup'    => $pick_up,
         ];
 
         return $data;

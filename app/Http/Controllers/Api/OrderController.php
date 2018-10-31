@@ -249,15 +249,16 @@ class OrderController extends Controller
                 $order_detail->name           = 'New '. $type .' '. $a;
                 $order_detail->room_or_box_id = $room_or_box_id;
                 $order_detail->amount         = $amount;
-                $order_detail->id_name        = $amount;
+                $order_detail->id_name        = $id_name;
 
                 $total += $order_detail->amount;
-                $order_detail->save();
-
-                $find      = OrderDetail::findOrFail($order_detail->id);
-                if($find){
-                    $update["id_name"]           = $id_name.$order_detail->id;
-                    $find->fill($update)->save();
+                
+                if($order_detail->save()){ 
+                    $find      = OrderDetail::findOrFail($order_detail->id);
+                    if($find){
+                        $update["id_name"]           = $id_name.$order_detail->id;
+                        $find->fill($update)->save();
+                    }
                 }
             }
 
