@@ -17,6 +17,7 @@ class CreateAreasTable extends Migration
             $table->increments('id');
             $table->integer('city_id')->unsigned();
             $table->string('name', 225);
+            $table->string('id_name', 4)->nullable();
             $table->timestamps();
             $table->softDeletes();
 

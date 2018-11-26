@@ -22,6 +22,7 @@ class CreateReturnBoxesTable extends Migration
             $table->string('longitude', 225)->nullable();
             $table->date('date');
             $table->time('time');
+            $table->string('time_pickup', 10)->nullable();
             $table->text('note')->nullable();
             $table->integer('deliver_fee');
             $table->string('driver_name', 50)->nullable();

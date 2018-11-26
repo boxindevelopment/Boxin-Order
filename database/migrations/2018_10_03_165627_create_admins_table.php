@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateAdminCityTable extends Migration
+class CreateAdminsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,17 +13,17 @@ class CreateAdminCityTable extends Migration
      */
     public function up()
     {
-        Schema::create('admin_city', function (Blueprint $table) {
+        Schema::create('admins', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id')->unsigned();
-            $table->integer('city_id')->unsigned();
+            $table->integer('area_id')->unsigned();
             $table->timestamps();
 
             $table
                 ->foreign('user_id')->references('id')->on('users')
                 ->onUpdate('cascade')->onDelete('cascade');
             $table
-                ->foreign('city_id')->references('id')->on('cities')
+                ->foreign('area_id')->references('id')->on('areas')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
     }
@@ -35,6 +35,6 @@ class CreateAdminCityTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('admin_city');
+        Schema::dropIfExists('admins');
     }
 }

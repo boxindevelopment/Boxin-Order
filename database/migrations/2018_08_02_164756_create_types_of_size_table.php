@@ -15,6 +15,7 @@ class CreateTypesOfSizeTable extends Migration
     {
         Schema::create('types_of_size', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('area_id')->unsigned();
             $table->integer('types_of_box_room_id')->unsigned();
             $table->string('name', 50);
             $table->string('size', 50); 
@@ -24,6 +25,9 @@ class CreateTypesOfSizeTable extends Migration
 
             $table
                 ->foreign('types_of_box_room_id')->references('id')->on('types_of_box_room')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table
+                ->foreign('area_id')->references('id')->on('areas')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
     }

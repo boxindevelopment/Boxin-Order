@@ -17,6 +17,7 @@ class CreateWarehousesTable extends Migration
             $table->increments('id');
             $table->integer('area_id')->unsigned();
             $table->string('name', 225);
+            $table->string('id_name', 6)->nullable();
             $table->string('lat', 225);
             $table->string('long', 225);
             $table->timestamps();

@@ -48,6 +48,7 @@ return array(
     'App\\Http\\Resources\\TypePickUpResource' => $baseDir . '/app/Http/Resources/TypePickUpResource.php',
     'App\\Http\\Resources\\TypeSizeResource' => $baseDir . '/app/Http/Resources/TypeSizeResource.php',
     'App\\Http\\Resources\\UserResource' => $baseDir . '/app/Http/Resources/UserResource.php',
+    'App\\Model\\Admin' => $baseDir . '/app/Model/Admin.php',
     'App\\Model\\Area' => $baseDir . '/app/Model/Area.php',
     'App\\Model\\Box' => $baseDir . '/app/Model/Box.php',
     'App\\Model\\City' => $baseDir . '/app/Model/City.php',

@@ -475,6 +475,7 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
         'App\\Http\\Resources\\TypePickUpResource' => __DIR__ . '/../..' . '/app/Http/Resources/TypePickUpResource.php',
         'App\\Http\\Resources\\TypeSizeResource' => __DIR__ . '/../..' . '/app/Http/Resources/TypeSizeResource.php',
         'App\\Http\\Resources\\UserResource' => __DIR__ . '/../..' . '/app/Http/Resources/UserResource.php',
+        'App\\Model\\Admin' => __DIR__ . '/../..' . '/app/Model/Admin.php',
         'App\\Model\\Area' => __DIR__ . '/../..' . '/app/Model/Area.php',
         'App\\Model\\Box' => __DIR__ . '/../..' . '/app/Model/Box.php',
         'App\\Model\\City' => __DIR__ . '/../..' . '/app/Model/City.php',

@@ -18,9 +18,9 @@ class CreatePriceTable extends Migration
             $table->integer('types_of_box_room_id')->unsigned();
             $table->integer('types_of_size_id')->unsigned();
             $table->integer('types_of_duration_id')->unsigned();
+            $table->integer('area_id')->unsigned();
             $table->integer('price');
-            $table->timestamps();
-
+            
             $table
                 ->foreign('types_of_box_room_id')->references('id')->on('types_of_box_room')
                 ->onUpdate('cascade')->onDelete('cascade');
@@ -29,6 +29,10 @@ class CreatePriceTable extends Migration
             $table
                 ->foreign('types_of_duration_id')->references('id')->on('types_of_duration')
                 ->onUpdate('cascade')->onDelete('cascade');
+            $table
+                ->foreign('area_id')->references('id')->on('areas')
+                ->onUpdate('cascade')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -39,6 +43,6 @@ class CreatePriceTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('price_box');
+        Schema::dropIfExists('prices');
     }
 }

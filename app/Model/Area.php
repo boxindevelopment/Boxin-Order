@@ -24,4 +24,9 @@ class Area extends Model
     {
         return $this->hasMany('App\Model\Warehouse', 'area_id', 'id');
     }
+
+    public function admin()
+    {
+        return $this->hasMany('App\Model\Admin', 'area_id', 'id');
+    }
 }

@@ -18,6 +18,7 @@ class CreateBoxesTable extends Migration
             $table->integer('space_id')->unsigned();
             $table->integer('types_of_size_id')->unsigned();
             $table->string('name', 225);
+            $table->string('id_name', 12)->nullable();
             $table->string('barcode', 225)->nullable();
             $table->string('location', 225)->nullable();
             $table->integer('status_id')->unsigned();

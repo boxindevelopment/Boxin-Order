@@ -24,8 +24,10 @@ class CreateOrderDetailsTable extends Migration
             $table->integer('duration');
             $table->integer('amount');
             $table->date('start_date');
-            $table->date('end_date');
+            $table->date('end_date');          
+            $table->string('id_name',50)->nullable();
             $table->integer('status_id')->unsigned();
+            $table->tinyInteger('is_returned')->default(0);
             $table->timestamps();
 
             $table

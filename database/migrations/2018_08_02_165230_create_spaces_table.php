@@ -17,6 +17,7 @@ class CreateSpacesTable extends Migration
             $table->increments('id');
             $table->integer('warehouse_id')->unsigned();
             $table->string('name', 225);
+            $table->string('id_name', 8)->nullable();
             $table->timestamps();
             $table->softDeletes();
 
