@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Model\Order;
-use App\Model\Room;
+use App\Model\Space;
 use App\Model\Box;
 use App\Model\OrderDetail;
 use App\Model\Price;
@@ -14,26 +14,26 @@ use App\Http\Resources\PriceResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\BoxRepository;
-use App\Repositories\Contracts\RoomRepository;
+use App\Repositories\Contracts\SpaceRepository;
 use App\Repositories\Contracts\PriceRepository;
 use DB;
 
 class OrderController extends Controller
 {
-    protected $rooms;
+    protected $space;
     protected $boxes;
     protected $price;
 
-    public function __construct(BoxRepository $boxes, RoomRepository $rooms, PriceRepository $price)
+    public function __construct(BoxRepository $boxes, SpaceRepository $space, PriceRepository $price)
     {
         $this->boxes = $boxes;
-        $this->rooms = $rooms;
+        $this->space = $space;
         $this->price = $price;
     }
 
-    public function chooseProduct($city_id){
-        $choose1 = $this->price->getChooseProduct(1, 1, $city_id);
-        $choose2 = $this->price->getChooseProduct(2, 1, $city_id);
+    public function chooseProduct($area_id){
+        $choose1 = $this->price->getChooseProduct(1, 1, $area_id);
+        $choose2 = $this->price->getChooseProduct(2, 1, $area_id);
 
         $arr1           = array();
         $arr1['name']   = $choose1->name;

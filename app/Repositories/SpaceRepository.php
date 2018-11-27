@@ -2,15 +2,15 @@
 
 namespace App\Repositories;
 
-  use App\Model\Room;
-use App\Repositories\Contracts\RoomRepository as RoomRepositoryInterface;
+  use App\Model\Space;
+use App\Repositories\Contracts\SpaceRepository as SpaceRepositoryInterface;
 use DB;
 
-class RoomRepository implements RoomRepositoryInterface
+class SpaceRepository implements SpaceRepositoryInterface
 {
     protected $model;
 
-    public function __construct(Room $model)
+    public function __construct(Space $model)
     {
         $this->model = $model;
     }
@@ -28,35 +28,6 @@ class RoomRepository implements RoomRepositoryInterface
     public function all()
     {
         return $this->model->get();
-    }
-
-    public function getData($args = [])
-    {
-        $query = $this->model->query();
-        if(isset($args['orderColumns']) && isset($args['orderDir'])){
-            $query->orderBy($args['orderColumns'], $args['orderDir']);
-        }
-        if(isset($args['status_id'])){
-            $query->where('status_id', $args['status_id']);
-        }
-        if(isset($args['space_id'])){
-            $query->where('space_id', $args['space_id']);
-        }
-        if(isset($args['types_of_size_id'])){
-            $query->where('types_of_size_id', $args['types_of_size_id']);
-        }
-        if(isset($args['start'])){
-            $query->skip($args['start']);
-        }
-        if(isset($args['length'])){
-            $query->take($args['length']);
-        }
-
-        $query->where('deleted_at', NULL);
-        $room = $query->get();
-
-        return $room;
-
     }
 
     public function getBySpace($space_id)
@@ -118,18 +89,18 @@ class RoomRepository implements RoomRepositoryInterface
         return $this->model->create($data);
     }
 
-    public function update(Room $room, $data)
+    public function update(Space $space, $data)
     {
         try{
-            return $room->update($data);
+            return $space->update($data);
         }
         catch(\Exception $e){
            return $e->getMessage();
         }
     }
 
-    public function delete(Room $room)
+    public function delete(Space $space)
     {
-        return $room->delete();
+        return $space->delete();
     }
 }
