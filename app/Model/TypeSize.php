@@ -10,7 +10,7 @@ class TypeSize extends Model
     protected $table = 'types_of_size';
 
     protected $fillable = [
-        'type_of_box_room_id', 'name', 'size'
+        'type_of_box_room_id', 'name', 'size', 'image', 
     ];
 
     protected $searchable = ['id', 'name'];
@@ -25,9 +25,9 @@ class TypeSize extends Model
         return $this->hasMany('App\Model\OrderDetail', 'types_of_size_id', 'id');
     }
 
-    public function room()
+    public function space()
     {
-        return $this->hasMany('App\Model\Room', 'types_of_size_id', 'id');
+        return $this->hasMany('App\Model\Space', 'types_of_size_id', 'id');
     }
 
     public function price()

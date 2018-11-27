@@ -9,12 +9,17 @@ class OrderDetailBox extends Model
     protected $table = 'order_detail_boxes';
 
     protected $fillable = [
-        'order_detail_id', 'item_name', 'item_image', 'note'
+        'order_detail_id', 'category_id', 'item_name', 'item_image', 'note'
     ];
 
     public function order_detail()
     {
         return $this->belongsTo('App\Model\OrderDetail', 'order_detail_id', 'id');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo('App\Model\Category', 'category_id', 'id');
     }
 
     public function getUrlAttribute()

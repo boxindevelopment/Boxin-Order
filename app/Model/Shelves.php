@@ -4,12 +4,13 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Room extends Model
+class Shelves extends Model
 {
-    protected $table = 'rooms';
+
+    protected $table = 'shelves';
 
     protected $fillable = [
-        'space_id', 'name', 'types_of_size_id', 'id_name'
+        'space_id', 'name', 'id_name'
     ];
 
     public function space()
@@ -17,11 +18,11 @@ class Room extends Model
         return $this->belongsTo('App\Model\Space', 'space_id', 'id');
     }
 
-    public function type_size()
+    public function box()
     {
-        return $this->belongsTo('App\Model\TypeSize', 'types_of_size_id', 'id');
+        return $this->hasMany('App\Model\Box', 'shelves_id', 'id');
     }
-    
+
     public function order_detail()
     {
         return $this->hasMany('App\Model\OrderDetail', 'room_or_box_id', 'id');
