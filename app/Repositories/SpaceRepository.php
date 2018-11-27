@@ -38,9 +38,18 @@ class SpaceRepository implements SpaceRepositoryInterface
                 ->where('deleted_at', NULL)
                 ->groupBy('types_of_size_id')
                 ->get();
-
         return $room;
+    }
 
+    public function check($area_id, $types_of_size_id)
+    {
+        $room = $this->model->select('spaces.*')
+                ->where('status_id', 10)
+                ->where('area_id', $area_id)
+                ->where('types_of_size_id', $types_of_size_id)
+                ->where('deleted_at', NULL)
+                ->get();
+        return $room;
     }
 
     public function findPaginate($args = [])
