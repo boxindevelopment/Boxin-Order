@@ -18,13 +18,17 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['namespace' => 'Api'], function() {
+    Route::prefix('type-size')->group(function() {
+        Route::get('{types_of_box_room_id}', 'TypeSizeController@list')->name('api.type-size.list');
+    });
+
     Route::prefix('box')->group(function() {
         Route::get('list/{area_id}', 'BoxController@listByArea')->name('api.box.listByArea');
         Route::get('list-/{duration}', 'BoxController@getBox')->name('api.box.getBox');
     });
 
-    Route::prefix('room')->group(function() {
-        Route::get('list-room/{space_id}', 'RoomController@getRoomBySpace')->name('api.room.getRoomBySpace');
+    Route::prefix('space')->group(function() {
+        Route::get('list/{area_id}', 'SpaceController@listByArea')->name('api.space.listByArea');
     });
 
     Route::prefix('pickup')->group(function() {

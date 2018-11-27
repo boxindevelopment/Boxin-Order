@@ -17,8 +17,8 @@ class BoxController extends Controller
         $this->boxes = $boxes;
     }
 
-    public function listByArea($area_id){
-
+    public function listByArea($area_id)
+    {
         $boxes = $this->boxes->getByArea($area_id); 
         
         if(count($boxes) > 0) {
@@ -37,8 +37,8 @@ class BoxController extends Controller
 
     }
 
-    public function getBox($duration){
-
+    public function getBox($duration)
+    {
         $boxes = $this->boxes->getBox($duration); 
 
         if(count($boxes) > 0) {

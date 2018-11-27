@@ -4,26 +4,24 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use DB;
-use App\Model\Room;
 use App\Http\Resources\RoomResource;
-use App\Repositories\Contracts\RoomRepository;
+use App\Repositories\Contracts\SpaceRepository;
 
-class RoomController extends Controller
+class SpaceController extends Controller
 {
-    protected $rooms;
+    protected $space;
 
-    public function __construct(RoomRepository $rooms)
+    public function __construct(SpaceRepository $space)
     {
-        $this->rooms = $rooms;
+        $this->space = $space;
     }
 
-    public function getRoomBySpace($space_id){
+    public function listByArea($area_id){
 
-        $rooms = $this->rooms->getBySpace($space_id);
+        $spaces = $this->space->getByArea($area_id);
 
-        if(count($rooms) > 0) {
-            $data = RoomResource::collection($rooms);
+        if(count($spaces) > 0) {
+            $data = RoomResource::collection($spaces);
 
             return response()->json([
                 'status' => true,

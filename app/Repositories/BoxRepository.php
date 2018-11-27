@@ -30,7 +30,7 @@ class BoxRepository implements BoxRepositoryInterface
 
     public function all()
     {
-        return $this->model->get();
+        return $this->model->groupBy('types_of_size_id')->get();
     }
 
     public function getData($args = [])

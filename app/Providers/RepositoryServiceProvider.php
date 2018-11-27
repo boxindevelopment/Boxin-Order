@@ -22,7 +22,8 @@ class RepositoryServiceProvider extends ServiceProvider
      * @return void
      */
     public function register()
-    {
+    {        
+        $this->app->bind('App\Repositories\Contracts\TypeSizeRepository', 'App\Repositories\TypeSizeRepository');
         $this->app->bind('App\Repositories\Contracts\BoxRepository', 'App\Repositories\BoxRepository');
         $this->app->bind('App\Repositories\Contracts\SpaceRepository', 'App\Repositories\SpaceRepository');
         $this->app->bind('App\Repositories\Contracts\OrderDetailRepository', 'App\Repositories\OrderDetailRepository');
