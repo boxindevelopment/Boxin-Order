@@ -10,8 +10,9 @@ class SpaceResource extends JsonResource
     {
 
         $data = [
-            'id'                => $this->id,
-            'name'              => $this->name,
+            'available'     => $this->available,
+            'area'     		=> new AreaResource($this->area),            
+            'types_of_size' => new TypeSizeResource($this->type_size), 
         ];
 
         return $data;

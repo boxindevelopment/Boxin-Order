@@ -52,6 +52,17 @@ class SpaceRepository implements SpaceRepositoryInterface
         return $room;
     }
 
+    public function getAvailable($types_of_size_id)
+    {
+        $room = $this->model->select('types_of_size_id', 'area_id', DB::raw('COUNT(types_of_size_id) as available'))
+                ->where('status_id', 10)
+                ->where('types_of_size_id', $types_of_size_id)
+                ->where('deleted_at', NULL)
+                ->groupBy('types_of_size_id', 'area_id')
+                ->get();
+        return $room;
+    }
+
     public function findPaginate($args = [])
     {
         // Set default args

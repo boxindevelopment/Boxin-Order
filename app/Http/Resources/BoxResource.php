@@ -16,9 +16,9 @@ class BoxResource extends JsonResource
     {
 
         $data = [
-            'id'                => $this->id,
             'available'         => $this->available,
-            'types_of_size'     => new TypeSizeResource($this->type_size),
+            'types_of_size'     => new TypeSizeResource($this->type_size),            
+            'shelves'           => new ShelvesResource($this->shelves),
         ];
 
         return $data;

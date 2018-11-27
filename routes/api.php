@@ -22,6 +22,7 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('size/{types_of_box_room_id}', 'TypeSizeController@list')->name('api.size.list');
         Route::get('list/{area_id}', 'OrderController@chooseProduct')->name('api.order.chooseProduct');
         Route::get('check-available/{types_of_box_room_id}/area/{area_id}/size/{types_of_size_id}', 'OrderController@checkOrder')->name('api.order.checkOrder');
+        Route::get('list-available/{types_of_box_room_id}/size/{types_of_size_id}', 'OrderController@listAvailable')->name('api.order.listAvailable');
     });
 
     Route::prefix('box')->group(function() {

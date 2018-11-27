@@ -9,8 +9,9 @@ use App\Model\OrderDetail;
 use App\Model\Price;
 use App\Model\PickupOrder;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\BoxesResource;
+use App\Http\Resources\BoxResource;
 use App\Http\Resources\RoomResource;
+use App\Http\Resources\SpaceResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\PriceResource;
 use Carbon\Carbon;
@@ -76,7 +77,7 @@ class OrderController extends Controller
 
         if(count($check) > 0) {
             if($types_of_box_room_id == 1) {
-                $data = BoxesResource::collection($check);
+                $data = BoxResource::collection($check);
             } else if ($types_of_box_room_id == 2) {
                 $data = RoomResource::collection($check);
             }
@@ -89,6 +90,32 @@ class OrderController extends Controller
         return response()->json([
             'status' => false,
             'message' => 'Kapasitas penuh, Anda dapat menyewa di...'
+        ]);
+    }
+
+    public function listAvailable($types_of_box_room_id, $types_of_size_id)
+    {   
+        if($types_of_box_room_id == 1) {
+            $check = $this->boxes->getAvailable($types_of_size_id);
+        } else if ($types_of_box_room_id == 2) {
+            $check = $this->space->getAvailable($types_of_size_id);
+        }
+
+        if(count($check) > 0) {
+            if($types_of_box_room_id == 1) {
+                $data = BoxResource::collection($check);
+            } else if ($types_of_box_room_id == 2) {
+                $data = SpaceResource::collection($check);
+            }
+            return response()->json([
+                'status'    => true,
+                'data'      => $data
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
         ]);
     }
 
