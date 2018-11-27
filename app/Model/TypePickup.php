@@ -19,4 +19,9 @@ class TypePickup extends Model
         return $this->hasMany('App\Model\PickupOrder', 'types_of_pickup_id', 'id');
     }
 
+    public function return_box()
+    {
+        return $this->hasMany('App\Model\ReturnBox', 'type_pickup_id', 'id');
+    }
+
 }
