@@ -62,13 +62,15 @@ class BoxRepository implements BoxRepositoryInterface
 
     }
 
-    public function getBySpace($space_id)
+    public function getByArea($area_id)
     {
-        $box = $this->model->select('types_of_size_id', DB::raw('COUNT(types_of_size_id) as available'))
-                ->where('status_id', 10)
-                ->where('space_id', $space_id)
-                ->where('deleted_at', NULL)
-                ->groupBy('types_of_size_id')
+        $box = $this->model->select('boxes.types_of_size_id', DB::raw('COUNT(boxes.types_of_size_id) as available'))
+                ->leftJoin('shelves', 'shelves.id', '=', 'boxes.shelves_id')
+                ->leftJoin('spaces', 'spaces.id', '=', 'shelves.space_id')
+                ->where('boxes.status_id', 10)
+                ->where('spaces.area_id', $area_id)
+                ->where('boxes.deleted_at', NULL)
+                ->groupBy('boxes.types_of_size_id')
                 ->get();
 
         return $box;

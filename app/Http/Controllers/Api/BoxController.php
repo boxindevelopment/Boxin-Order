@@ -4,11 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use DB;
-use App\Model\Box;
-use App\Model\TypeSize;
 use App\Http\Resources\BoxResource;
-
 use App\Http\Resources\PriceResource;
 use App\Repositories\Contracts\BoxRepository;
 
@@ -21,9 +17,9 @@ class BoxController extends Controller
         $this->boxes = $boxes;
     }
 
-    public function getBoxBySpace($space_id){
+    public function listByArea($area_id){
 
-        $boxes = $this->boxes->getBySpace($space_id); 
+        $boxes = $this->boxes->getByArea($area_id); 
         
         if(count($boxes) > 0) {
             $data = BoxResource::collection($boxes);
