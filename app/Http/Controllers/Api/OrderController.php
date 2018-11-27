@@ -40,12 +40,14 @@ class OrderController extends Controller
         $arr1['min']    = intval($choose1->min);
         $arr1['max']    = intval($choose1->max);
         $arr1['time']   = $choose1->alias;
+        $arr1['type_of_box_room_id'] = 1;
 
         $arr2 = array();
         $arr2['name']   = $choose2->name;
         $arr2['min']    = intval($choose2->min);
         $arr2['max']    = intval($choose2->max);
         $arr2['time']   = $choose2->alias;
+        $arr2['type_of_box_room_id'] = 2;
 
         if(($choose1)) {
             return response()->json([
