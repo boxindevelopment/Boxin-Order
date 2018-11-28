@@ -6,6 +6,7 @@ use App\Model\Order;
 use App\Model\Space;
 use App\Model\Box;
 use App\Model\OrderDetail;
+use App\Model\DeliveryFee;
 use App\Model\Price;
 use App\Model\PickupOrder;
 use App\Http\Controllers\Controller;
@@ -253,7 +254,7 @@ class OrderController extends Controller
                     }
 
                     // get price box
-                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order_detail->area_id);
+                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order->area_id);
 
                     if($price){
                         $amount = $price->price*$order_detail->duration;
@@ -280,7 +281,7 @@ class OrderController extends Controller
                     }
 
                     // get price room
-                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order_detail->area_id);
+                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order->area_id);
 
                     if($price){
                         $amount = $price->price*$order_detail->duration;
@@ -310,6 +311,7 @@ class OrderController extends Controller
                 }
             }
 
+            $delivery_fee = DeliveryFee::where('area_id', $order_detail->area_id)->first();
             
             $pickup->order_id       = $order->id;
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
@@ -319,13 +321,14 @@ class OrderController extends Controller
             $pickup->time           = $request->time;
             $pickup->time_pickup    = $request->time_pickup;
             $pickup->note           = $request->note;
-            $pickup->pickup_fee     = 0;
+            $pickup->pickup_fee     = $delivery_fee->fee;
             $pickup->status_id      = 11;
             $pickup->save();
 
             //update total order
             $total_amount += $total;
-            DB::table('orders')->where('id', $order->id)->update(['total' => $total_amount]);
+            $total_all = $total_amount + $delivery_fee->fee;
+            DB::table('orders')->where('id', $order->id)->update(['total' => $total_all]);
 
         } catch (\Exception $e) {
             // delete order when order_detail failed to create
