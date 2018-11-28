@@ -75,6 +75,18 @@ class BoxRepository implements BoxRepositoryInterface
         return $box;
     }
 
+    public function getBoxInSpace($area_id)
+    {
+        $box = $this->model->select('boxes.*')
+                ->leftJoin('shelves', 'shelves.id', '=', 'boxes.shelves_id')
+                ->leftJoin('spaces', 'spaces.id', '=', 'shelves.space_id')
+                ->where('boxes.status_id', 10)
+                ->where('spaces.area_id', $area_id)
+                ->where('boxes.deleted_at', NULL)
+                ->get();
+        return $box;
+    }
+
     public function getAvailable($types_of_size_id)
     {
         $box = $this->model->select('boxes.types_of_size_id', 'boxes.shelves_id', DB::raw('COUNT(boxes.types_of_size_id) as available'))
@@ -87,7 +99,6 @@ class BoxRepository implements BoxRepositoryInterface
                 ->get();
         return $box;
     }
-
 
     public function getByArea($area_id)
     {

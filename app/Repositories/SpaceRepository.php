@@ -2,17 +2,20 @@
 
 namespace App\Repositories;
 
-  use App\Model\Space;
+use App\Model\Space;
+use App\Model\Shelves;
 use App\Repositories\Contracts\SpaceRepository as SpaceRepositoryInterface;
 use DB;
 
 class SpaceRepository implements SpaceRepositoryInterface
 {
     protected $model;
+    protected $shelves;
 
-    public function __construct(Space $model)
+    public function __construct(Space $model, Shelves $shelves)
     {
-        $this->model = $model;
+        $this->model    = $model;
+        $this->shelves  = $shelves;
     }
 
     public function findOrFail($id)
@@ -52,13 +55,31 @@ class SpaceRepository implements SpaceRepositoryInterface
         return $room;
     }
 
+    public function anyBoxInSpace()
+    {
+        $shelf = $this->shelves->select('space_id')->get();
+        $data  = $shelf->toArray();
+        $room  = $this->model->select('spaces.*')
+                ->leftJoin('shelves', 'shelves.space_id', '=', 'spaces.id')
+                ->leftJoin('boxes', 'boxes.shelves_id', '=', 'shelves.id')
+                ->whereNotIn('spaces.id', $data)
+                ->where('boxes.deleted_at', NULL)
+                ->get();
+        return $room;
+    }
+
     public function getAvailable($types_of_size_id)
     {
-        $room = $this->model->select('types_of_size_id', 'area_id', DB::raw('COUNT(types_of_size_id) as available'))
-                ->where('status_id', 10)
-                ->where('types_of_size_id', $types_of_size_id)
-                ->where('deleted_at', NULL)
-                ->groupBy('types_of_size_id', 'area_id')
+        $shelf = $this->shelves->select('space_id')->get();
+        $data  = $shelf->toArray();
+        $room = $this->model->select('spaces.types_of_size_id', 'spaces.area_id', DB::raw('COUNT(spaces.types_of_size_id) as available'))
+                ->leftJoin('shelves', 'shelves.space_id', '=', 'spaces.id')
+                ->leftJoin('boxes', 'boxes.shelves_id', '=', 'shelves.id')
+                ->whereNotIn('spaces.id', $data)
+                ->where('spaces.status_id', 10)
+                ->where('spaces.types_of_size_id', $types_of_size_id)
+                ->where('spaces.deleted_at', NULL)
+                ->groupBy('spaces.types_of_size_id', 'spaces.area_id')
                 ->get();
         return $room;
     }
