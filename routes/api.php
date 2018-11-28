@@ -46,11 +46,14 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('my-deliveries', 'ReturnBoxController@my_deliveries')->name('api.order.my_deliveries')->middleware('auth:api');
     });
 
+    Route::prefix('category')->group(function() {
+        Route::get('list', 'CategoryController@index')->name('api.category.index');
+    });
+
     Route::prefix('order')->group(function() {
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
         Route::get('my-box-history', 'OrderDetailController@my_box_history')->name('api.order.my_box_history')->middleware('auth:api');        
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
-
 
         Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store')->middleware('auth:api');
         Route::get('find/{id}', 'OrderController@getOrder')->name('api.order.getOrder');
