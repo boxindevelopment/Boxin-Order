@@ -70,9 +70,17 @@ class OrderController extends Controller
     public function checkOrder($types_of_box_room_id, $area_id, $types_of_size_id)
     {   
         if($types_of_box_room_id == 1) {
-            $check = $this->boxes->check($area_id, $types_of_size_id);
+            $check = $this->boxes->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
         } else if ($types_of_box_room_id == 2) {
-            $check = $this->space->check($area_id, $types_of_size_id);
+            $checkBoxInSpace = $this->boxes->getData(['status_id' => 10, 'area_id' => $area_id]);
+            if(count($checkBoxInSpace) > 0){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Kapasitas penuh, Anda dapat menyewa di...'
+                ]);
+            } else {
+                $check = $this->space->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
+            }            
         }
 
         if(count($check) > 0) {
@@ -98,7 +106,10 @@ class OrderController extends Controller
         if($types_of_box_room_id == 1) {
             $check = $this->boxes->getAvailable($types_of_size_id);
         } else if ($types_of_box_room_id == 2) {
-            $check = $this->space->getAvailable($types_of_size_id);
+            $checkBoxInSpace = $this->space->anyBoxInSpace();
+            if(count($checkBoxInSpace) > 0){
+                $check = $this->space->getAvailable($types_of_size_id);
+            }
         }
 
         if(count($check) > 0) {
@@ -138,35 +149,13 @@ class OrderController extends Controller
 
     }
 
-
-    public function getPriceCity($types_of_box_room_id, $types_of_size_id, $city_id)
-    {
-        $prices = $this->price->getPriceCity($types_of_box_room_id, $types_of_size_id, $city_id);
-
-        if(count($prices) > 0) {
-            $data = PriceResource::collection($prices);
-
-            return response()->json([
-                'status' => true,
-                'data' => $data
-            ]);
-        }
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Data not found'
-        ]);
-    }
-
-
     public function startStoring(Request $request)
     {
-
         $user = $request->user();
 
         $validator = \Validator::make($request->all(), [
-            'space_id' => 'required',
-            'order_count' => 'required',
+            'area_id'           => 'required',
+            'order_count'       => 'required',
             'types_of_pickup_id'=> 'required',
             'date'              => 'required',
             'time'              => 'required',
@@ -207,7 +196,7 @@ class OrderController extends Controller
         try {
             $order              = new Order;
             $order->user_id     = $user->id;
-            $order->space_id    = $request->space_id;
+            $order->area_id     = $request->area_id;
             $order->status_id   = 11;
             $order->total       = 0;
             $order->qty         = $data['order_count'];
@@ -252,27 +241,26 @@ class OrderController extends Controller
                     $type = 'box';
 
                     // get box
-                    $boxes = $this->boxes->getData(['status_id' => 10, 'space_id' => $request->space_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
+                    $boxes = $this->boxes->getData(['status_id' => 10, 'area_id' => $request->area_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
 
                     if(isset($boxes[0]->id)){
                         $id_name = $boxes[0]->id_name;
                         $room_or_box_id = $boxes[0]->id;
                         //change status box to fill
                         DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 9]);
+                    }else{
+                        return response()->json(['status' => false, 'message' => 'Not found box available.']);
                     }
 
                     // get price box
-                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id);
+                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order_detail->area_id);
 
                     if($price){
                         $amount = $price->price*$order_detail->duration;
                     }else{
                         // change status room to empty when order failed to create
                         DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 10]);
-                        return response()->json([
-                            'status' =>false,
-                            'message' => 'Not found price box.'
-                        ]);
+                        return response()->json(['status' => false, 'message' => 'Not found price box.']);
                     }
                 }
 
@@ -280,17 +268,19 @@ class OrderController extends Controller
                 if ($order_detail->types_of_box_room_id == 2 || $order_detail->types_of_box_room_id == "2") {
                     $type = 'room';
                     // get room
-                    $rooms = $this->rooms->getData(['status_id' => 10, 'space_id' => $request->space_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
+                    $rooms = $this->space->getData(['status_id' => 10, 'area_id' => $request->area_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
 
                     if(isset($rooms[0]->id)){
                         $id_name = $rooms[0]->id_name;
                         $room_or_box_id = $rooms[0]->id;
                         //change status room to fill
                         DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 9]);
+                    }else{
+                        return response()->json(['status' => false, 'message' => 'Not found room available.']);
                     }
 
                     // get price room
-                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id);
+                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order_detail->area_id);
 
                     if($price){
                         $amount = $price->price*$order_detail->duration;
@@ -307,7 +297,7 @@ class OrderController extends Controller
                 $order_detail->name           = 'New '. $type .' '. $a;
                 $order_detail->room_or_box_id = $room_or_box_id;
                 $order_detail->amount         = $amount;
-                $order_detail->id_name        = $id_name;
+                $order_detail->id_name        = $id_name.''.$order->id;
 
                 $total += $order_detail->amount;
                 

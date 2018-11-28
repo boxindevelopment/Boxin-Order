@@ -27,7 +27,7 @@ class OrderResource extends JsonResource
             'order_date'        => $this->created_at->format('Y-m-d'),
             'user'              => new UserResource($this->user),
             'status'            => $this->status->name,
-            'space'             => new SpaceResource($this->space),
+            'area'              => new AreaResource($this->space),
             'order_detail'      => $this->order_detail,
             'pickup_order'      => $this->pickup_order,
         ];

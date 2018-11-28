@@ -36,17 +36,20 @@ class BoxRepository implements BoxRepositoryInterface
     public function getData($args = [])
     {
         $query = $this->model->query();
+        $query->leftJoin('shelves', 'shelves.id', '=', 'boxes.shelves_id');
+        $query->leftJoin('spaces', 'spaces.id', '=', 'shelves.space_id');
+
         if(isset($args['orderColumns']) && isset($args['orderDir'])){
             $query->orderBy($args['orderColumns'], $args['orderDir']);
         }
         if(isset($args['status_id'])){
-            $query->where('status_id', $args['status_id']);
+            $query->where('boxes.status_id', $args['status_id']);
         }
-        if(isset($args['space_id'])){
-            $query->where('space_id', $args['space_id']);
+        if(isset($args['area_id'])){
+            $query->where('spaces.area_id', $args['area_id']);
         }
         if(isset($args['types_of_size_id'])){
-            $query->where('types_of_size_id', $args['types_of_size_id']);
+            $query->where('boxes.types_of_size_id', $args['types_of_size_id']);
         }
         if(isset($args['start'])){
             $query->skip($args['start']);
@@ -54,25 +57,11 @@ class BoxRepository implements BoxRepositoryInterface
         if(isset($args['length'])){
             $query->take($args['length']);
         }
-
-        $query->where('deleted_at', NULL);
+        $query->where('boxes.deleted_at', NULL);
         $box = $query->get();
 
         return $box;
 
-    }
-
-    public function check($area_id, $types_of_size_id)
-    {
-        $box = $this->model->select('boxes.*')
-                ->leftJoin('shelves', 'shelves.id', '=', 'boxes.shelves_id')
-                ->leftJoin('spaces', 'spaces.id', '=', 'shelves.space_id')
-                ->where('boxes.status_id', 10)
-                ->where('spaces.area_id', $area_id)
-                ->where('boxes.types_of_size_id', $types_of_size_id)
-                ->where('boxes.deleted_at', NULL)
-                ->get();
-        return $box;
     }
 
     public function getAvailable($types_of_size_id)
@@ -88,7 +77,6 @@ class BoxRepository implements BoxRepositoryInterface
         return $box;
     }
 
-
     public function getByArea($area_id)
     {
         $box = $this->model->select('boxes.types_of_size_id', DB::raw('COUNT(boxes.types_of_size_id) as available'))
@@ -101,7 +89,6 @@ class BoxRepository implements BoxRepositoryInterface
                 ->get();
 
         return $box;
-
     }
 
     public function getBox($duration)
@@ -113,7 +100,6 @@ class BoxRepository implements BoxRepositoryInterface
                 ->where('types_of_size.types_of_box_room_id', 1)
                 ->where('types_of_duration.id', $duration)
                 ->get();
-
         return $box;
     }
 

@@ -2,17 +2,20 @@
 
 namespace App\Repositories;
 
-  use App\Model\Space;
+use App\Model\Space;
+use App\Model\Shelves;
 use App\Repositories\Contracts\SpaceRepository as SpaceRepositoryInterface;
 use DB;
 
 class SpaceRepository implements SpaceRepositoryInterface
 {
     protected $model;
+    protected $shelves;
 
-    public function __construct(Space $model)
+    public function __construct(Space $model, Shelves $shelves)
     {
-        $this->model = $model;
+        $this->model    = $model;
+        $this->shelves  = $shelves;
     }
 
     public function findOrFail($id)
@@ -30,6 +33,38 @@ class SpaceRepository implements SpaceRepositoryInterface
         return $this->model->get();
     }
 
+    public function getData($args = [])
+    {
+        $query = $this->model->query();
+        $query->select('spaces.*');
+        $query->leftJoin('shelves', 'shelves.space_id', '=', 'spaces.id');
+        $query->leftJoin('boxes', 'boxes.shelves_id', '=', 'shelves.id');
+
+        if(isset($args['orderColumns']) && isset($args['orderDir'])){
+            $query->orderBy($args['orderColumns'], $args['orderDir']);
+        }
+        if(isset($args['status_id'])){
+            $query->where('spaces.status_id', $args['status_id']);
+        }
+        if(isset($args['area_id'])){
+            $query->where('spaces.area_id', $args['area_id']);
+        }
+        if(isset($args['types_of_size_id'])){
+            $query->where('spaces.types_of_size_id', $args['types_of_size_id']);
+        }
+        if(isset($args['start'])){
+            $query->skip($args['start']);
+        }
+        if(isset($args['length'])){
+            $query->take($args['length']);
+        }
+        $query->where('spaces.deleted_at', NULL);
+        $box = $query->get();
+
+        return $box;
+
+    }
+
     public function getByArea($area_id)
     {
         $room = $this->model->select('types_of_size_id', DB::raw('COUNT(types_of_size_id) as available'))
@@ -41,24 +76,31 @@ class SpaceRepository implements SpaceRepositoryInterface
         return $room;
     }
 
-    public function check($area_id, $types_of_size_id)
+    public function anyBoxInSpace()
     {
-        $room = $this->model->select('spaces.*')
-                ->where('status_id', 10)
-                ->where('area_id', $area_id)
-                ->where('types_of_size_id', $types_of_size_id)
-                ->where('deleted_at', NULL)
+        $shelf = $this->shelves->select('space_id')->get();
+        $data  = $shelf->toArray();
+        $room  = $this->model->select('spaces.*')
+                ->leftJoin('shelves', 'shelves.space_id', '=', 'spaces.id')
+                ->leftJoin('boxes', 'boxes.shelves_id', '=', 'shelves.id')
+                ->whereNotIn('spaces.id', $data)
+                ->where('boxes.deleted_at', NULL)
                 ->get();
         return $room;
     }
 
     public function getAvailable($types_of_size_id)
     {
-        $room = $this->model->select('types_of_size_id', 'area_id', DB::raw('COUNT(types_of_size_id) as available'))
-                ->where('status_id', 10)
-                ->where('types_of_size_id', $types_of_size_id)
-                ->where('deleted_at', NULL)
-                ->groupBy('types_of_size_id', 'area_id')
+        $shelf = $this->shelves->select('space_id')->get();
+        $data  = $shelf->toArray();
+        $room  = $this->model->select('spaces.types_of_size_id', 'spaces.area_id', DB::raw('COUNT(spaces.types_of_size_id) as available'))
+                ->leftJoin('shelves', 'shelves.space_id', '=', 'spaces.id')
+                ->leftJoin('boxes', 'boxes.shelves_id', '=', 'shelves.id')
+                ->whereNotIn('spaces.id', $data)
+                ->where('spaces.status_id', 10)
+                ->where('spaces.types_of_size_id', $types_of_size_id)
+                ->where('spaces.deleted_at', NULL)
+                ->groupBy('spaces.types_of_size_id', 'spaces.area_id')
                 ->get();
         return $room;
     }
