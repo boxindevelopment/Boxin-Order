@@ -30,7 +30,7 @@ class PriceRepository implements PriceRepositoryInterface
         return $this->model->get();
     }
 
-    public function getChooseProduct($types_of_box_room_id, $types_of_duration_id, $city_id)
+    public function getChooseProduct($types_of_box_room_id, $types_of_duration_id, $area_id)
     {
         $price =  Price::select('types_of_box_room.name', DB::raw('MIN(price) as min'), DB::raw('MAX(price) as max'), 'types_of_duration.alias')
             ->leftJoin('types_of_box_room', 'types_of_box_room.id', '=', 'prices.types_of_box_room_id')
@@ -39,7 +39,7 @@ class PriceRepository implements PriceRepositoryInterface
             ->where('prices.types_of_duration_id', $types_of_duration_id)
             ->groupBy('types_of_box_room.name')
             ->groupBy('types_of_duration.alias')
-            ->where('city_id', $city_id)
+            ->where('area_id', $area_id)
             ->first();
 
         return $price;

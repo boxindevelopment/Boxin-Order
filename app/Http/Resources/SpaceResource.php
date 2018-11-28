@@ -6,18 +6,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class SpaceResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
     public function toArray($request)
     {
 
         $data = [
-            'id'                => $this->id,
-            'name'              => $this->name,
+            'available'     => $this->available,
+            'area'     		=> new AreaResource($this->area),            
+            'types_of_size' => new TypeSizeResource($this->type_size), 
         ];
 
         return $data;

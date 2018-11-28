@@ -18,13 +18,20 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['namespace' => 'Api'], function() {
-    Route::prefix('box')->group(function() {
-        Route::get('list-box/{space_id}', 'BoxController@getBoxBySpace')->name('api.box.getBoxBySpace');
-        Route::get('list/{duration}', 'BoxController@getBox')->name('api.box.getBox');
+    Route::prefix('product')->group(function() {
+        Route::get('size/{types_of_box_room_id}', 'TypeSizeController@list')->name('api.size.list');
+        Route::get('list/{area_id}', 'OrderController@chooseProduct')->name('api.order.chooseProduct');
+        Route::get('check-available/{types_of_box_room_id}/area/{area_id}/size/{types_of_size_id}', 'OrderController@checkOrder')->name('api.order.checkOrder');
+        Route::get('list-available/{types_of_box_room_id}/size/{types_of_size_id}', 'OrderController@listAvailable')->name('api.order.listAvailable');
     });
 
-    Route::prefix('room')->group(function() {
-        Route::get('list-room/{space_id}', 'RoomController@getRoomBySpace')->name('api.room.getRoomBySpace');
+    Route::prefix('box')->group(function() {
+        Route::get('list/{area_id}', 'BoxController@listByArea')->name('api.box.listByArea');
+        Route::get('list-/{duration}', 'BoxController@getBox')->name('api.box.getBox');
+    });
+
+    Route::prefix('space')->group(function() {
+        Route::get('list/{area_id}', 'SpaceController@listByArea')->name('api.space.listByArea');
     });
 
     Route::prefix('pickup')->group(function() {
@@ -40,12 +47,12 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('order')->group(function() {
+
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
         Route::get('my-box-history', 'OrderDetailController@my_box_history')->name('api.order.my_box_history')->middleware('auth:api');        
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
 
-        Route::get('product/list', 'OrderController@listProduct')->name('api.order.listProduct');
-        Route::get('product/list-choose/{city_id}', 'OrderController@chooseProduct')->name('api.order.chooseProduct');
+        
         Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}/city/{city_id}', 'OrderController@getPriceCity')->name('api.order.getPrice');
 
         Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store')->middleware('auth:api');

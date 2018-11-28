@@ -3,55 +3,113 @@
 namespace App\Http\Controllers\Api;
 
 use App\Model\Order;
-use App\Model\Room;
+use App\Model\Space;
 use App\Model\Box;
 use App\Model\OrderDetail;
 use App\Model\Price;
 use App\Model\PickupOrder;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BoxResource;
+use App\Http\Resources\RoomResource;
+use App\Http\Resources\SpaceResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\PriceResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\BoxRepository;
-use App\Repositories\Contracts\RoomRepository;
+use App\Repositories\Contracts\SpaceRepository;
 use App\Repositories\Contracts\PriceRepository;
 use DB;
 
 class OrderController extends Controller
 {
-    protected $rooms;
+    protected $space;
     protected $boxes;
     protected $price;
 
-    public function __construct(BoxRepository $boxes, RoomRepository $rooms, PriceRepository $price)
+    public function __construct(BoxRepository $boxes, SpaceRepository $space, PriceRepository $price)
     {
         $this->boxes = $boxes;
-        $this->rooms = $rooms;
+        $this->space = $space;
         $this->price = $price;
     }
 
-    public function chooseProduct($city_id){
-        $choose1 = $this->price->getChooseProduct(1, 1, $city_id);
-        $choose2 = $this->price->getChooseProduct(2, 1, $city_id);
+    public function chooseProduct($area_id)
+    {
+        $choose1 = $this->price->getChooseProduct(1, 1, $area_id);
+        $choose2 = $this->price->getChooseProduct(2, 1, $area_id);
 
         $arr1           = array();
         $arr1['name']   = $choose1->name;
         $arr1['min']    = intval($choose1->min);
         $arr1['max']    = intval($choose1->max);
         $arr1['time']   = $choose1->alias;
+        $arr1['type_of_box_room_id'] = 1;
 
         $arr2 = array();
         $arr2['name']   = $choose2->name;
         $arr2['min']    = intval($choose2->min);
         $arr2['max']    = intval($choose2->max);
         $arr2['time']   = $choose2->alias;
+        $arr2['type_of_box_room_id'] = 2;
 
         if(($choose1)) {
             return response()->json([
                 'status'    => true,
                 'data_box'  => $arr1,
                 'data_room' => $arr2
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
+        ]);
+    }
+
+    public function checkOrder($types_of_box_room_id, $area_id, $types_of_size_id)
+    {   
+        if($types_of_box_room_id == 1) {
+            $check = $this->boxes->check($area_id, $types_of_size_id);
+        } else if ($types_of_box_room_id == 2) {
+            $check = $this->space->check($area_id, $types_of_size_id);
+        }
+
+        if(count($check) > 0) {
+            if($types_of_box_room_id == 1) {
+                $data = BoxResource::collection($check);
+            } else if ($types_of_box_room_id == 2) {
+                $data = RoomResource::collection($check);
+            }
+            return response()->json([
+                'status'    => true,
+                'data'      => $data
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Kapasitas penuh, Anda dapat menyewa di...'
+        ]);
+    }
+
+    public function listAvailable($types_of_box_room_id, $types_of_size_id)
+    {   
+        if($types_of_box_room_id == 1) {
+            $check = $this->boxes->getAvailable($types_of_size_id);
+        } else if ($types_of_box_room_id == 2) {
+            $check = $this->space->getAvailable($types_of_size_id);
+        }
+
+        if(count($check) > 0) {
+            if($types_of_box_room_id == 1) {
+                $data = BoxResource::collection($check);
+            } else if ($types_of_box_room_id == 2) {
+                $data = SpaceResource::collection($check);
+            }
+            return response()->json([
+                'status'    => true,
+                'data'      => $data
             ]);
         }
 
