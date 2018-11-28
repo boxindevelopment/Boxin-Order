@@ -57,11 +57,12 @@ class PriceRepository implements PriceRepositoryInterface
 
     }
 
-    public function getPrice($types_of_box_room_id, $types_of_size_id, $types_of_duration_id)
+    public function getPrice($types_of_box_room_id, $types_of_size_id, $types_of_duration_id, $area_id)
     {
         $price =  Price::where('types_of_box_room_id', $types_of_box_room_id)
             ->where('types_of_size_id', $types_of_size_id)
             ->where('types_of_duration_id', $types_of_duration_id)
+            ->where('area_id', $area_id)
             ->first();
 
         return $price;
