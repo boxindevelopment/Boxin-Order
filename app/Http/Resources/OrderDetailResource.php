@@ -6,12 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class OrderDetailResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
+    
     public function toArray($request)
     {
 
@@ -49,18 +44,15 @@ class OrderDetailResource extends JsonResource
         }
 
         $location = [
-            'city_id'   => $this->order->space->warehouse->area->city->id,
-            'city'      => $this->order->space->warehouse->area->city->name,
-            'area_id'   => $this->order->space->warehouse->area->id,
-            'area'      => $this->order->space->warehouse->area->name,
-            'warehouse_id' => $this->order->space->warehouse->id,
-            'warehouse' => $this->order->space->warehouse->name,
-            'space_id'  => $this->order->space->id,
-            'space'     => $this->order->space->name,
+            'city_id'   => $this->order->area->city->id,
+            'city'      => $this->order->area->city->name,
+            'area_id'   => $this->order->area->id,
+            'area'      => $this->order->area->name,
         ];
 
         $data = [
             'id'        => $this->id,
+            'id_name'   => $this->id_name,
             'name'      => $this->name,
             'amount'    => $this->amount,
             'start_date'=> $this->start_date,

@@ -23,12 +23,13 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('list/{area_id}', 'OrderController@chooseProduct')->name('api.order.chooseProduct');
         Route::get('check-available/{types_of_box_room_id}/area/{area_id}/size/{types_of_size_id}', 'OrderController@checkOrder')->name('api.order.checkOrder');
         Route::get('list-available/{types_of_box_room_id}/size/{types_of_size_id}', 'OrderController@listAvailable')->name('api.order.listAvailable');        
-        Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}/area/{area_id}', 'PriceController@listPriceArea')->name('api.price.getPriceArea');
+        Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}/area/{area_id}', 'PriceController@listPriceArea')->name('api.price.getPriceArea');     
+        Route::get('delivery-fee/{area_id}', 'DeliveryFeeController@deliveryFee')->name('api.delivery.deliveryFee');
     });
 
     Route::prefix('box')->group(function() {
-        Route::get('list/{area_id}', 'BoxController@listByArea')->name('api.box.listByArea');
-        Route::get('list-/{duration}', 'BoxController@getBox')->name('api.box.getBox');
+        Route::get('list-area/{area_id}', 'BoxController@listByArea')->name('api.box.listByArea');
+        Route::get('list/{duration}', 'BoxController@getBox')->name('api.box.getBox');
     });
 
     Route::prefix('space')->group(function() {
@@ -36,9 +37,7 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('pickup')->group(function() {
-        Route::get('price', 'PickupOrderController@getPrice')->name('api.pickup.getPrice');
-        Route::get('type', 'PickupOrderController@getType')->name('api.pickup.getType');
-        Route::post('start-pickup', 'PickupOrderController@startPickUp')->name('api.pickup.startPickUp');
+        Route::get('type', 'TypePickupController@getType')->name('api.pickup.getType');
     });
 
     Route::prefix('return')->group(function() {
@@ -47,12 +46,14 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('my-deliveries', 'ReturnBoxController@my_deliveries')->name('api.order.my_deliveries')->middleware('auth:api');
     });
 
-    Route::prefix('order')->group(function() {
+    Route::prefix('category')->group(function() {
+        Route::get('list', 'CategoryController@index')->name('api.category.index');
+    });
 
+    Route::prefix('order')->group(function() {
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
         Route::get('my-box-history', 'OrderDetailController@my_box_history')->name('api.order.my_box_history')->middleware('auth:api');        
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
-
 
         Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store')->middleware('auth:api');
         Route::get('find/{id}', 'OrderController@getOrder')->name('api.order.getOrder');

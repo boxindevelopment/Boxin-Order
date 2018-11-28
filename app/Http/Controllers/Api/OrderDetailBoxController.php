@@ -15,11 +15,11 @@ use App\Repositories\Contracts\OrderDetailBoxRepository;
 
 class OrderDetailBoxController extends Controller
 {
-    protected $order_detail_box;
+    protected $repository;
 
-    public function __construct(OrderDetailBoxRepository $order_detail_box)
+    public function __construct(OrderDetailBoxRepository $repository)
     {
-        $this->order_detail_box = $order_detail_box;
+        $this->repository = $repository;
     }
 
     public function startDetailItemBox(Request $request)
@@ -29,6 +29,7 @@ class OrderDetailBoxController extends Controller
             'order_detail_id'   => 'required',
             'item_image'        => 'required|image|mimes:jpeg,png,jpg',
             'item_name'         => 'required',
+            'category_id'       => 'required',
         ]);
 
         if($validator->fails()) {
@@ -49,7 +50,8 @@ class OrderDetailBoxController extends Controller
             }
 
             $order                  = new OrderDetailBox;
-            $order->order_detail_id = $request->order_detail_id;
+            $order->order_detail_id = $request->order_detail_id;            
+            $order->category_id     = $request->category_id;
             $order->item_name       = $request->item_name;
             $order->item_image      = $getimageName;
             $order->note            = $request->note;
@@ -73,7 +75,7 @@ class OrderDetailBoxController extends Controller
 
     public function getItemByOrderDetailId($order_detail_id)
     {
-        $orders = $this->order_detail_box->getItemByOrderDetailId($order_detail_id);
+        $orders = $this->repository->getItemByOrderDetailId($order_detail_id);
         
         if(count($orders) > 0) {
             $data = OrderDetailBoxResource::collection($orders);
@@ -92,7 +94,7 @@ class OrderDetailBoxController extends Controller
 
     public function getItemById($id)
     {
-        $orders = $this->order_detail_box->getItemById($id);
+        $orders = $this->repository->getItemById($id);
 
         if(count($orders) > 0) {
             $data = OrderDetailBoxResource::collection($orders);
@@ -128,7 +130,7 @@ class OrderDetailBoxController extends Controller
             $item_image = $request->item_image;
             $item       = OrderDetailBox::findOrFail($id); 
             
-            $dataItem   = $this->order_detail_box->getById($id);
+            $dataItem   = $this->repository->getById($id);
             $getImage   = $dataItem[0]->item_image;
 
             $data       = $request->all();
@@ -174,13 +176,13 @@ class OrderDetailBoxController extends Controller
     public function destroy($id)
     {
 
-        $item   = $this->order_detail_box->find($id); 
+        $item   = $this->repository->find($id); 
         if (!$item) {
             return response()->json(['message' => 'Item box not found'], 404);
         }
         try {
 
-            $dataItem           = $this->order_detail_box->getById($id);
+            $dataItem           = $this->repository->getById($id);
             $getImage           = $dataItem[0]->item_image;
             $image_path = "/images/detail_item_box/{$getImage}";
             if (file_exists(public_path().$image_path)) {
@@ -228,7 +230,7 @@ class OrderDetailBoxController extends Controller
                     return response()->json(['status' => false, 'message' => $validator->errors()]);
                 }
 
-                $item   = $this->order_detail_box->find($data['detail_box_id'.$a]); 
+                $item   = $this->repository->find($data['detail_box_id'.$a]); 
                 if (!$item) {
                     return response()->json(['status' => false, 'message' => 'Item box not found'], 401);
                 }
@@ -239,7 +241,7 @@ class OrderDetailBoxController extends Controller
 
         try{
             for ($a = 1; $a <= $data['delete_count']; $a++) {
-                $dataItem           = $this->order_detail_box->getById($data['detail_box_id'.$a]);
+                $dataItem           = $this->repository->getById($data['detail_box_id'.$a]);
                 $getImage           = $dataItem[0]->item_image;
                 $image_path = "/images/detail_item_box/{$getImage}";
                 if (file_exists(public_path().$image_path)) {

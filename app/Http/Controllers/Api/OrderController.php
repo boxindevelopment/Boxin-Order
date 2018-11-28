@@ -6,6 +6,7 @@ use App\Model\Order;
 use App\Model\Space;
 use App\Model\Box;
 use App\Model\OrderDetail;
+use App\Model\DeliveryFee;
 use App\Model\Price;
 use App\Model\PickupOrder;
 use App\Http\Controllers\Controller;
@@ -159,6 +160,7 @@ class OrderController extends Controller
             'types_of_pickup_id'=> 'required',
             'date'              => 'required',
             'time'              => 'required',
+            'pickup_fee'        => 'required',
         ]);
 
         if($validator->fails()) {
@@ -253,7 +255,7 @@ class OrderController extends Controller
                     }
 
                     // get price box
-                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order_detail->area_id);
+                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order->area_id);
 
                     if($price){
                         $amount = $price->price*$order_detail->duration;
@@ -268,25 +270,25 @@ class OrderController extends Controller
                 if ($order_detail->types_of_box_room_id == 2 || $order_detail->types_of_box_room_id == "2") {
                     $type = 'room';
                     // get room
-                    $rooms = $this->space->getData(['status_id' => 10, 'area_id' => $request->area_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
+                    $rooms = $this->space->getAvailableByArea($request->area_id, $data['types_of_size_id'.$a]);
 
                     if(isset($rooms[0]->id)){
                         $id_name = $rooms[0]->id_name;
                         $room_or_box_id = $rooms[0]->id;
                         //change status room to fill
-                        DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 9]);
+                        DB::table('spaces')->where('id', $room_or_box_id)->update(['status_id' => 9]);
                     }else{
                         return response()->json(['status' => false, 'message' => 'Not found room available.']);
                     }
 
                     // get price room
-                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order_detail->area_id);
+                    $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order->area_id);
 
                     if($price){
                         $amount = $price->price*$order_detail->duration;
                     }else{
                         // change status room to empty when order failed to create
-                        DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 10]);
+                        DB::table('spaces')->where('id', $room_or_box_id)->update(['status_id' => 10]);
                         return response()->json([
                             'status' =>false,
                             'message' => 'Not found price room.'
@@ -309,7 +311,6 @@ class OrderController extends Controller
                     }
                 }
             }
-
             
             $pickup->order_id       = $order->id;
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
@@ -319,13 +320,14 @@ class OrderController extends Controller
             $pickup->time           = $request->time;
             $pickup->time_pickup    = $request->time_pickup;
             $pickup->note           = $request->note;
-            $pickup->pickup_fee     = 0;
+            $pickup->pickup_fee     = $request->pickup_fee;
             $pickup->status_id      = 11;
             $pickup->save();
 
             //update total order
             $total_amount += $total;
-            DB::table('orders')->where('id', $order->id)->update(['total' => $total_amount]);
+            $total_all = $total_amount + $request->pickup_fee;
+            DB::table('orders')->where('id', $order->id)->update(['total' => $total_all]);
 
         } catch (\Exception $e) {
             // delete order when order_detail failed to create

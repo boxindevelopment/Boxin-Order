@@ -17,7 +17,8 @@ class OrderDetailBoxResource extends JsonResource
         
         $data = [
             'id'                => $this->id,
-            'order_detail_id'   => $this->order_detail_id,
+            'order_detail_id'   => intval($this->order_detail_id),
+            'category'          => new CategoryResource($this->category),
             'name'              => $this->item_name,
             'image'             => is_null($this->item_image) ? null : (asset('images/detail_item_box').'/'.$this->item_image),
             'note'              => $this->note,
