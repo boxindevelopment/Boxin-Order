@@ -28,8 +28,8 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('box')->group(function() {
-        Route::get('list/{area_id}', 'BoxController@listByArea')->name('api.box.listByArea');
-        Route::get('list-/{duration}', 'BoxController@getBox')->name('api.box.getBox');
+        Route::get('list-area/{area_id}', 'BoxController@listByArea')->name('api.box.listByArea');
+        Route::get('list/{duration}', 'BoxController@getBox')->name('api.box.getBox');
     });
 
     Route::prefix('space')->group(function() {
