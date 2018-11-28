@@ -160,6 +160,7 @@ class OrderController extends Controller
             'types_of_pickup_id'=> 'required',
             'date'              => 'required',
             'time'              => 'required',
+            'pickup_fee'        => 'required',
         ]);
 
         if($validator->fails()) {
@@ -310,8 +311,6 @@ class OrderController extends Controller
                     }
                 }
             }
-
-            $delivery_fee = DeliveryFee::where('area_id', $order_detail->area_id)->first();
             
             $pickup->order_id       = $order->id;
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
@@ -321,13 +320,13 @@ class OrderController extends Controller
             $pickup->time           = $request->time;
             $pickup->time_pickup    = $request->time_pickup;
             $pickup->note           = $request->note;
-            $pickup->pickup_fee     = $delivery_fee->fee;
+            $pickup->pickup_fee     = $request->pickup_fee;
             $pickup->status_id      = 11;
             $pickup->save();
 
             //update total order
             $total_amount += $total;
-            $total_all = $total_amount + $delivery_fee->fee;
+            $total_all = $total_amount + $request->pickup_fee;
             DB::table('orders')->where('id', $order->id)->update(['total' => $total_all]);
 
         } catch (\Exception $e) {
