@@ -10,7 +10,7 @@ class Category extends Model
     protected $table = 'categories';
 
     protected $fillable = [
-        'name', 
+        'name', 'description',
     ];
 
     protected $searchable = ['id', 'name'];

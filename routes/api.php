@@ -37,9 +37,7 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('pickup')->group(function() {
-        Route::get('price', 'PickupOrderController@getPrice')->name('api.pickup.getPrice');
-        Route::get('type', 'PickupOrderController@getType')->name('api.pickup.getType');
-        Route::post('start-pickup', 'PickupOrderController@startPickUp')->name('api.pickup.startPickUp');
+        Route::get('type', 'TypePickupController@getType')->name('api.pickup.getType');
     });
 
     Route::prefix('return')->group(function() {
