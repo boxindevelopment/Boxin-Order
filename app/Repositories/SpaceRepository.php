@@ -105,6 +105,23 @@ class SpaceRepository implements SpaceRepositoryInterface
         return $room;
     }
 
+    public function getAvailableByArea($types_of_size_id, $area_id)
+    {
+        $shelf = $this->shelves->select('space_id')->get();
+        $data  = $shelf->toArray();
+        $room  = $this->model->select('spaces.types_of_size_id', 'spaces.area_id', DB::raw('COUNT(spaces.types_of_size_id) as available'))
+                ->leftJoin('shelves', 'shelves.space_id', '=', 'spaces.id')
+                ->leftJoin('boxes', 'boxes.shelves_id', '=', 'shelves.id')
+                ->whereNotIn('spaces.id', $data)
+                ->where('spaces.status_id', 10)
+                ->where('spaces.types_of_size_id', $types_of_size_id)
+                ->where('spaces.area_id', $area_id)
+                ->where('spaces.deleted_at', NULL)
+                ->groupBy('spaces.types_of_size_id', 'spaces.area_id')
+                ->get();
+        return $room;
+    }
+
     public function findPaginate($args = [])
     {
         // Set default args

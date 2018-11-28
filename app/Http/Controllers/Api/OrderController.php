@@ -268,13 +268,13 @@ class OrderController extends Controller
                 if ($order_detail->types_of_box_room_id == 2 || $order_detail->types_of_box_room_id == "2") {
                     $type = 'room';
                     // get room
-                    $rooms = $this->space->getData(['status_id' => 10, 'area_id' => $request->area_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
+                    $rooms = $this->space->getAvailableByArea($request->area_id, $data['types_of_size_id'.$a]);
 
                     if(isset($rooms[0]->id)){
                         $id_name = $rooms[0]->id_name;
                         $room_or_box_id = $rooms[0]->id;
                         //change status room to fill
-                        DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 9]);
+                        DB::table('spaces')->where('id', $room_or_box_id)->update(['status_id' => 9]);
                     }else{
                         return response()->json(['status' => false, 'message' => 'Not found room available.']);
                     }
@@ -286,7 +286,7 @@ class OrderController extends Controller
                         $amount = $price->price*$order_detail->duration;
                     }else{
                         // change status room to empty when order failed to create
-                        DB::table('rooms')->where('id', $room_or_box_id)->update(['status_id' => 10]);
+                        DB::table('spaces')->where('id', $room_or_box_id)->update(['status_id' => 10]);
                         return response()->json([
                             'status' =>false,
                             'message' => 'Not found price room.'
