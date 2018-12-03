@@ -24,8 +24,28 @@ class OrderDetailController extends Controller
         $user   = $request->user();
         $params = array();
         $params['user_id'] = $user->id;
-        $params['limit']   = intval($request->limit);
+        $params['limit']   = intval($request->limit);     
         $orders = $this->orderDetail->findPaginateMyBox($params);
+
+        if($orders) {
+            foreach ($orders as $k => $v) {
+                $orders[$k] = $v->toSearchableArray();
+            }
+        } else {
+            return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
+        }
+
+        return response()->json($orders);
+    }
+
+    public function my_item(Request $request)
+    {   
+        $user   = $request->user();
+        $params = array();
+        $params['user_id'] = $user->id;
+        $params['limit']   = intval($request->limit);
+        $params['search']  = $request->input('search');
+        $orders = $this->orderDetail->findPaginateMyItem($params);
 
         if($orders) {
             foreach ($orders as $k => $v) {
