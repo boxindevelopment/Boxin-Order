@@ -37,8 +37,8 @@ class SpaceRepository implements SpaceRepositoryInterface
     {
         $query = $this->model->query();
         $query->select('spaces.*');
-        $query->leftJoin('shelves', 'shelves.space_id', '=', 'spaces.id');
-        $query->leftJoin('boxes', 'boxes.shelves_id', '=', 'shelves.id');
+        // $query->leftJoin('shelves', 'shelves.space_id', '=', 'spaces.id');
+        // $query->leftJoin('boxes', 'boxes.shelves_id', '=', 'shelves.id');
 
         if(isset($args['orderColumns']) && isset($args['orderDir'])){
             $query->orderBy($args['orderColumns'], $args['orderDir']);
@@ -75,7 +75,7 @@ class SpaceRepository implements SpaceRepositoryInterface
                 ->get();
         return $room;
     }
-
+    
     public function anyBoxInSpace()
     {
         $shelf = $this->shelves->select('space_id')->get();
@@ -89,16 +89,18 @@ class SpaceRepository implements SpaceRepositoryInterface
         return $room;
     }
 
-    public function getAvailable($types_of_size_id)
+    public function getAvailable($types_of_size_id, $city_id)
     {
         $shelf = $this->shelves->select('space_id')->get();
         $data  = $shelf->toArray();
         $room  = $this->model->select('spaces.types_of_size_id', 'spaces.area_id', DB::raw('COUNT(spaces.types_of_size_id) as available'))
                 ->leftJoin('shelves', 'shelves.space_id', '=', 'spaces.id')
                 ->leftJoin('boxes', 'boxes.shelves_id', '=', 'shelves.id')
+                ->leftJoin('areas', 'areas.id', '=', 'spaces.area_id')
                 ->whereNotIn('spaces.id', $data)
                 ->where('spaces.status_id', 10)
                 ->where('spaces.types_of_size_id', $types_of_size_id)
+                ->where('areas.city_id', $city_id)
                 ->where('spaces.deleted_at', NULL)
                 ->groupBy('spaces.types_of_size_id', 'spaces.area_id')
                 ->get();

@@ -73,14 +73,14 @@ class OrderController extends Controller
         if($types_of_box_room_id == 1) {
             $check = $this->boxes->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
         } else if ($types_of_box_room_id == 2) {
-            $checkBoxInSpace = $this->boxes->getData(['status_id' => 10, 'area_id' => $area_id]);
-            if(count($checkBoxInSpace) > 0){
+            $totalSpace = $this->space->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
+            if(count($totalSpace) > 0){
+                $check = $totalSpace;
+            } else {
                 return response()->json([
                     'status' => false,
                     'message' => 'Kapasitas penuh, Anda dapat menyewa di...'
                 ]);
-            } else {
-                $check = $this->space->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
             }            
         }
 
@@ -88,7 +88,7 @@ class OrderController extends Controller
             if($types_of_box_room_id == 1) {
                 $data = BoxResource::collection($check);
             } else if ($types_of_box_room_id == 2) {
-                $data = RoomResource::collection($check);
+                $data = SpaceResource::collection($check);
             }
             return response()->json([
                 'status'    => true,
@@ -102,14 +102,14 @@ class OrderController extends Controller
         ]);
     }
 
-    public function listAvailable($types_of_box_room_id, $types_of_size_id)
+    public function listAvailable($types_of_box_room_id, $types_of_size_id, $city_id)
     {   
         if($types_of_box_room_id == 1) {
-            $check = $this->boxes->getAvailable($types_of_size_id);
+            $check = $this->boxes->getAvailable($types_of_size_id, $city_id);
         } else if ($types_of_box_room_id == 2) {
             $checkBoxInSpace = $this->space->anyBoxInSpace();
             if(count($checkBoxInSpace) > 0){
-                $check = $this->space->getAvailable($types_of_size_id);
+                $check = $this->space->getAvailable($types_of_size_id, $city_id);
             }
         }
 
