@@ -81,6 +81,9 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         $query->where('user_id', $args['user_id']);
         $query->where('is_returned', '!=', 1);        
         $query->where('order_details.status_id', 4);
+        if(isset($args['seacrh'])){
+            $query->where('order_details.name',  'like', '%' . $args['seacrh'] . '%');
+        }
         $query->orderBy('order_details.name', 'ASC');
 
         $orders = $query->paginate($args['perPage']);

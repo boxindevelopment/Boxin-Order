@@ -44,6 +44,7 @@ class OrderDetailController extends Controller
         $params = array();
         $params['user_id'] = $user->id;
         $params['limit']   = intval($request->limit);
+        $params['search']  = $request->input('search');
         $orders = $this->orderDetail->findPaginateMyItem($params);
 
         if($orders) {
