@@ -29,4 +29,24 @@ class SettingRepository implements SettingRepositoryInterface
         return $this->model->get();
     }
 
+    public function create(array $data)
+    {
+        return $this->model->create($data);
+    }
+
+    public function update(Setting $sett, $data)
+    {
+        try{
+            return $sett->update($data);
+        }
+        catch(\Exception $e){
+           return $e->getMessage();
+        }
+    }
+
+    public function delete(Setting $sett)
+    {
+        return $sett->delete();
+    }
+
 }
