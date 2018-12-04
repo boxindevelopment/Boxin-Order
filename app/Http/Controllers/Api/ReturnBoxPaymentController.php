@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Model\Order;
-use App\Model\Payment;
+use App\Model\OrderDetail;
+use App\Model\ReturnBoxPayment;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PaymentResource;
+use App\Http\Resources\ReturnBoxPaymentResource;
 use Illuminate\Http\Request;
 
-class PaymentController extends Controller
+class ReturnBoxPaymentController extends Controller
 {
     
     public function startPayment(Request $request)
@@ -16,7 +16,7 @@ class PaymentController extends Controller
         $user = $request->user();
 
         $validator = \Validator::make($request->all(), [
-            'order_id'          => 'required',
+            'order_detail_id'   => 'required',
             'amount'            => 'required',
             'bank'              => 'required',
             'image'             => 'required',
@@ -30,11 +30,11 @@ class PaymentController extends Controller
         }
 
         try {
-            $id = Order::find($request->order_id);
+            $id = OrderDetail::find($request->order_detail_id);
             if($id){
                 $data                    = $request->all();
-                $payment                 = new Payment;
-                $payment->order_id       = $request->order_id;
+                $payment                 = new ReturnBoxPayment;
+                $payment->order_detail_id= $request->order_detail_id;
                 $payment->user_id        = $user->id;
                 $payment->payment_type   = 'transfer';
                 $payment->bank           = $request->bank;
@@ -43,7 +43,7 @@ class PaymentController extends Controller
                 if ($request->hasFile('image')) {
                     if ($request->file('image')->isValid()) {
                         $getimageName = time().'.'.$request->image->getClientOriginalExtension();
-                        $image = $request->image->move(public_path('images/payment/order'), $getimageName);
+                        $image = $request->image->move(public_path('images/payment/return'), $getimageName);
             
                     }
                 }
@@ -52,7 +52,7 @@ class PaymentController extends Controller
             }else {
                 return response()->json([
                     'status' => false,
-                    'message' => 'Order Id not found'
+                    'message' => 'Order Detail Id not found'
                 ], 401);
             }
             
@@ -66,7 +66,7 @@ class PaymentController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'Create data payment success.',
-            'data' => new PaymentResource($payment->fresh())
+            'data' => new ReturnBoxPaymentResource($payment->fresh())
         ]);
     }
 
