@@ -4,10 +4,10 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 
-class ReturnPayment extends Model
+class ReturnBoxPayment extends Model
 {
 
-    protected $table = 'return_payments';
+    protected $table = 'return_box_payments';
 
     protected $fillable = [
         'order_detail_id', 'user_id', 'payment_type', 'bank', 'amount', 'image_transfer', 'status_id'

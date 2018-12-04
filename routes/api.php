@@ -69,7 +69,8 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('payment')->group(function() {
-        Route::post('start-payment', 'PaymentController@startPayment')->name('api.payment.startPayment')->middleware('auth:api');
+        Route::post('order/start-payment', 'PaymentController@startPayment')->name('api.payment.startPayment')->middleware('auth:api');
+        Route::post('return/start-payment', 'ReturnBoxPaymentController@startPayment')->name('api.returnBoxPayment.startPayment')->middleware('auth:api');
     });
 
     // midtrans

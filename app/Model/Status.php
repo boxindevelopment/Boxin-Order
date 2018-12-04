@@ -35,6 +35,11 @@ class Status extends Model
         return $this->hasMany('App\Model\Payment', 'status_id', 'id');
     }
 
+    public function return_box_payment()
+    {
+        return $this->hasMany('App\Model\ReturnBoxPayment', 'status_id', 'id');
+    }
+
     public function space()
     {
         return $this->hasMany('App\Model\Space', 'status_id', 'id');
