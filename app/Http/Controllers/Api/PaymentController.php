@@ -18,7 +18,8 @@ class PaymentController extends Controller
         $validator = \Validator::make($request->all(), [
             'order_id'          => 'required',
             'amount'            => 'required',
-            'payment_type'      => 'required'
+            'bank'              => 'required',
+            'image'             => 'required',
         ]);
 
         if($validator->fails()) {
@@ -35,10 +36,18 @@ class PaymentController extends Controller
                 $payment                 = new Payment;
                 $payment->order_id       = $request->order_id;
                 $payment->user_id        = $user->id;
-                $payment->payment_type   = $request->payment_type;
-                $payment->payment_credit_card_id  = $request->payment_credit_card_id;
+                $payment->payment_type   = 'transfer';
+                $payment->bank           = $request->bank;
                 $payment->amount         = $request->amount;
-                $payment->status_id      = 5;
+                $payment->status_id      = 15;
+                if ($request->hasFile('image')) {
+                    if ($request->file('image')->isValid()) {
+                        $getimageName = time().'.'.$request->image->getClientOriginalExtension();
+                        $image = $request->image->move(public_path('images/payment/order'), $getimageName);
+            
+                    }
+                }
+                $payment->image_transfer = $getimageName;
                 $payment->save();
             }else {
                 return response()->json([
@@ -46,7 +55,6 @@ class PaymentController extends Controller
                     'message' => 'Order Id not found'
                 ], 401);
             }
-
             
         } catch (\Exception $e) {
             return response()->json([
