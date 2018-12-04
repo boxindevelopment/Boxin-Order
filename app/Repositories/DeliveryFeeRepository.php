@@ -27,7 +27,7 @@ class DeliveryFeeRepository implements DeliveryFeeRepositoryInterface
 
     public function getFee($area_id)
     {
-        return $this->model->where('area_id', $area_id)->get();
+        return $this->model->where('area_id', $area_id)->first();
     }
 
     public function create(array $data)

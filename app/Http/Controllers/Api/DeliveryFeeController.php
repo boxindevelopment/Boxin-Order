@@ -19,13 +19,15 @@ class DeliveryFeeController extends Controller
     public function deliveryFee($area_id){
 
         $fee = $this->repository->getFee($area_id);
+        $arr            = array();
+        $arr['id']      = $fee->id;
+        $arr['fee']     = intval($fee->fee);
+        $arr['area_id'] = intval($fee->area_id);
 
-        if(count($fee) > 0) {
-            $data = DeliveryFeeResource::collection($fee);
-
+        if($arr) {
             return response()->json([
-                'status' => true,
-                'data' => $data
+                'status'    => true,
+                'data'      => $arr,
             ]);
         }
 
