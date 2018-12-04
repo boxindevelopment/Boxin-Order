@@ -36,6 +36,7 @@ class BoxRepository implements BoxRepositoryInterface
     public function getData($args = [])
     {
         $query = $this->model->query();
+        $query->select('boxes.*');
         $query->leftJoin('shelves', 'shelves.id', '=', 'boxes.shelves_id');
         $query->leftJoin('spaces', 'spaces.id', '=', 'shelves.space_id');
 
@@ -59,7 +60,7 @@ class BoxRepository implements BoxRepositoryInterface
         }
         $query->where('boxes.deleted_at', NULL);
         $box = $query->get();
-
+        
         return $box;
 
     }

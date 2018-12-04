@@ -244,7 +244,6 @@ class OrderController extends Controller
 
                     // get box
                     $boxes = $this->boxes->getData(['status_id' => 10, 'area_id' => $request->area_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
-
                     if(isset($boxes[0]->id)){
                         $id_name = $boxes[0]->id_name;
                         $room_or_box_id = $boxes[0]->id;
