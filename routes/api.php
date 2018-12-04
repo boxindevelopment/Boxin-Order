@@ -73,6 +73,10 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('return/start-payment', 'ReturnBoxPaymentController@startPayment')->name('api.returnBoxPayment.startPayment')->middleware('auth:api');
     });
 
+    Route::prefix('setting')->group(function() {
+        Route::get('list', 'SettingController@index')->name('api.setting.index');
+    });
+
     // midtrans
     // Route::get('/vtweb', 'PagesController@vtweb');
 
