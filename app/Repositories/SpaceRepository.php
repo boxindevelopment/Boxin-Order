@@ -102,6 +102,7 @@ class SpaceRepository implements SpaceRepositoryInterface
                 ->where('spaces.types_of_size_id', $types_of_size_id)
                 ->where('areas.city_id', $city_id)
                 ->where('spaces.deleted_at', NULL)
+                ->where('areas.deleted_at', NULL)
                 ->groupBy('spaces.types_of_size_id', 'spaces.area_id')
                 ->get();
         return $room;
