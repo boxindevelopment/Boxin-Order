@@ -74,6 +74,7 @@ class BoxRepository implements BoxRepositoryInterface
                 ->where('boxes.types_of_size_id', $types_of_size_id)
                 ->where('areas.city_id', $city_id)
                 ->where('boxes.deleted_at', NULL)
+                ->where('areas.deleted_at', NULL)
                 ->groupBy('boxes.types_of_size_id', 'shelves_id')
                 ->get();
         return $box;
