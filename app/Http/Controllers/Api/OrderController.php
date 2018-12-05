@@ -320,7 +320,7 @@ class OrderController extends Controller
             $pickup->time_pickup    = $request->time_pickup;
             $pickup->note           = $request->note;
             $pickup->pickup_fee     = $request->pickup_fee;
-            $pickup->status_id      = 11;
+            $pickup->status_id      = 14;
             $pickup->save();
 
             //update total order
