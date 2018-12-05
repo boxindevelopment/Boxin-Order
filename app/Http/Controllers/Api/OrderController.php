@@ -325,7 +325,7 @@ class OrderController extends Controller
 
             //update total order
             $total_amount += $total;
-            $total_all = $total_amount + $request->pickup_fee;
+            $total_all = $total_amount + intval($request->pickup_fee);
             DB::table('orders')->where('id', $order->id)->update(['total' => $total_all]);
 
         } catch (\Exception $e) {
