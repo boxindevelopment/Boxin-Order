@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Api;
 
 use App\Model\Order;
+use App\Model\OrderDetail;
 use App\Model\Payment;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentResource;
 use Illuminate\Http\Request;
+use DB;
 
 class PaymentController extends Controller
 {
-    
     public function startPayment(Request $request)
     {
         $user = $request->user();
@@ -30,8 +31,8 @@ class PaymentController extends Controller
         }
 
         try {
-            $id = Order::find($request->order_id);
-            if($id){
+            $order = Order::find($request->order_id);
+            if($order){
                 $data                    = $request->all();
                 $payment                 = new Payment;
                 $payment->order_id       = $request->order_id;
@@ -49,6 +50,15 @@ class PaymentController extends Controller
                 }
                 $payment->image_transfer = $getimageName;
                 $payment->save();
+
+                if($payment){
+                    //change status order
+                    $order->status_id       = 15;
+                    $order->save();
+                    //change status order detail
+                    $status_order = DB::table('order_details')->where('order_id', $request->order_id)->update(['status_id' => 15]);
+                }
+                
             }else {
                 return response()->json([
                     'status' => false,
