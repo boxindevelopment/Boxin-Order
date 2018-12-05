@@ -320,12 +320,12 @@ class OrderController extends Controller
             $pickup->time_pickup    = $request->time_pickup;
             $pickup->note           = $request->note;
             $pickup->pickup_fee     = $request->pickup_fee;
-            $pickup->status_id      = 11;
+            $pickup->status_id      = 14;
             $pickup->save();
 
             //update total order
             $total_amount += $total;
-            $total_all = $total_amount + $request->pickup_fee;
+            $total_all = $total_amount + intval($request->pickup_fee);
             DB::table('orders')->where('id', $order->id)->update(['total' => $total_all]);
 
         } catch (\Exception $e) {
