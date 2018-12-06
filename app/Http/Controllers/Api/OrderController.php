@@ -250,7 +250,7 @@ class OrderController extends Controller
                         //change status box to fill
                         DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 9]);
                     }else{
-                        return response()->json(['status' => false, 'message' => 'Not found box available.']);
+                        return response()->json(['status' => false, 'message' => 'The box is not available.']);
                     }
 
                     // get price box
@@ -277,7 +277,7 @@ class OrderController extends Controller
                         //change status room to fill
                         DB::table('spaces')->where('id', $room_or_box_id)->update(['status_id' => 9]);
                     }else{
-                        return response()->json(['status' => false, 'message' => 'Not found room available.']);
+                        return response()->json(['status' => false, 'message' => 'The room is not available.']);
                     }
 
                     // get price room
@@ -339,7 +339,7 @@ class OrderController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Create order success.',
+            'message' => 'Your order has been made. Please complete the payment within 1 hour.',
             'data' => new OrderResource($order)
         ]);
 

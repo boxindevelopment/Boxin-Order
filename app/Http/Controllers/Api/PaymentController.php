@@ -77,7 +77,7 @@ class PaymentController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Create data payment success.',
+            'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
             'data' => new PaymentResource($payment->fresh())
         ]);
     }
