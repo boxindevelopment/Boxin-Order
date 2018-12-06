@@ -40,4 +40,9 @@ class Order extends Model
         return $this->hasOne('App\Model\PickupOrder', 'order_id');
     }
 
+    public function payment()
+    {
+        return $this->hasOne('App\Model\Payment', 'order_id');
+    }
+
 }

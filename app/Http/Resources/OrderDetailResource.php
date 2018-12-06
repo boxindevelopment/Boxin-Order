@@ -57,6 +57,7 @@ class OrderDetailResource extends JsonResource
             'amount'    => $this->amount,
             'start_date'=> $this->start_date,
             'end_date'  => $this->end_date,
+            'status_id' => $this->status->id,  
             'status'    => $this->status->name,
             'types_of_box_room_id'  => new TypeBoxRoomResource($this->type_box_room),
             'types_of_size'         => new TypeSizeResource($this->type_size),

@@ -44,6 +44,7 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('price', 'ReturnBoxController@getPrice')->name('api.return.getPrice');
         Route::post('start-return', 'ReturnBoxController@startReturnBox')->name('api.return.startReturnBox')->middleware('auth:api');
         Route::get('my-deliveries', 'ReturnBoxController@my_deliveries')->name('api.order.my_deliveries')->middleware('auth:api');
+        Route::get('done/{order_detail_id}', 'ReturnBoxController@done')->name('api.return.done')->middleware('auth:api');
     });
 
     Route::prefix('category')->group(function() {

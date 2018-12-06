@@ -269,11 +269,11 @@ class OrderController extends Controller
                 if ($order_detail->types_of_box_room_id == 2 || $order_detail->types_of_box_room_id == "2") {
                     $type = 'room';
                     // get room
-                    $rooms = $this->space->getAvailableByArea($request->area_id, $data['types_of_size_id'.$a]);
+                    $rooms = $this->space->getAvailableByArea($order->area_id, $data['types_of_size_id'.$a]);
 
-                    if(isset($rooms[0]->id)){
-                        $id_name = $rooms[0]->id_name;
-                        $room_or_box_id = $rooms[0]->id;
+                    if(isset($rooms->id)){
+                        $id_name = $rooms->id_name;
+                        $room_or_box_id = $rooms->id;
                         //change status room to fill
                         DB::table('spaces')->where('id', $room_or_box_id)->update(['status_id' => 9]);
                     }else{
