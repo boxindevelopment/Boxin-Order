@@ -54,8 +54,7 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
             DB::raw('DATEDIFF(day, order_details.start_date, order_details.end_date) as total_time'), 
             DB::raw('DATEDIFF(day, order_details.start_date, GETDATE()) as selisih'));
         $query->leftJoin('orders', 'orders.id', '=', 'order_details.order_id');
-        $query->where('user_id', $args['user_id']);
-        $query->where('is_returned', '!=', 1);        
+        $query->where('user_id', $args['user_id']);     
         $query->where('order_details.status_id', '!=', 4);
         $query->where('order_details.status_id', '!=', 18);
         $query->orderBy('order_details.id', 'DESC');
