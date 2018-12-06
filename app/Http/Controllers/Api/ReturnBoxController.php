@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Model\ReturnBoxes;
+use App\Model\Order;
 use App\Model\OrderDetail;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReturnBoxesResource;
@@ -56,7 +57,7 @@ class ReturnBoxController extends Controller
                 $return->time                   = $data['time'];
                 $return->time_pickup            = $data['time_pickup'];
                 $return->note                   = $data['note'];
-                $return->status_id              = 11;
+                $return->status_id              = 16;
                 $return->address                = $data['address'];
                 $return->order_detail_id        = $data['order_detail_id'.$a];
                 $return->longitude              = $data['longitude'];
@@ -65,10 +66,11 @@ class ReturnBoxController extends Controller
                 $return->save();
 
                 //update status order detail to
-                $order      = OrderDetail::findOrFail($return->order_detail_id);
-                if($order){
-                    $data1["is_returned"]        = 1;       
-                    $order->fill($data1)->save();
+                $order_detail      = OrderDetail::findOrFail($return->order_detail_id);
+                if($order_detail){
+                    $data1["is_returned"]        = 1;                     
+                    $data1["status_id"]          = 16;       
+                    $order_detail->fill($data1)->save();
                 }
             }
 
