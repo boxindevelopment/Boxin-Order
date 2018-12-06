@@ -58,6 +58,25 @@ class OrderDetailController extends Controller
         return response()->json($orders);
     }
 
+    public function my_history(Request $request)
+    {   
+        $user   = $request->user();
+        $params = array();
+        $params['user_id'] = $user->id;
+        $params['limit']   = intval($request->limit);     
+        $orders = $this->orderDetail->findPaginateMyBoxHistory($params);
+
+        if($orders) {
+            foreach ($orders as $k => $v) {
+                $orders[$k] = $v->toSearchableArray();
+            }
+        } else {
+            return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
+        }
+
+        return response()->json($orders);
+    }
+
     public function getById($order_detail_id)
     {
         $orders = $this->orderDetail->getById($order_detail_id);
