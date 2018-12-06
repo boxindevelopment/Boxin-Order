@@ -32,6 +32,10 @@ class ReturnBoxPaymentController extends Controller
         try {
             $id = OrderDetail::find($request->order_detail_id);
             if($id){
+                $check = ReturnBoxPayment::where('order_detail_id', $request->order_detail_id)->get();
+                if(count($check)>0){
+                    return response()->json(['status' => false, 'message' => 'Order return box has been paid.'], 401);
+                }
                 $data                    = $request->all();
                 $payment                 = new ReturnBoxPayment;
                 $payment->order_detail_id= $request->order_detail_id;
@@ -48,6 +52,7 @@ class ReturnBoxPaymentController extends Controller
                     }
                 }
                 $payment->image_transfer = $getimageName;
+                $payment->id_name        = 'PAYRB'.$this->id_name();
                 $payment->save();
             }else {
                 return response()->json([
@@ -65,10 +70,20 @@ class ReturnBoxPaymentController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Create data payment success.',
+            'message' => 'Create data return box payment success.',
             'data' => new ReturnBoxPaymentResource($payment->fresh())
         ]);
     }
 
+    private function id_name()
+    {
+
+        $sql    = ReturnBoxPayment::orderBy('number', 'desc')->whereRaw("MONTH(created_at) = " . date('m'))->first(['id_name', DB::raw('substring(id_name,10,12) as number')]);
+        $number = isset($sql->number) ? $sql->number : 0;
+        $code   = date('ym') . str_pad($number + 1, 3, "0", STR_PAD_LEFT);
+
+        return $code;
+
+    }
 
 }

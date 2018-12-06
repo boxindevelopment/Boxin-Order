@@ -33,6 +33,10 @@ class PaymentController extends Controller
         try {
             $order = Order::find($request->order_id);
             if($order){
+                $check = Payment::where('order_id', $request->order_id)->get();
+                if(count($check)>0){
+                    return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
+                }
                 $data                    = $request->all();
                 $payment                 = new Payment;
                 $payment->order_id       = $request->order_id;
@@ -61,10 +65,7 @@ class PaymentController extends Controller
                 }
                 
             }else {
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Order Id not found'
-                ], 401);
+                return response()->json(['status' => false, 'message' => 'Order Id not found'], 401);
             }
             
         } catch (\Exception $e) {
