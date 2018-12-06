@@ -51,6 +51,11 @@ class OrderDetail extends Model
     {
         return $this->hasMany('App\Model\OrderDetailBox', 'order_detail_id', 'id');
     }
+
+    public function return_box()
+    {
+        return $this->hasMany('App\Model\ReturnBoxes', 'order_detail_id', 'id');
+    }
     
     public function toSearchableArray()
     {
@@ -117,6 +122,18 @@ class OrderDetail extends Model
             
         }
 
+        $payment = null;
+        if(!is_null($this->order->payment)){
+            
+            $payment = [
+                'id'         => $this->order->payment->id,
+                'order_id'   => $this->order->payment->order_id,
+                'status_id'  => $this->order->payment->status->id,                
+                'status'     => $this->order->payment->status->name,
+            ];
+            
+        }
+
         $location = [
             'city_id'   => $this->order->area->city->id,
             'city'      => $this->order->area->city->name,
@@ -131,6 +148,7 @@ class OrderDetail extends Model
             'amount'    => $this->amount,
             'start_date'=> $this->start_date,
             'end_date'  => $this->end_date,
+            'status_id' => $this->status->id,            
             'status'    => $this->status->name,
             'types_of_box_room_id'  => $type_box_room,
             'types_of_size'         => $type_size,
@@ -138,6 +156,7 @@ class OrderDetail extends Model
             'location'  => $location,
             'duration'  => $duration,
             'pickup'    => $pick_up,
+            'payment'   => $payment,
         ];
 
         return $data;

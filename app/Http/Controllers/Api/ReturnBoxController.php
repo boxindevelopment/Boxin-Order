@@ -101,4 +101,43 @@ class ReturnBoxController extends Controller
         return response()->json($data);
     }
 
+    public function done(Request $request, $order_detail_id)
+    {
+        try {
+            $order_detail = OrderDetail::find($order_detail_id);
+            if($order_detail){
+                $check              = ReturnBoxes::where('order_detail_id', $order_detail_id)->first();
+                if($check){
+                    $data               = ReturnBoxes::find('id', $check->id);
+                    $data->status_id    = 18;
+                    $data->save();
+
+                    if($data){
+                        //change status order detail
+                        $order_detail->status_id       = 18;
+                        $order_detail->save();
+                        //change status order
+                        $status_order = DB::table('orders')->where('id', $order_detail->order_id)->update(['status_id' => 18]);
+                    }else{                        
+                        return response()->json(['status' => false, 'message' => 'Return box not found.'], 401);
+                    }
+                }
+                
+            }else {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Order Detail Id not found'
+                ], 401);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+
+        return response()->json(['status' => true, 'message' => 'Change status success.'], 200);
+    }
+
 }
