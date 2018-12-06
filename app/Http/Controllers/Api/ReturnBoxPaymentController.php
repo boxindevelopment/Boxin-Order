@@ -30,15 +30,15 @@ class ReturnBoxPaymentController extends Controller
         }
 
         try {
-            $id = OrderDetail::find($request->order_detail_id);
-            if($id){
-                $check = ReturnBoxPayment::where('order_detail_id', $request->order_detail_id)->get();
+            $order_detail = OrderDetail::find($request->order_detail_id);
+            if($order_detail){
+                $check = ReturnBoxPayment::where('return_boxes_id', $request->return_boxes_id)->get();
                 if(count($check)>0){
                     return response()->json(['status' => false, 'message' => 'Order return box has been paid.'], 401);
                 }
                 $data                    = $request->all();
                 $payment                 = new ReturnBoxPayment;
-                $payment->order_detail_id= $request->order_detail_id;
+                $payment->return_boxes_id= $request->return_boxes_id;
                 $payment->user_id        = $user->id;
                 $payment->payment_type   = 'transfer';
                 $payment->bank           = $request->bank;
@@ -54,6 +54,14 @@ class ReturnBoxPaymentController extends Controller
                 $payment->image_transfer = $getimageName;
                 $payment->id_name        = 'PAYRB'.$this->id_name();
                 $payment->save();
+
+                if($payment){
+                    //change status order detail
+                    $order_detail->status_id       = 15;
+                    $order_detail->save();
+                    //change status order
+                    $status_order = DB::table('orders')->where('id', $order_detail->order_id)->update(['status_id' => 15]);
+                }
             }else {
                 return response()->json([
                     'status' => false,
