@@ -101,14 +101,14 @@ class ReturnBoxController extends Controller
         return response()->json($data);
     }
 
-    public function done(Request $request, $order_detail_id)
+    public function done($order_detail_id)
     {
         try {
             $order_detail = OrderDetail::find($order_detail_id);
             if($order_detail){
                 $check              = ReturnBoxes::where('order_detail_id', $order_detail_id)->first();
                 if($check){
-                    $data               = ReturnBoxes::find('id', $check->id);
+                    $data               = ReturnBoxes::find($check->id);
                     $data->status_id    = 18;
                     $data->save();
 
