@@ -10,12 +10,12 @@ class ReturnBoxPayment extends Model
     protected $table = 'return_box_payments';
 
     protected $fillable = [
-        'order_detail_id', 'user_id', 'payment_type', 'bank', 'amount', 'image_transfer', 'status_id'
+        'return_boxes_id', 'user_id', 'payment_type', 'bank', 'amount', 'image_transfer', 'status_id', 'id_name'
     ];
 
-    public function order_detail()
+    public function return_boxes()
     {
-        return $this->belongsTo('App\Model\OrderDetail', 'order_detail_id', 'id');
+        return $this->belongsTo('App\Model\ReturnBoxes', 'return_boxes_id', 'id');
     }
 
     public function user()

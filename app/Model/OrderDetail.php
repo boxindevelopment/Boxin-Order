@@ -51,11 +51,6 @@ class OrderDetail extends Model
     {
         return $this->hasMany('App\Model\OrderDetailBox', 'order_detail_id', 'id');
     }
-
-    public function return_box_payment()
-    {
-        return $this->hasMany('App\Model\ReturnBoxPayment', 'order_detail_id', 'id');
-    }
     
     public function toSearchableArray()
     {
