@@ -57,6 +57,11 @@ class OrderDetail extends Model
         return $this->hasMany('App\Model\ReturnBoxes', 'order_detail_id', 'id');
     }
     
+    public function change_box_payment()
+    {
+        return $this->hasMany('App\Model\ChangeBoxPayment', 'order_detail_id', 'id');
+    }
+    
     public function toSearchableArray()
     {
         $url = 'https://boxin-dev-webbackend.azurewebsites.net/';

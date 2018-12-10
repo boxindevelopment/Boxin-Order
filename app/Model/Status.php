@@ -60,8 +60,8 @@ class Status extends Model
         return $this->hasMany('App\Model\OrderDetailBox', 'status_id', 'id');
     }
 
-    public function change_box()
+    public function change_box_payment()
     {
-        return $this->hasMany('App\Model\ChangeBox', 'status_id', 'id');
+        return $this->hasMany('App\Model\ChangeBoxPayment', 'status_id', 'id');
     }
 }

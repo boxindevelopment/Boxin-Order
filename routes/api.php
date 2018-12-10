@@ -48,7 +48,7 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('change-box')->group(function() {
-        Route::post('start', 'ChangeBoxController@startChangeBox')->name('api.return.startReturnBox')->middleware('auth:api');
+        Route::post('start', 'ChangeBoxController@startChangeBox')->name('api.change-box.startChangeBox')->middleware('auth:api');
     });
 
     Route::prefix('category')->group(function() {
@@ -76,6 +76,7 @@ Route::group(['namespace' => 'Api'], function() {
     Route::prefix('payment')->group(function() {
         Route::post('order/start-payment', 'PaymentController@startPayment')->name('api.payment.startPayment')->middleware('auth:api');
         Route::post('return/start-payment', 'ReturnBoxPaymentController@startPayment')->name('api.returnBoxPayment.startPayment')->middleware('auth:api');
+        Route::post('change-box/start-payment', 'ChangeBoxPaymentController@startPayment')->name('api.changeBoxPayment.startPayment')->middleware('auth:api');
     });
 
     Route::prefix('setting')->group(function() {
