@@ -59,4 +59,9 @@ class Status extends Model
     {
         return $this->hasMany('App\Model\OrderDetailBox', 'status_id', 'id');
     }
+
+    public function change_box()
+    {
+        return $this->hasMany('App\Model\ChangeBox', 'status_id', 'id');
+    }
 }
