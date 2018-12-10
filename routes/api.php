@@ -47,6 +47,10 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('done/{order_detail_id}', 'ReturnBoxController@done')->name('api.return.done')->middleware('auth:api');
     });
 
+    Route::prefix('change-box')->group(function() {
+        Route::post('start', 'ChangeBoxController@startChangeBox')->name('api.return.startReturnBox')->middleware('auth:api');
+    });
+
     Route::prefix('category')->group(function() {
         Route::get('list', 'CategoryController@index')->name('api.category.index');
     });

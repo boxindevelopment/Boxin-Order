@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-  use App\Model\ReturnBoxes;
+use App\Model\ReturnBoxes;
 use App\Repositories\Contracts\ReturnBoxRepository as ReturnBoxRepositoryInterface;
 use DB;
 
