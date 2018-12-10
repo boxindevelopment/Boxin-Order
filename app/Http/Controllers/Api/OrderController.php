@@ -37,8 +37,8 @@ class OrderController extends Controller
 
     public function chooseProduct($area_id)
     {
-        $choose1 = $this->price->getChooseProduct(1, 1, $area_id);
-        $choose2 = $this->price->getChooseProduct(2, 1, $area_id);
+        $choose1 = $this->price->getChooseProduct(1, 2, $area_id);
+        $choose2 = $this->price->getChooseProduct(2, 2, $area_id);
 
         $arr1           = array();
         $arr1['name']   = $choose1->name;
