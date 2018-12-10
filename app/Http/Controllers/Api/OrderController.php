@@ -37,8 +37,8 @@ class OrderController extends Controller
 
     public function chooseProduct($area_id)
     {
-        $choose1 = $this->price->getChooseProduct(1, 1, $area_id);
-        $choose2 = $this->price->getChooseProduct(2, 1, $area_id);
+        $choose1 = $this->price->getChooseProduct(1, 2, $area_id);
+        $choose2 = $this->price->getChooseProduct(2, 2, $area_id);
 
         $arr1           = array();
         $arr1['name']   = $choose1->name;
@@ -222,11 +222,6 @@ class OrderController extends Controller
                 $order_detail->duration               = $data['duration'.$a];
                 $order_detail->start_date             = $pickup->date;
 
-                // daily
-                if ($order_detail->types_of_duration_id == 1 || $order_detail->types_of_duration_id == '1') {
-                    $order_detail->end_date     = date('Y-m-d', strtotime('+'.$order_detail->duration.' days', strtotime($order_detail->start_date)));
-
-                }
                 // weekly
                 else if ($order_detail->types_of_duration_id == 2 || $order_detail->types_of_duration_id == '2') {
                     $end_date                   = $order_detail->duration*7;
@@ -235,6 +230,16 @@ class OrderController extends Controller
                 // monthly
                 else if ($order_detail->types_of_duration_id == 3 || $order_detail->types_of_duration_id == '3') {
                     $order_detail->end_date     = date('Y-m-d', strtotime('+'.$order_detail->duration.' month', strtotime($order_detail->start_date)));
+                }
+                // 6month
+                else if ($order_detail->types_of_duration_id == 7 || $order_detail->types_of_duration_id == '7') {
+                    $end_date                   = $order_detail->duration*6;
+                    $order_detail->end_date     = date('Y-m-d', strtotime('+'.$end_date.' month', strtotime($order_detail->start_date)));
+                }
+                // annual
+                else if ($order_detail->types_of_duration_id == 8 || $order_detail->types_of_duration_id == '8') {
+                    $end_date                   = $order_detail->duration*12;
+                    $order_detail->end_date     = date('Y-m-d', strtotime('+'.$end_date.' month', strtotime($order_detail->start_date)));
                 }
 
 

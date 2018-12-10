@@ -47,6 +47,10 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('done/{order_detail_id}', 'ReturnBoxController@done')->name('api.return.done')->middleware('auth:api');
     });
 
+    Route::prefix('change-box')->group(function() {
+        Route::post('start', 'ChangeBoxController@startChangeBox')->name('api.change-box.startChangeBox')->middleware('auth:api');
+    });
+
     Route::prefix('category')->group(function() {
         Route::get('list', 'CategoryController@index')->name('api.category.index');
     });
@@ -72,6 +76,7 @@ Route::group(['namespace' => 'Api'], function() {
     Route::prefix('payment')->group(function() {
         Route::post('order/start-payment', 'PaymentController@startPayment')->name('api.payment.startPayment')->middleware('auth:api');
         Route::post('return/start-payment', 'ReturnBoxPaymentController@startPayment')->name('api.returnBoxPayment.startPayment')->middleware('auth:api');
+        Route::post('change-box/start-payment', 'ChangeBoxPaymentController@startPayment')->name('api.changeBoxPayment.startPayment')->middleware('auth:api');
     });
 
     Route::prefix('setting')->group(function() {

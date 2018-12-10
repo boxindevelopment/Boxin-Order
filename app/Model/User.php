@@ -39,6 +39,11 @@ class User extends Authenticatable
         return $this->hasMany('App\Model\ReturnBoxPayment', 'user_id', 'id');
     }
 
+    public function change_box_payment()
+    {
+        return $this->hasMany('App\Model\ChangeBoxPayment', 'user_id', 'id');
+    }
+
     public function admin()
     {
         return $this->hasMany('App\Model\Admin', 'user_id', 'id');

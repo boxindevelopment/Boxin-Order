@@ -23,6 +23,7 @@ class OrderDetailBoxResource extends JsonResource
             'image'             => is_null($this->item_image) ? null : (asset('images/detail_item_box').'/'.$this->item_image),
             'note'              => $this->note,
             'created_date'      => $this->created_at->format('Y-m-d'),
+            'status'            => new StatusResource($this->status),
         ];
 
         return $data;
