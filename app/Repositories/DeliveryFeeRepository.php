@@ -30,6 +30,11 @@ class DeliveryFeeRepository implements DeliveryFeeRepositoryInterface
         return $this->model->where('area_id', $area_id)->first();
     }
 
+    public function minFee()
+    {
+        return $this->model->orderBy('fee', 'ASC')->first();
+    }
+
     public function create(array $data)
     {
         return $this->model->create($data);

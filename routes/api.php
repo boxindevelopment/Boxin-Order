@@ -24,6 +24,7 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('check-available/{types_of_box_room_id}/area/{area_id}/size/{types_of_size_id}', 'OrderController@checkOrder')->name('api.order.checkOrder');
         Route::get('list-available/{types_of_box_room_id}/size/{types_of_size_id}/city/{city_id}', 'OrderController@listAvailable')->name('api.order.listAvailable');        
         Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}/area/{area_id}', 'PriceController@listPriceArea')->name('api.price.getPriceArea');     
+        Route::get('delivery-fee', 'DeliveryFeeController@minFee')->name('api.delivery.minFee');
         Route::get('delivery-fee/{area_id}', 'DeliveryFeeController@deliveryFee')->name('api.delivery.deliveryFee');
     });
 
