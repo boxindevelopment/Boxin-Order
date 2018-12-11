@@ -7,6 +7,7 @@ use App\Model\ReturnBoxPayment;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReturnBoxPaymentResource;
 use Illuminate\Http\Request;
+use DB;
 
 class ReturnBoxPaymentController extends Controller
 {
@@ -32,13 +33,13 @@ class ReturnBoxPaymentController extends Controller
         try {
             $order_detail = OrderDetail::find($request->order_detail_id);
             if($order_detail){
-                $check = ReturnBoxPayment::where('return_boxes_id', $request->return_boxes_id)->get();
+                $check = ReturnBoxPayment::where('order_detail_id', $request->order_detail_id)->get();
                 if(count($check)>0){
                     return response()->json(['status' => false, 'message' => 'Order return box has been paid.'], 401);
                 }
                 $data                    = $request->all();
                 $payment                 = new ReturnBoxPayment;
-                $payment->return_boxes_id= $request->return_boxes_id;
+                $payment->order_detail_id= $request->order_detail_id;
                 $payment->user_id        = $user->id;
                 $payment->payment_type   = 'transfer';
                 $payment->bank           = $request->bank;
@@ -86,9 +87,9 @@ class ReturnBoxPaymentController extends Controller
     private function id_name()
     {
 
-        $sql    = ReturnBoxPayment::orderBy('number', 'desc')->whereRaw("MONTH(created_at) = " . date('m'))->first(['id_name', DB::raw('substring(id_name,10,12) as number')]);
+        $sql    = ReturnBoxPayment::orderBy('number', 'desc')->whereRaw("MONTH(created_at) = " . date('m'))->first(['id_name', DB::raw('substring(id_name,12,14) as number')]);
         $number = isset($sql->number) ? $sql->number : 0;
-        $code   = date('ym') . str_pad($number + 1, 3, "0", STR_PAD_LEFT);
+        $code   = date('ymd') . str_pad($number + 1, 3, "0", STR_PAD_LEFT);
 
         return $code;
 
