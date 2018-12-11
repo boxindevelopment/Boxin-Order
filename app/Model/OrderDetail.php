@@ -57,6 +57,11 @@ class OrderDetail extends Model
         return $this->hasMany('App\Model\ReturnBoxes', 'order_detail_id', 'id');
     }
     
+    public function return_box_payment()
+    {
+        return $this->hasMany('App\Model\ReturnBoxPayment', 'order_detail_id', 'id');
+    }
+
     public function change_box_payment()
     {
         return $this->hasMany('App\Model\ChangeBoxPayment', 'order_detail_id', 'id');
@@ -164,6 +169,48 @@ class OrderDetail extends Model
             }
         }
 
+        $return_box_payment = null;
+        if($this->return_box_payment){
+            foreach ($this->return_box_payment as $k => $return_box_payment) {
+                $return_box_payment = [
+                    'id'                => $return_box_payment->id,
+                    'status_id'         => $return_box_payment->status->id,                
+                    'status'            => $return_box_payment->status->name,
+                ];                
+            }
+        }
+
+        $change_box = null;
+        if($this->change_box){
+            foreach ($this->change_box as $k => $change_box) {
+                if($change_box->type_pickup->id == 1){
+                    $change_box = [
+                        'change_box_id'     => $change_box->id,
+                        'address'           => $change_box->address,
+                        'date'              => $change_box->date,
+                        'note'              => $change_box->note,
+                        'deliver_fee'       => intval($change_box->deliver_fee),
+                        'driver_name'       => $change_box->driver_name,
+                        'driver_phone'      => $change_box->driver_phone,              
+                        'time_pickup'       => $change_box->time_pickup,
+                        'type_pickup_id'    => $change_box->type_pickup->id,
+                        'type_pickup_name'  => $change_box->type_pickup->name,
+                    ];
+                }
+            }
+        }
+
+        $change_box_payment = null;
+        if($this->change_box_payment){
+            foreach ($this->change_box_payment as $k => $change_box_payment) {
+                $change_box_payment = [
+                    'id'                => $change_box_payment->id,
+                    'status_id'         => $change_box_payment->status->id,                
+                    'status'            => $change_box_payment->status->name,
+                ];
+            }
+        }
+
         $location = [
             'city_id'   => $this->order->area->city->id,
             'city'      => $this->order->area->city->name,
@@ -187,7 +234,10 @@ class OrderDetail extends Model
             'duration'  => $duration,
             'pickup'    => $pick_up,
             'payment'   => $payment,
-            'return_box'=> $return_box,
+            'return_box'=> $return_box,            
+            'return_box_payment'    => $return_box_payment,
+            'change_box'=> $change_box,            
+            'change_box_payment'    => $change_box_payment,
         ];
 
         return $data;

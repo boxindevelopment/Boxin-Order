@@ -27,11 +27,6 @@ class ReturnBoxes extends Model
         return $this->belongsTo('App\Model\Status', 'status_id', 'id');
     }
 
-    public function return_box_payment()
-    {
-        return $this->hasMany('App\Model\ReturnBoxPayment', 'return_boxes_id', 'id');
-    }
-
     public function toSearchableArray()
     {
         $url = 'https://boxin-dev-webbackend.azurewebsites.net/';
