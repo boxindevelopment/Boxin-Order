@@ -7,6 +7,7 @@ use App\Model\ReturnBoxPayment;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReturnBoxPaymentResource;
 use Illuminate\Http\Request;
+use DB;
 
 class ReturnBoxPaymentController extends Controller
 {
