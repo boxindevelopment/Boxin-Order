@@ -61,6 +61,11 @@ class OrderDetail extends Model
     {
         return $this->hasMany('App\Model\ChangeBoxPayment', 'order_detail_id', 'id');
     }
+
+    public function change_box()
+    {
+        return $this->hasMany('App\Model\ChangeBox', 'order_detail_id', 'id');
+    }
     
     public function toSearchableArray()
     {

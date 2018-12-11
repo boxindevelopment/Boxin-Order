@@ -47,6 +47,7 @@ class ChangeBoxController extends Controller
                 if($check){
                     $change                         = new ChangeBox;
                     $change->types_of_pickup_id     = $data['types_of_pickup_id'];
+                    $change->order_detail_id        = $data['order_detail_id'];   
                     $change->order_detail_box_id    = $data['order_detail_box_id'.$a];     
                     $change->date                   = $data['date'];
                     $change->time_pickup            = $data['time_pickup'];
@@ -57,9 +58,9 @@ class ChangeBoxController extends Controller
                     $change->save();
 
                     //update status order detail box 
-                    $order_detail_box      = OrderDetailBox::findOrFail($change->order_detail_box_id);
+                    $order_detail_box      = OrderDetailBox::findOrFail($data['order_detail_box_id'.$a]);
                     if($order_detail_box){
-                        $order_detail      = OrderDetail::findOrFail($order_detail_box->order_detail_id);
+                        $order_detail      = OrderDetail::findOrFail($data['order_detail_id']);
                         if($order_detail){
                             $data_orderdetail["status_id"] = 19;
                             $order_detail->fill($data_orderdetail)->save();

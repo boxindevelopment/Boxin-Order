@@ -12,6 +12,7 @@ class ChangeBoxResource extends JsonResource
 
         $data = [
             'id'                    => $this->id,
+            'order_detail_id'       => $this->order_detail_id,
             'order_detail_box_id'   => $this->order_detail_box_id,
             'address'               => $this->address,
             'date'                  => $this->date,
