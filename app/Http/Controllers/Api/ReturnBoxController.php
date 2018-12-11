@@ -57,7 +57,7 @@ class ReturnBoxController extends Controller
                 $return->time                   = $data['time'];
                 $return->time_pickup            = $data['time_pickup'];
                 $return->note                   = $data['note'];
-                $return->status_id              = 16;
+                $return->status_id              = $data['types_of_pickup_id'] == '1' ? 14 : 16;
                 $return->address                = $data['address'];
                 $return->order_detail_id        = $data['order_detail_id'.$a];
                 $return->longitude              = $data['longitude'];
@@ -69,7 +69,7 @@ class ReturnBoxController extends Controller
                 $order_detail      = OrderDetail::findOrFail($return->order_detail_id);
                 if($order_detail){
                     $data1["is_returned"]        = 1;                     
-                    $data1["status_id"]          = 16;       
+                    $data1["status_id"]          = $data['types_of_pickup_id'] == '1' ? 14 : 16;      
                     $order_detail->fill($data1)->save();
                 }
             }

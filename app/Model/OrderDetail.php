@@ -144,6 +144,26 @@ class OrderDetail extends Model
             
         }
 
+        $return_box = null;
+        if($this->return_box){
+            foreach ($this->return_box as $k => $return_box) {
+                if($return_box->type_pickup->id == 1){
+                    $return_box = [
+                        'return_box_id'     => $return_box->id,
+                        'address'           => $return_box->address,
+                        'date'              => $return_box->date,
+                        'note'              => $return_box->note,
+                        'deliver_fee'       => intval($return_box->deliver_fee),
+                        'driver_name'       => $return_box->driver_name,
+                        'driver_phone'      => $return_box->driver_phone,              
+                        'time_pickup'       => $return_box->time_pickup,
+                        'type_pickup_id'    => $return_box->type_pickup->id,
+                        'type_pickup_name'  => $return_box->type_pickup->name,
+                    ];
+                }
+            }
+        }
+
         $location = [
             'city_id'   => $this->order->area->city->id,
             'city'      => $this->order->area->city->name,
@@ -167,6 +187,7 @@ class OrderDetail extends Model
             'duration'  => $duration,
             'pickup'    => $pick_up,
             'payment'   => $payment,
+            'return_box'=> $return_box,
         ];
 
         return $data;

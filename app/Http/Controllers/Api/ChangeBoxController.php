@@ -52,7 +52,7 @@ class ChangeBoxController extends Controller
                     $change->date                   = $data['date'];
                     $change->time_pickup            = $data['time_pickup'];
                     $change->note                   = $data['note'];
-                    $change->status_id              = 19;
+                    $change->status_id              = $data['types_of_pickup_id'] == '1' ? 14 : 19;
                     $change->address                = $data['address'];
                     $change->deliver_fee            = 0;
                     $change->save();
@@ -62,7 +62,7 @@ class ChangeBoxController extends Controller
                     if($order_detail_box){
                         $order_detail      = OrderDetail::findOrFail($data['order_detail_id']);
                         if($order_detail){
-                            $data_orderdetail["status_id"] = 19;
+                            $data_orderdetail["status_id"] = $data['types_of_pickup_id'] == '1' ? 14 : 19;
                             $order_detail->fill($data_orderdetail)->save();
                         }
                         $data1["status_id"]          = 21;  
