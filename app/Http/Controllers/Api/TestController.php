@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use PDF;
-use Mail;
 
 class TestController extends Controller
 {
@@ -18,7 +16,7 @@ class TestController extends Controller
     public function mail(Request $request)
     {
         // $order = Order::with('order_detail', 'pickup_order.order_detail_box', 'payment')->findOrFail($order->id);
-        $order = ['data' => 'Meidina Istimewa Nurmala'];
+        $order = ['data' => 'Test ok'];
         $pdf = PDF::loadView('pdf.invoice', $order);
         $pdf->setPaper(array(0, 0, 280, 400), 'portrait');
         $pdf->save('invoice.pdf');

@@ -85,9 +85,9 @@ class PaymentController extends Controller
     private function id_name()
     {
 
-        $sql    = Payment::orderBy('number', 'desc')->whereRaw("MONTH(created_at) = " . date('m'))->first(['id_name', DB::raw('substring(id_name,8,10) as number')]);
+        $sql    = Payment::orderBy('number', 'desc')->whereRaw("MONTH(created_at) = " . date('m'))->first(['id_name', DB::raw('substring(id_name,10,12) as number')]);
         $number = isset($sql->number) ? $sql->number : 0;
-        $code   = date('ym') . str_pad($number + 1, 3, "0", STR_PAD_LEFT);
+        $code   = date('ymd') . str_pad($number + 1, 3, "0", STR_PAD_LEFT);
 
         return $code;
 

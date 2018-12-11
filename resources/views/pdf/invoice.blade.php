@@ -19,7 +19,7 @@
 	<div style="margin: 5px;">
 		<div style=""><img width="52" height="26" src="{{asset('images/logo.png')}}" /></div>
 		<br>
-		<h3 style="font-weight: 700; font-size:16px; margin-bottom: 5px;">Invoice Order <span style="font-size: 18px;">#43243242343</span></h3>
+		<h3 style="font-weight: 700; font-size:16px; margin-bottom: 5px;">Invoice Order <span style="font-size: 18px;">#{{$order->order_detail[0]->id_name}}</span></h3>
 		<p style=" margin-top: 2px;">9 december 2018</p>
 		<h5 style="font-size:14px; font-weight: 600; margin-bottom: 2px;">Item</h5>
 		<table width="100%" border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
@@ -36,7 +36,7 @@
 			</tr>
 			<tr>
 				<td colspan="2" style="border-bottom: 1px solid #eee;">Delivery</td>
-				<td style="border-bottom: 2px solid #eee; text-align: right; padding-bottom: 15px; padding-top:10px;">Rp 20.000</td>
+				<td style="border-bottom: 2px solid #eee; text-align: right; padding-bottom: 15px; padding-top:10px;">Rp 20.000</tud>
 			</tr>
 			<tr>
 				<td colspan="2" style="border-bottom: 1px solid #eee; padding-bottom: 15px;"><strong>Total</strong></td>

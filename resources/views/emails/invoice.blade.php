@@ -6,6 +6,6 @@
   </head>
   <body>
       <h1>Hi</h1>
-      <a href="">Reset </a>
+      
   </body>
 </html>
