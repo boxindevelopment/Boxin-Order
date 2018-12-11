@@ -45,11 +45,11 @@ class MessageInvoice implements ShouldQueue
         $users = 1;
         $orders = ['data' => 'Test ok'];
         // $orders = $this->order;
-        Mail::send('emails.invoice', $orders, function($message) use($users) {
-            $message->to('bahtiar@twiscode.com');
-            $message->subject('Test Email');
-            $message->attach('invoice.pdf');
-        });
+        // Mail::send('emails.invoice', $orders, function($message) use($users) {
+        //     $message->to('bahtiar@twiscode.com');
+        //     $message->subject('Test Email');
+        //     $message->attach('invoice.pdf');
+        // });
 
     }
 }
