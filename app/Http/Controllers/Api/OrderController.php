@@ -331,7 +331,7 @@ class OrderController extends Controller
             $total_all = $total_amount + intval($request->pickup_fee);
             DB::table('orders')->where('id', $order->id)->update(['total' => $total_all]);
 
-            $order = Order::with('order_detail', 'pickup_order.order_detail_box', 'payment')->findOrFail($order->id);
+            $order = Order::with('order_detail', 'order_detail.order_detail_box', 'payment')->findOrFail($order->id);
             $pdf = PDF::loadView('pdf.invoice', $order);
             $pdf->download('invoice.pdf');
 
