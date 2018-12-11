@@ -9,6 +9,7 @@ use App\Model\OrderDetail;
 use App\Model\DeliveryFee;
 use App\Model\Price;
 use App\Model\PickupOrder;
+use App\Jobs\MessageInvoice;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BoxResource;
 use App\Http\Resources\RoomResource;
@@ -40,7 +41,7 @@ class OrderController extends Controller
     {
         $choose1 = $this->price->getChooseProduct(1, 2, $area_id);
         $choose2 = $this->price->getChooseProduct(2, 2, $area_id);
-    
+
         $arr1           = array();
         $arr1['name']   = $choose1->name;
         $arr1['min']    = intval($choose1->min);
@@ -153,7 +154,7 @@ class OrderController extends Controller
         $user = $request->user();
 
         $validator = \Validator::make($request->all(), [
-            'area_id'           => 'required',
+            'area_id'           => 'required|exists:areas,id',
             'order_count'       => 'required',
             'types_of_pickup_id'=> 'required',
             'date'              => 'required',
@@ -331,9 +332,9 @@ class OrderController extends Controller
             $total_all = $total_amount + intval($request->pickup_fee);
             DB::table('orders')->where('id', $order->id)->update(['total' => $total_all]);
 
-            $order = Order::with('order_detail', 'order_detail.order_detail_box', 'payment')->findOrFail($order->id);
-            $pdf = PDF::loadView('pdf.invoice', $order);
-            $pdf->download('invoice.pdf');
+            $order = Order::with('order_detail.type_size', 'payment')->findOrFail($order->id);
+            MessageInvoice::dispatch($order, $user)->onQueue('processing');
+
 
         } catch (\Exception $e) {
             // delete order when order_detail failed to create
