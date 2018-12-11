@@ -21,6 +21,7 @@ use App\Repositories\Contracts\BoxRepository;
 use App\Repositories\Contracts\SpaceRepository;
 use App\Repositories\Contracts\PriceRepository;
 use DB;
+use PDF;
 
 class OrderController extends Controller
 {
@@ -66,7 +67,7 @@ class OrderController extends Controller
     }
 
     public function checkOrder($types_of_box_room_id, $area_id, $types_of_size_id)
-    {   
+    {
         if($types_of_box_room_id == 1) {
             $check = $this->boxes->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
         } else if ($types_of_box_room_id == 2) {
@@ -78,7 +79,7 @@ class OrderController extends Controller
                     'status' => false,
                     'message' => 'Kapasitas penuh, Anda dapat menyewa di...'
                 ]);
-            }            
+            }
         }
 
         if(count($check) > 0) {
@@ -100,7 +101,7 @@ class OrderController extends Controller
     }
 
     public function listAvailable($types_of_box_room_id, $types_of_size_id, $city_id)
-    {   
+    {
         if($types_of_box_room_id == 1) {
             $check = $this->boxes->getAvailable($types_of_size_id, $city_id);
         } else if ($types_of_box_room_id == 2) {
@@ -303,8 +304,8 @@ class OrderController extends Controller
                 $order_detail->id_name        = $id_name.''.$order->id;
 
                 $total += $order_detail->amount;
-                
-                if($order_detail->save()){ 
+
+                if($order_detail->save()){
                     $find      = OrderDetail::findOrFail($order_detail->id);
                     if($find){
                         $update["id_name"]           = $id_name.$order_detail->id;
@@ -312,12 +313,12 @@ class OrderController extends Controller
                     }
                 }
             }
-            
+
             $pickup->order_id       = $order->id;
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
             $pickup->address        = $request->address;
             $pickup->longitude      = $request->longitude;
-            $pickup->latitude       = $request->latitude;            
+            $pickup->latitude       = $request->latitude;
             $pickup->time           = $request->time;
             $pickup->time_pickup    = $request->time_pickup;
             $pickup->note           = $request->note;
@@ -329,6 +330,10 @@ class OrderController extends Controller
             $total_amount += $total;
             $total_all = $total_amount + intval($request->pickup_fee);
             DB::table('orders')->where('id', $order->id)->update(['total' => $total_all]);
+
+            $order = Order::with('order_detail', 'pickup_order.order_detail_box', 'payment')->findOrFail($order->id);
+            $pdf = PDF::loadView('pdf.invoice', $order);
+            $pdf->download('invoice.pdf');
 
         } catch (\Exception $e) {
             // delete order when order_detail failed to create

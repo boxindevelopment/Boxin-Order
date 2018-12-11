@@ -18,12 +18,13 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['namespace' => 'Api'], function() {
+    Route::post('test-email', 'TestController@mail')->name('api.test.mail');
     Route::prefix('product')->group(function() {
         Route::get('size/{types_of_box_room_id}', 'TypeSizeController@list')->name('api.size.list');
         Route::get('list/{area_id}', 'OrderController@chooseProduct')->name('api.order.chooseProduct');
         Route::get('check-available/{types_of_box_room_id}/area/{area_id}/size/{types_of_size_id}', 'OrderController@checkOrder')->name('api.order.checkOrder');
-        Route::get('list-available/{types_of_box_room_id}/size/{types_of_size_id}/city/{city_id}', 'OrderController@listAvailable')->name('api.order.listAvailable');        
-        Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}/area/{area_id}', 'PriceController@listPriceArea')->name('api.price.getPriceArea');     
+        Route::get('list-available/{types_of_box_room_id}/size/{types_of_size_id}/city/{city_id}', 'OrderController@listAvailable')->name('api.order.listAvailable');
+        Route::get('price/{types_of_box_room_id}/size/{types_of_size_id}/area/{area_id}', 'PriceController@listPriceArea')->name('api.price.getPriceArea');
         Route::get('delivery-fee', 'DeliveryFeeController@minFee')->name('api.delivery.minFee');
         Route::get('delivery-fee/{area_id}', 'DeliveryFeeController@deliveryFee')->name('api.delivery.deliveryFee');
     });
@@ -59,7 +60,7 @@ Route::group(['namespace' => 'Api'], function() {
     Route::prefix('order')->group(function() {
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
         Route::get('my-item', 'OrderDetailController@my_item')->name('api.order.my_item')->middleware('auth:api');
-        Route::get('my-history', 'OrderDetailController@my_history')->name('api.order.my_history')->middleware('auth:api');        
+        Route::get('my-history', 'OrderDetailController@my_history')->name('api.order.my_history')->middleware('auth:api');
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
 
         Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store')->middleware('auth:api');
@@ -100,5 +101,3 @@ Route::group(['namespace' => 'Api'], function() {
     Route::post('/snapfinish', 'SnapController@finish');
 
 });
-
-
