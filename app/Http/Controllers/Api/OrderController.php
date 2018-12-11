@@ -39,7 +39,7 @@ class OrderController extends Controller
     {
         $choose1 = $this->price->getChooseProduct(1, 2, $area_id);
         $choose2 = $this->price->getChooseProduct(2, 2, $area_id);
-
+    
         $arr1           = array();
         $arr1['name']   = $choose1->name;
         $arr1['min']    = intval($choose1->min);
@@ -54,7 +54,7 @@ class OrderController extends Controller
         $arr2['time']   = $choose2->alias;
         $arr2['type_of_box_room_id'] = 2;
 
-        if(($choose1)) {
+        if($choose1) {
             return response()->json([
                 'status'    => true,
                 'data_box'  => $arr1,
@@ -62,10 +62,7 @@ class OrderController extends Controller
             ]);
         }
 
-        return response()->json([
-            'status' => false,
-            'message' => 'Data not found'
-        ]);
+        return response()->json(['status' => false, 'message' => 'Data not found']);
     }
 
     public function checkOrder($types_of_box_room_id, $area_id, $types_of_size_id)
@@ -223,7 +220,7 @@ class OrderController extends Controller
                 $order_detail->start_date             = $pickup->date;
 
                 // weekly
-                else if ($order_detail->types_of_duration_id == 2 || $order_detail->types_of_duration_id == '2') {
+                if ($order_detail->types_of_duration_id == 2 || $order_detail->types_of_duration_id == '2') {
                     $end_date                   = $order_detail->duration*7;
                     $order_detail->end_date     = date('Y-m-d', strtotime('+'.$end_date.' days', strtotime($order_detail->start_date)));
                 }
