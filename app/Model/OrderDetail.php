@@ -74,7 +74,7 @@ class OrderDetail extends Model
     
     public function toSearchableArray()
     {
-        $url = 'https://boxin-dev-webbackend.azurewebsites.net/';
+        $url = 'https://boxin-prod-webbackend.azurewebsites.net/';
         
         if (!is_null($this->order_id)) {
             $order = [
