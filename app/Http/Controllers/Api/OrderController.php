@@ -330,7 +330,15 @@ class OrderController extends Controller
             //update total order
             $total_amount += $total;
             $total_all = $total_amount + intval($request->pickup_fee);
-            DB::table('orders')->where('id', $order->id)->update(['total' => $total_all]);
+
+            //voucher
+            if(strtoupper($request->voucher) == 'DIBOXININAJA'){
+                    $tot = $total_all - (0.1 * $total_all);
+            }else{
+                $tot = $total_all;
+            }
+
+            DB::table('orders')->where('id', $order->id)->update(['total' => $tot, 'deliver_fee' => intval($request->pickup_fee)]);
 
             $order = Order::with('order_detail.type_size', 'payment')->findOrFail($order->id);
             MessageInvoice::dispatch($order, $user)->onQueue('processing');
