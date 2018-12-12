@@ -10,7 +10,7 @@ class BoxResource extends JsonResource
     public function toArray($request)
     {
 
-        $url = 'https://boxin-dev-webbackend.azurewebsites.net/';
+        $url = 'https://boxin-prod-webbackend.azurewebsites.net/';
 
         $data = [
             'available'     => $this->available,
