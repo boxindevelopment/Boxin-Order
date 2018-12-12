@@ -43,17 +43,17 @@ class OrderController extends Controller
         $choose2 = $this->price->getChooseProduct(2, 2, $area_id);
 
         $arr1           = array();
-        $arr1['name']   = $choose1->name;
-        $arr1['min']    = intval($choose1->min);
-        $arr1['max']    = intval($choose1->max);
-        $arr1['time']   = $choose1->alias;
+        $arr1['name']   = ($choose1) ? $choose1->name : null;
+        $arr1['min']    = ($choose1) ? intval($choose1->min) : 0;
+        $arr1['max']    = ($choose1) ? intval($choose1->max) : 0;
+        $arr1['time']   = ($choose1) ? $choose1->alias  : null;
         $arr1['type_of_box_room_id'] = 1;
 
         $arr2 = array();
-        $arr2['name']   = $choose2->name;
-        $arr2['min']    = intval($choose2->min);
-        $arr2['max']    = intval($choose2->max);
-        $arr2['time']   = $choose2->alias;
+        $arr2['name']   = ($choose2) ? $choose2->name : null;
+        $arr2['min']    = ($choose2) ? intval($choose2->min) : 0;
+        $arr2['max']    = ($choose2) ? intval($choose2->max) : 0;
+        $arr2['time']   = ($choose2) ? $choose2->alias : null;
         $arr2['type_of_box_room_id'] = 2;
 
         if($choose1) {
