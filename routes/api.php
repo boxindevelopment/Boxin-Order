@@ -85,6 +85,10 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('list', 'SettingController@index')->name('api.setting.index');
     });
 
+    Route::prefix('promotion')->group(function() {
+        Route::get('voucher/list', 'VoucherController@index')->name('api.voucher.index');
+    });
+
     // midtrans
     // Route::get('/vtweb', 'PagesController@vtweb');
 

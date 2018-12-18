@@ -64,4 +64,9 @@ class Status extends Model
     {
         return $this->hasMany('App\Model\ChangeBoxPayment', 'status_id', 'id');
     }
+
+    public function voucher()
+    {
+        return $this->hasMany('App\Model\Voucher', 'status_id', 'id');
+    }
 }
