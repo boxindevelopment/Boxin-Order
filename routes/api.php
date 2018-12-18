@@ -87,6 +87,7 @@ Route::group(['namespace' => 'Api'], function() {
 
     Route::prefix('promotion')->group(function() {
         Route::get('voucher/list', 'VoucherController@index')->name('api.voucher.index');
+        Route::get('banner/list', 'BannerController@index')->name('api.banner.index');
     });
 
     // midtrans
