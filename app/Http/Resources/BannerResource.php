@@ -8,7 +8,7 @@ class BannerResource extends JsonResource
 {
     public function toArray($request)
     {
-        $url = 'https://boxin-prod-webbackend.azurewebsites.net/';
+        $url = (env('DB_DATABASE') == 'coredatabase') ? 'https://boxin-dev-webbackend.azurewebsites.net/' : 'https://boxin-prod-webbackend.azurewebsites.net/';
 
         $data = [
             'id'                => $this->id,
