@@ -36,4 +36,37 @@ class VoucherController extends Controller
 
     }
 
+    public function detail($code)
+    {
+        $voucher = $this->repository->findByCode($code);
+        if($voucher){
+            $data = new VoucherResource($voucher);
+            if($data->status->name != 'Actived'){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'voucher is not actived'
+                ]);
+            } else if(strtotime($data->start_date) > strtotime(date('Y-m-d'))){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'voucher is not valid '
+                ]);
+            } else if(strtotime($data->end_date) < strtotime(date('Y-m-d'))){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'voucher is expired'
+                ]);
+            }
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
+        ]);
+    }
+
 }

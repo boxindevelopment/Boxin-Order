@@ -21,7 +21,12 @@ class VoucherRepository implements VoucherRepositoryInterface
     {
         return $this->model->findOrFail($id);
     }
-    
+
+    public function findByCode($code)
+    {
+        return $this->model->where('code', $code)->first();
+    }
+
     public function all()
     {
         return $this->model->where('status_id', 20)->where('deleted_at', NULL)->orderBy('updated_at', 'DESC')->orderBy('id','DESC')->get();
@@ -31,7 +36,7 @@ class VoucherRepository implements VoucherRepositoryInterface
     {
         return $this->model->create($data);
     }
-    
+
     public function update(Voucher $voucher, $data)
     {
         return $voucher->update($data);
@@ -41,5 +46,5 @@ class VoucherRepository implements VoucherRepositoryInterface
     {
         return $voucher->delete();
     }
-    
+
 }
