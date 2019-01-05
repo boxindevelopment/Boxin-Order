@@ -36,10 +36,22 @@ class VoucherController extends Controller
 
     }
 
-    public function detail($code)
+    public function detail($code, Request $request)
     {
         $voucher = $this->repository->findByCode($code);
         if($voucher){
+
+            $validator = \Validator::make($request->all(), [
+                'amount'       => 'required|numeric',
+            ]);
+
+            if($validator->fails()) {
+                return response()->json([
+                    'status' => false,
+                    'message' => $validator->errors()
+                ]);
+            }
+
             $data = new VoucherResource($voucher);
             if($data->status->name != 'Actived'){
                 return response()->json([
@@ -56,10 +68,24 @@ class VoucherController extends Controller
                     'status' => false,
                     'message' => 'voucher is expired'
                 ]);
+            } else if($request->amount < $data->min_amount){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Amount less than ' . $data->min_amount . ' (min amount)'
+                ]);
+            }
+            if($data->type_voucher == 2){
+                $result = $request->amount;
+            } else {
+                $result = ($data->value/100) * $request->amount;
+                if($result > $data->max_value){
+                    $result = $data->max_value;
+                }
             }
             return response()->json([
                 'status' => true,
-                'data' => $data
+                'data' => $data,
+                'result' => $result
             ]);
         }
 
