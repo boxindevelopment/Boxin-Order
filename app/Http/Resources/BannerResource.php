@@ -4,14 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class TypeSizeResource extends JsonResource
+class BannerResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
     public function toArray($request)
     {
         $url = (env('DB_DATABASE') == 'coredatabase') ? 'https://boxin-dev-webbackend.azurewebsites.net/' : 'https://boxin-prod-webbackend.azurewebsites.net/';
@@ -19,9 +13,8 @@ class TypeSizeResource extends JsonResource
         $data = [
             'id'                => $this->id,
             'name'              => $this->name,
-            'size'              => $this->size,
-            'image'             => is_null($this->image) ? null : $url.'images/types_of_size'.'/'.$this->image,
-            'types_of_box_room' => new TypeBoxRoomResource($this->type_box_room),
+            'image'             => is_null($this->image) ? null : $url.'images/banner'.'/'.$this->image,
+            'status'            => new StatusResource($this->status),
         ];
 
         return $data;

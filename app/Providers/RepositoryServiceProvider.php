@@ -34,5 +34,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind('App\Repositories\Contracts\TypePickupRepository', 'App\Repositories\TypePickupRepository');
         $this->app->bind('App\Repositories\Contracts\CategoryRepository', 'App\Repositories\CategoryRepository');
         $this->app->bind('App\Repositories\Contracts\SettingRepository', 'App\Repositories\SettingRepository');
+        $this->app->bind('App\Repositories\Contracts\VoucherRepository', 'App\Repositories\VoucherRepository');
+        $this->app->bind('App\Repositories\Contracts\BannerRepository', 'App\Repositories\BannerRepository');
     }
 }
