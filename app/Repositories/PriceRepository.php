@@ -33,11 +33,11 @@ class PriceRepository implements PriceRepositoryInterface
     public function getChooseProduct($types_of_box_room_id, $types_of_duration_id, $area_id)
     {
         $min = Price::where('types_of_box_room_id', $types_of_box_room_id)
+                    ->where('types_of_duration_id', 2)
                     ->where('area_id', $area_id)
-                    ->whereRaw("types_of_duration_id IN (SELECT id FROM types_of_duration WHERE alias='week')")
                     ->min('price');
         $max = Price::where('prices.types_of_box_room_id', $types_of_box_room_id)
-                    ->whereRaw("types_of_duration_id IN (SELECT id FROM types_of_duration WHERE alias='month')")
+                    ->where('prices.types_of_duration_id', 3)
                     ->where('area_id', $area_id)
                     ->max('price');
         $query =  Price::query();
