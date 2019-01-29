@@ -20,11 +20,11 @@ class OrderDetailController extends Controller
     }
 
     public function my_box(Request $request)
-    {   
+    {
         $user   = $request->user();
         $params = array();
         $params['user_id'] = $user->id;
-        $params['limit']   = intval($request->limit);     
+        $params['limit']   = intval($request->limit);
         $orders = $this->orderDetail->findPaginateMyBox($params);
 
         if($orders) {
@@ -39,7 +39,7 @@ class OrderDetailController extends Controller
     }
 
     public function my_item(Request $request)
-    {   
+    {
         $user   = $request->user();
         $params = array();
         $params['user_id'] = $user->id;
@@ -59,11 +59,11 @@ class OrderDetailController extends Controller
     }
 
     public function my_history(Request $request)
-    {   
+    {
         $user   = $request->user();
         $params = array();
         $params['user_id'] = $user->id;
-        $params['limit']   = intval($request->limit);     
+        $params['limit']   = intval($request->limit);
         $orders = $this->orderDetail->findPaginateMyBoxHistory($params);
 
         if($orders) {
