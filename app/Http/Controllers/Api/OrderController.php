@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Model\Order;
-use App\Model\Space;
+use App\Model\SpaceSmall;
 use App\Model\Box;
 use App\Model\OrderDetail;
 use App\Model\DeliveryFee;
@@ -12,28 +12,27 @@ use App\Model\PickupOrder;
 use App\Jobs\MessageInvoice;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BoxResource;
-use App\Http\Resources\RoomResource;
 use App\Http\Resources\SpaceResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\PriceResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\BoxRepository;
-use App\Repositories\Contracts\SpaceRepository;
+use App\Repositories\Contracts\SpaceSmallRepository;
 use App\Repositories\Contracts\PriceRepository;
 use DB;
 use PDF;
 
 class OrderController extends Controller
 {
-    protected $space;
+    protected $spaceSmall;
     protected $boxes;
     protected $price;
 
-    public function __construct(BoxRepository $boxes, SpaceRepository $space, PriceRepository $price)
+    public function __construct(BoxRepository $boxes, SpaceSmallRepository $spaceSmall, PriceRepository $price)
     {
         $this->boxes = $boxes;
-        $this->space = $space;
+        $this->spaceSmall = $spaceSmall;
         $this->price = $price;
     }
 
@@ -72,7 +71,7 @@ class OrderController extends Controller
         if($types_of_box_room_id == 1) {
             $check = $this->boxes->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
         } else if ($types_of_box_room_id == 2) {
-            $totalSpace = $this->space->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
+            $totalSpace = $this->spaceSmall->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
             if(count($totalSpace) > 0){
                 $check = $totalSpace;
             } else {
@@ -106,9 +105,9 @@ class OrderController extends Controller
         if($types_of_box_room_id == 1) {
             $check = $this->boxes->getAvailable($types_of_size_id, $city_id);
         } else if ($types_of_box_room_id == 2) {
-            $checkBoxInSpace = $this->space->anyBoxInSpace();
+            $checkBoxInSpace = $this->spaceSmall->anyBoxInSpace();
             if(count($checkBoxInSpace) > 0){
-                $check = $this->space->getAvailable($types_of_size_id, $city_id);
+                $check = $this->spaceSmall->getAvailable($types_of_size_id, $city_id);
             }
         }
 
@@ -264,23 +263,24 @@ class OrderController extends Controller
                         $amount = $price->price*$order_detail->duration;
                     }else{
                         // change status room to empty when order failed to create
-                        DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 10]);
+                        Box::where('id', $room_or_box_id)->update(['status_id' => 10]);
                         return response()->json(['status' => false, 'message' => 'Not found price box.']);
                     }
                 }
 
                 // order room
                 if ($order_detail->types_of_box_room_id == 2 || $order_detail->types_of_box_room_id == "2") {
-                    $type = 'room';
-                    // get room
-                    $rooms = $this->space->getAvailableByArea($order->area_id, $data['types_of_size_id'.$a]);
-
-                    if(isset($rooms->id)){
-                        $id_name = $rooms->id_name;
-                        $room_or_box_id = $rooms->id;
+                    $type = 'space';
+                    // get space small
+                    $spaceSmall = $this->spaceSmall->getData(['status_id' => 10, 'area_id' => $request->area_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
+                    if(isset($spaceSmall->id)){
+                        $code_space_small = $spaceSmall->code_space_small;
+                        $room_or_box_id = $spaceSmall->id;
                         //change status room to fill
-                        DB::table('spaces')->where('id', $room_or_box_id)->update(['status_id' => 9]);
+                        SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 9]);
                     }else{
+                        // change status room to empty when order failed to create
+                        SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 10]);
                         return response()->json(['status' => false, 'message' => 'The room is not available.']);
                     }
 
@@ -291,7 +291,7 @@ class OrderController extends Controller
                         $amount = $price->price*$order_detail->duration;
                     }else{
                         // change status room to empty when order failed to create
-                        DB::table('spaces')->where('id', $room_or_box_id)->update(['status_id' => 10]);
+                        SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 10]);
                         return response()->json([
                             'status' =>false,
                             'message' => 'Not found price room.'
@@ -302,14 +302,14 @@ class OrderController extends Controller
                 $order_detail->name           = 'New '. $type .' '. $a;
                 $order_detail->room_or_box_id = $room_or_box_id;
                 $order_detail->amount         = $amount;
-                $order_detail->id_name        = $id_name.''.$order->id;
+                $order_detail->id_name        = $code_space_small.''.$order->id;
 
                 $total += $order_detail->amount;
 
                 if($order_detail->save()){
                     $find      = OrderDetail::findOrFail($order_detail->id);
                     if($find){
-                        $update["id_name"]           = $id_name.$order_detail->id;
+                        $update["id_name"]           = $code_space_small.$order_detail->id;
                         $find->fill($update)->save();
                     }
                 }
@@ -338,15 +338,15 @@ class OrderController extends Controller
                 $tot = $total_all;
             }
 
-            DB::table('orders')->where('id', $order->id)->update(['total' => $tot, 'deliver_fee' => intval($request->pickup_fee)]);
+            Order::where('id', $order->id)->update(['total' => $tot, 'deliver_fee' => intval($request->pickup_fee)]);
 
             $order = Order::with('order_detail.type_size', 'payment')->findOrFail($order->id);
-            MessageInvoice::dispatch($order, $user)->onQueue('processing');
+            // MessageInvoice::dispatch($order, $user)->onQueue('processing');
 
 
         } catch (\Exception $e) {
             // delete order when order_detail failed to create
-            DB::table('orders')->where('id', $order->id)->delete();
+            Order::where('id', $order->id)->delete();
             return response()->json([
                 'status' =>false,
                 'message' => $e->getMessage()
