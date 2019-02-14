@@ -403,7 +403,7 @@ class OrderController extends Controller
 
     }
 
-    public function cancelOrder($id)
+    public function cancelOrder($id, Request $request)
     {
 
         $order                      = Order::find($id);
