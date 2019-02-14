@@ -65,7 +65,7 @@ Route::group(['namespace' => 'Api'], function() {
 
         Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store')->middleware('auth:api');
         Route::get('find/{id}', 'OrderController@getOrder')->name('api.order.getOrder');
-        Route::post('cancel/{id}', 'OrderController@cancelOrder')->name('api.order.cancelOrder');
+        Route::post('cancel/{id}', 'OrderController@cancelOrder')->name('api.order.cancelOrder')->middleware('auth:api');
         Route::post('update', 'OrderController@update')->name('api.order.update');
 
         Route::post('start-item-box','OrderDetailBoxController@startDetailItemBox')->name('api.order.startDetailItemBox');
