@@ -409,6 +409,13 @@ class OrderController extends Controller
         $order                      = Order::find($id);
         $status                     = 24;
         if($order){
+            $user = $request->user();
+            if($user->id != $order->user_id){
+                return response()->json([
+                    'status' => false,
+                    'message' => "Order can't canceled, you're not ordering of this order"
+                ]);
+            }
             if($order->status_id == 7 || $order->status_id == 14){
                 $order->status_id   = $status;
                 $order->save();
