@@ -329,7 +329,9 @@ class OrderController extends Controller
 
             //update total order
             $total_amount += $total;
-            $total_all = $total_amount + intval($request->pickup_fee);
+            if($request->types_of_pickup_id == 1){
+                $total_all = $total_amount + intval($request->pickup_fee);
+            }
 
             //voucher
             if(strtoupper($request->voucher) == 'DIBOXININAJA'){
