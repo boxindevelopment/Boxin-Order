@@ -403,4 +403,33 @@ class OrderController extends Controller
 
     }
 
+    public function cancelOrder($id)
+    {
+
+        $order                      = Order::find($id);
+        $status                     = 24;
+        if($order){
+            if($order->status_id == 7 || $order->status_id == 14){
+                $order->status_id   = $status;
+                $order->save();
+                DB::table('pickup_orders')->where('order_id', $order->id)->update(['status_id' => $status]);
+                DB::table('order_details')->where('order_id', $order->id)->update(['status_id' => $status]);
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Update status to cancelled success.',
+                    'data' => $order
+                ]);
+            }
+
+        }
+
+
+        return response()->json([
+            'status' => false,
+            'message' => "Order can't canceled"
+        ]);
+
+    }
+
 }
