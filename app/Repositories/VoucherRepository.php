@@ -31,8 +31,8 @@ class VoucherRepository implements VoucherRepositoryInterface
     {
         $now = date('Y-m-d');
         return $this->model->where('status_id', 20)
-                           ->where('start_date', '>=', $now)
-                           ->where('end_date', '<=', $now)
+                           ->where('start_date', '<=', $now)
+                           ->where('end_date', '>=', $now)
                            ->where('deleted_at', NULL)
                            ->orderBy('updated_at', 'DESC')
                            ->orderBy('id','DESC')
