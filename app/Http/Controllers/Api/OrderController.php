@@ -449,9 +449,8 @@ class OrderController extends Controller
         }
 
         try {
+            
             $order              = Order::find($request->order_id);
-
-            }
 
             $pickup->order_id       = $order->id;
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
