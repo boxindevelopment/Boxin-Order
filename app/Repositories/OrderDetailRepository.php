@@ -55,6 +55,7 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         $query->where('user_id', $args['user_id']);
         $query->where('order_details.status_id', '!=', 4);
         $query->where('order_details.status_id', '!=', 18);
+        $query->orderBy('order_details.order_id', 'DESC');
         $query->orderBy('order_details.id', 'DESC');
 
         $orders = $query->paginate($args['perPage']);

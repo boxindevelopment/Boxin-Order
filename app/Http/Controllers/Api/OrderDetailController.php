@@ -20,16 +20,30 @@ class OrderDetailController extends Controller
     }
 
     public function my_box(Request $request)
-    {   
+    {
         $user   = $request->user();
         $params = array();
         $params['user_id'] = $user->id;
-        $params['limit']   = intval($request->limit);     
+        $params['limit']   = intval($request->limit);
         $orders = $this->orderDetail->findPaginateMyBox($params);
+        $orderArrays = array();
 
         if($orders) {
+            $cekOrderId = 0;
+            $no = 0;
             foreach ($orders as $k => $v) {
-                $orders[$k] = $v->toSearchableArray();
+                if (in_array($v->status_id, array(8, 10, 11, 14, 15, 24))) {
+                    if($cekOrderId != $v->order_id){
+                        $orders[$k] = $v->toSearchableArray();
+                        $no++;
+                    } else {
+                        unset($orders[$k]);
+                    }
+                } else {
+                    $orders[$k] = $v->toSearchableArray();
+                    $no++;
+                }
+                $cekOrderId = $v->order_id;
             }
         } else {
             return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
@@ -39,7 +53,7 @@ class OrderDetailController extends Controller
     }
 
     public function my_item(Request $request)
-    {   
+    {
         $user   = $request->user();
         $params = array();
         $params['user_id'] = $user->id;
@@ -59,11 +73,11 @@ class OrderDetailController extends Controller
     }
 
     public function my_history(Request $request)
-    {   
+    {
         $user   = $request->user();
         $params = array();
         $params['user_id'] = $user->id;
-        $params['limit']   = intval($request->limit);     
+        $params['limit']   = intval($request->limit);
         $orders = $this->orderDetail->findPaginateMyBoxHistory($params);
 
         if($orders) {
