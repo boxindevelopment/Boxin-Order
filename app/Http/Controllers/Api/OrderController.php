@@ -329,7 +329,11 @@ class OrderController extends Controller
 
             //update total order
             $total_amount += $total;
-            $total_all = $total_amount + intval($request->pickup_fee);
+            if($request->types_of_pickup_id == 1){
+                $total_all = $total_amount + intval($request->pickup_fee);
+            } else {
+                $total_all = $total_amount;
+            }
 
             //voucher
             if(strtoupper($request->voucher) == 'DIBOXININAJA'){
@@ -397,6 +401,55 @@ class OrderController extends Controller
             'status' => true,
             'message' => 'Update name order detail success.',
             'data' => $order
+        ]);
+
+    }
+
+    public function extend(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = \Validator::make($request->all(), [
+            'order_id'           => 'required|exists:order,id',
+            'types_of_pickup_id'=> 'required',
+            'date'              => 'required',
+            'time'              => 'required',
+        ]);
+
+    }
+
+    public function cancelOrder($id, Request $request)
+    {
+
+        $order                      = Order::find($id);
+        $status                     = 24;
+        if($order){
+            $user = $request->user();
+            if($user->id != $order->user_id){
+                return response()->json([
+                    'status' => false,
+                    'message' => "Order can't canceled, you're not ordering of this order"
+                ]);
+            }
+            if($order->status_id == 7 || $order->status_id == 14){
+                $order->status_id   = $status;
+                $order->save();
+                DB::table('pickup_orders')->where('order_id', $order->id)->update(['status_id' => $status]);
+                DB::table('order_details')->where('order_id', $order->id)->update(['status_id' => $status]);
+
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Update status to cancelled success.',
+                    'data' => $order
+                ]);
+            }
+
+        }
+
+
+        return response()->json([
+            'status' => false,
+            'message' => "Order can't canceled"
         ]);
 
     }

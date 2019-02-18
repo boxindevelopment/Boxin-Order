@@ -29,7 +29,14 @@ class VoucherRepository implements VoucherRepositoryInterface
 
     public function all()
     {
-        return $this->model->where('status_id', 20)->where('deleted_at', NULL)->orderBy('updated_at', 'DESC')->orderBy('id','DESC')->get();
+        $now = date('Y-m-d');
+        return $this->model->where('status_id', 20)
+                           ->where('start_date', '<=', $now)
+                           ->where('end_date', '>=', $now)
+                           ->where('deleted_at', NULL)
+                           ->orderBy('updated_at', 'DESC')
+                           ->orderBy('id','DESC')
+                           ->get();
     }
 
     public function create(array $data)
