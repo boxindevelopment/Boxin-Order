@@ -201,9 +201,9 @@ class OrderDetailController extends Controller
         $total_amount = $nominal * $new_duration;
 
         $orderDetails           = OrderDetail::findOrFail($order_detail_id);
-        $orderDetails->amount   = $total_amount;
-        $orderDetails->end_date = $new_end_date;
-        $orderDetails->duration = $new_duration;
+        $orderDetails->amount   = $total_amount; // total amount dari durasi baru dan lama
+        $orderDetails->end_date = $new_end_date; // durasi tanggal berakhir yang baru
+        $orderDetails->duration = $new_duration; // total durasi
         $orderDetails->save();
 
         DB::commit();
