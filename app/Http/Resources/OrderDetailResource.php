@@ -31,6 +31,7 @@ class OrderDetailResource extends JsonResource
             $type_box_room = [
                 'id'        => $this->type_box_room->id,
                 'name'      => $this->type_box_room->name,
+                'code'      => $this->type_box_room->id_name,
             ];
         }
 

@@ -96,6 +96,7 @@ class OrderDetail extends Model
             $type_box_room = [
                 'id'        => $this->type_box_room->id,
                 'name'      => $this->type_box_room->name,
+                'code'      => $this->type_box_room->id_name,
             ];
         }
 
@@ -119,7 +120,6 @@ class OrderDetail extends Model
 
         $pick_up = null;
         if(!is_null($this->order->pickup_order)){
-
             if($this->order->pickup_order->type_pickup->id == 1){
                 $pick_up = [
                     'pickup_id'         => $this->order->pickup_order->id,
@@ -134,7 +134,6 @@ class OrderDetail extends Model
                     'type_pickup_name'  => $this->order->pickup_order->type_pickup->name,
                 ];
             }
-
         }
 
         $payment = null;
