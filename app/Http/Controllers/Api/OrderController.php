@@ -196,6 +196,8 @@ class OrderController extends Controller
         try {
             $order              = new Order;
             $order->user_id     = $user->id;
+            $order->payment_expired = Carbon::now('Asia/Jakarta')->addDays(1)->toDateTimeString();
+            $order->payment_status_expired = 0;
             $order->area_id     = $request->area_id;
             $order->status_id   = 14;
             $order->total       = 0;
@@ -302,7 +304,7 @@ class OrderController extends Controller
                 $order_detail->name           = 'New '. $type .' '. $a;
                 $order_detail->room_or_box_id = $room_or_box_id;
                 $order_detail->amount         = $amount;
-                $order_detail->id_name        = $code_space_small.''.$order->id;
+                $order_detail->id_name        = date('Ymd') . $order->id;
 
                 $total += $order_detail->amount;
 
@@ -452,6 +454,28 @@ class OrderController extends Controller
             'message' => "Order can't canceled"
         ]);
 
+    }
+
+    public function checkExpiredOrder()
+    {
+        try {
+            Order::whereDate('payment_expired', '=', Carbon::now('Asia/Jakarta')->toDateTimeString())
+                    ->where('payment_status_expired', '=', 0)
+                    ->update([
+                        'payment_status_expired' => 1
+                    ]);
+
+            return response()->json([
+                'status' => false,
+                'message' => $x->getMessage()
+            ]);
+        } catch (Exception $x) {
+            return response()->json([
+                'status' => false,
+                'message' => $x->getMessage()
+            ]);
+        }
+        // Order::whereDate('payment_expired', '=', Carbon::now('Asia/Jakarta')->toDateTimeString())->get();
     }
 
 }

@@ -75,6 +75,7 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('item-box/update', 'OrderDetailBoxController@updateItem')->name('api.order.updateItem');
         Route::get('item-box/{id}/del', 'OrderDetailBoxController@destroy')->name('api.order.destroy');
         Route::post('item-box/deleteMultiple', 'OrderDetailBoxController@deleteMultiple')->name('api.order.deleteMultiple');
+        Route::get('expired-payment', 'OrderController@checkExpiredOrder')->name('api.order.checkExpiredOrder');
     });
 
     Route::prefix('payment')->group(function() {

@@ -21,7 +21,7 @@ class OrderResource extends JsonResource
             'user'              => new UserResource($this->user),
             'status'            => $this->status->name,
             'area'              => new AreaResource($this->area),
-            'order_detail'      => $this->order_detail,
+            'order_detail'      => new OrderDetailResource($this->order_detail),
             'pickup_order'      => $this->pickup_order,
         ];
 
