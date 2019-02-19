@@ -462,7 +462,8 @@ class OrderController extends Controller
             Order::whereDate('payment_expired', '=', Carbon::now('Asia/Jakarta')->toDateTimeString())
                     ->where('payment_status_expired', '=', 0)
                     ->update([
-                        'payment_status_expired' => 1
+                        'payment_status_expired' => 1,
+                        'status_id'              => 8
                     ]);
 
             return response()->json([
