@@ -308,7 +308,15 @@ class OrderController extends Controller
                 $order_detail->id_name        = date('Ymd') . $order->id;
 
                 $total += $order_detail->amount;
-                
+                $order_detail->save();
+
+                // if($order_detail->save()){
+                //     $find      = OrderDetail::findOrFail($order_detail->id);
+                //     if($find){
+                //         $update["id_name"]           = $code_space_small.$order_detail->id;
+                //         $find->fill($update)->save();
+                //     }
+                // }
             }
 
             $pickup->order_id       = $order->id;
