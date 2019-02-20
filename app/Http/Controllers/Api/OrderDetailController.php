@@ -192,7 +192,7 @@ class OrderDetailController extends Controller
         $extend_order->remaining_duration     = $orders->duration;   // durasi sebelumnya
         $extend_order->amount                 = $amount;
         $extend_order->end_date_before        = $orders->end_date;
-        $extend_order->payment_expired        = Carbon::now('Asia/Jakarta')->addDays(1)->toDateTimeString();
+        $extend_order->payment_expired        = Carbon::now()->addDays(1)->toDateTimeString();
         $extend_order->payment_status_expired = 0;
         $extend_order->status_id              = 14;
         $extend_order->save();

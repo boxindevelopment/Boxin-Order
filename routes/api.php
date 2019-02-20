@@ -61,7 +61,6 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
         Route::get('my-item', 'OrderDetailController@my_item')->name('api.order.my_item')->middleware('auth:api');
         Route::get('my-history', 'OrderDetailController@my_history')->name('api.order.my_history')->middleware('auth:api');
-        Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
 
         Route::post('start-storing', 'OrderController@startStoring')->name('api.order.store')->middleware('auth:api');
         Route::post('extend', 'OrderController@extend')->name('api.order.extend')->middleware('auth:api');
@@ -76,6 +75,10 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('item-box/{id}/del', 'OrderDetailBoxController@destroy')->name('api.order.destroy');
         Route::post('item-box/deleteMultiple', 'OrderDetailBoxController@deleteMultiple')->name('api.order.deleteMultiple');
         Route::get('expired-payment', 'OrderController@checkExpiredOrder')->name('api.order.checkExpiredOrder');
+
+        Route::post('extend-order/{order_detail_id}', 'OrderDetailController@extendOrderDetail')->name('api.order.extendOrderDetail')->middleware('auth:api');
+        // route awal yang dimulai parameter harus dibawah dari route static
+        Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
     });
 
     Route::prefix('payment')->group(function() {
