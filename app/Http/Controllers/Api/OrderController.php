@@ -308,14 +308,7 @@ class OrderController extends Controller
                 $order_detail->id_name        = date('Ymd') . $order->id;
 
                 $total += $order_detail->amount;
-
-                if($order_detail->save()){
-                    $find      = OrderDetail::findOrFail($order_detail->id);
-                    if($find){
-                        $update["id_name"]           = $code_space_small.$order_detail->id;
-                        $find->fill($update)->save();
-                    }
-                }
+                
             }
 
             $pickup->order_id       = $order->id;
@@ -458,7 +451,7 @@ class OrderController extends Controller
     }
 
     public function checkExpiredOrder()
-    { 
+    {
         try {
             Order::whereDate('payment_expired', '=', Carbon::now()->toDateTimeString())
                     ->where('payment_status_expired', '=', 0)
@@ -466,7 +459,7 @@ class OrderController extends Controller
                         'payment_status_expired' => 1,
                         'status_id'              => 8
                     ]);
-            
+
             ExtendOrderDetail::whereDate('payment_expired', '=', Carbon::now()->toDateTimeString())
                     ->where('payment_status_expired', '=', 0)
                     ->update([
