@@ -6,6 +6,7 @@ use App\Model\Order;
 use App\Model\SpaceSmall;
 use App\Model\Box;
 use App\Model\OrderDetail;
+use App\Model\ExtendOrderDetail;
 use App\Model\DeliveryFee;
 use App\Model\Price;
 use App\Model\PickupOrder;
@@ -460,6 +461,13 @@ class OrderController extends Controller
     { 
         try {
             Order::whereDate('payment_expired', '=', Carbon::now()->toDateTimeString())
+                    ->where('payment_status_expired', '=', 0)
+                    ->update([
+                        'payment_status_expired' => 1,
+                        'status_id'              => 8
+                    ]);
+            
+            ExtendOrderDetail::whereDate('payment_expired', '=', Carbon::now()->toDateTimeString())
                     ->where('payment_status_expired', '=', 0)
                     ->update([
                         'payment_status_expired' => 1,
