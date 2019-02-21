@@ -220,7 +220,7 @@ class OrderDetailController extends Controller
       return response()->json([
         'status' => true,
         'message' => 'Your order has been made. Please complete the payment.',
-        'data' => new ExtendOrderDetailResource($order)
+        'data' => new ExtendOrderDetailResource($extend_order)
       ]);
     }
 
