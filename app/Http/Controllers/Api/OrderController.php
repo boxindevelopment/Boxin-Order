@@ -30,11 +30,17 @@ class OrderController extends Controller
     protected $boxes;
     protected $price;
 
+    private $url;
+    CONST DEV_URL = 'https://boxin-dev-notification.azurewebsites.net/';
+    CONST LOC_URL = 'http://localhost:5252/';
+    CONST PROD_URL = 'https://boxin-prod-notification.azurewebsites.net/';
+
     public function __construct(BoxRepository $boxes, SpaceSmallRepository $spaceSmall, PriceRepository $price)
     {
-        $this->boxes = $boxes;
+        $this->boxes      = $boxes;
         $this->spaceSmall = $spaceSmall;
-        $this->price = $price;
+        $this->price      = $price;
+        $this->url        = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
     }
 
     public function chooseProduct($area_id)
@@ -350,7 +356,7 @@ class OrderController extends Controller
 
             $order = Order::with('order_detail.type_size', 'payment')->findOrFail($order->id);
             // MessageInvoice::dispatch($order, $user)->onQueue('processing');
-
+            $response = Requests::post($this->url . 'api/payment-email/' . $order->id, [], $params, []);
 
         } catch (\Exception $e) {
             // delete order when order_detail failed to create

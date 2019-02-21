@@ -149,7 +149,6 @@ class OrderDetailController extends Controller
         $new_duration = (int)$request->duration + $orders->duration;
         $new_end_date = null;
         $amount       = 0;
-
         // weekly
         if ($request->types_of_duration_id == 2 || $request->types_of_duration_id == '2') {
             $end_date     = (int)$new_duration * 7;
