@@ -123,7 +123,7 @@ class OrderDetailController extends Controller
 
       $validator = Validator::make($request->all(), [
         'types_of_duration_id' => 'required',
-        'duration'             => 'required|numeric'
+        'duration'             => 'required'
       ]);
 
       if ($validator->fails()) {
