@@ -12,7 +12,7 @@ use App\Http\Resources\AuthResource;
 use App\Repositories\Contracts\OrderDetailRepository;
 use App\Repositories\Contracts\PriceRepository;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Validation;
+use Validator;
 use Carbon\Carbon;
 use DB;
 
