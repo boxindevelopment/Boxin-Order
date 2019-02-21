@@ -144,6 +144,8 @@ class OrderDetailController extends Controller
       DB::beginTransaction();
       try {
 
+        $orders = $orders->first();
+
         $new_duration = (int)$request->duration + $orders->duration;
         $new_end_date = null;
         $amount       = 0;
@@ -182,7 +184,7 @@ class OrderDetailController extends Controller
           }
           return response()->json(['status' => false, 'message' => 'Not found price ' . $type . '.']);
         }
-        
+
         $extend_order                         = new ExtendOrderDetail;
         $extend_order->order_detail_id        = $order_detail_id;
         $extend_order->order_id               = $orders->order_id;
@@ -217,7 +219,7 @@ class OrderDetailController extends Controller
       return response()->json([
         'status' => true,
         'message' => 'Your order has been made. Please complete the payment.',
-        'data' => new ExtendOrderDetailResource($order)
+        'data' => new ExtendOrderDetailResource($extend_order)
       ]);
     }
 
