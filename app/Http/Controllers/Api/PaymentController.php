@@ -49,7 +49,6 @@ class PaymentController extends Controller
                     if ($request->file('image')->isValid()) {
                         $getimageName = time().'.'.$request->image->getClientOriginalExtension();
                         $image = $request->image->move(public_path('images/payment/order'), $getimageName);
-            
                     }
                 }
                 $payment->image_transfer = $getimageName;
