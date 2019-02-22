@@ -198,14 +198,14 @@ class OrderDetailController extends Controller
         $extend_order->status_id              = 14;
         $extend_order->save();
 
-        // hitung jumlah amount sebelum dan sesudah extend
-        $total_amount = $nominal * $new_duration;
+        // // hitung jumlah amount sebelum dan sesudah extend
+        // $total_amount = $nominal * $new_duration;
 
-        $orderDetails           = OrderDetail::findOrFail($order_detail_id);
-        $orderDetails->amount   = $total_amount; // total amount dari durasi baru dan lama
-        $orderDetails->end_date = $new_end_date; // durasi tanggal berakhir yang baru
-        $orderDetails->duration = $new_duration; // total durasi
-        $orderDetails->save();
+        // $orderDetails           = OrderDetail::findOrFail($order_detail_id);
+        // $orderDetails->amount   = $total_amount; // total amount dari durasi baru dan lama
+        // $orderDetails->end_date = $new_end_date; // durasi tanggal berakhir yang baru
+        // $orderDetails->duration = $new_duration; // total durasi
+        // $orderDetails->save();
 
         DB::commit();
       } catch (\Exception $x) {
