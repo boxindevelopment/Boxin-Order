@@ -47,7 +47,20 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         ], $args);
 
         $query = $this->model->query();
-        $query->select('order_details.*,',
+        $query->select('order_details.id', 
+                      'order_details.id_name', 
+                      'order_details.order_id', 
+                      'order_details.is_returned', 
+                      'order_details.types_of_duration_id', 
+                      'order_details.room_or_box_id', 
+                      'order_details.types_of_box_room_id', 
+                      'order_details.types_of_size_id', 
+                      'order_details.name', 
+                      'order_details.duration', 
+                      'order_details.amount', 
+                      'order_details.start_date', 
+                      'order_details.end_date', 
+                      'order_details.status_id',
             DB::raw('boxes.code_box as code_box'),
             DB::raw('orders.user_id as user_id'),
             DB::raw('DATEDIFF(day, order_details.start_date, order_details.end_date) as total_time'),
