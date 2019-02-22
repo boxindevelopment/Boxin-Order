@@ -79,8 +79,11 @@ class OrderDetail extends Model
 
         if (!is_null($this->order_id)) {
             $order = [
-                'id'        => $this->order->id,
-                'total'     => $this->order->total,
+                'id'                     => $this->order->id,
+                'total'                  => $this->order->total,
+                'qty'                    => $this->order->qty,
+                'payment_expired'        => $this->order->payment_expired,
+                'payment_status_expired' => $this->order->payment_status_expired
             ];
         }
 
