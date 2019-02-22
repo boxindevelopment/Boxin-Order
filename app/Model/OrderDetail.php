@@ -224,7 +224,7 @@ class OrderDetail extends Model
         $room_or_box = null;
         if ($this->box) {
           $room_or_box = [
-            'id'   => $this->box->id_name,
+            'id'   => $this->box->code_box,
             'name' => $this->box->name
           ];
         }
