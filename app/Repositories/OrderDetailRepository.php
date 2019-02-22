@@ -47,7 +47,8 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         ], $args);
 
         $query = $this->model->query();
-        $query->select('order_details.*, boxes.code_box as code_box',
+        $query->select('order_details.*,',
+            DB::raw('boxes.code_box as code_box'),
             DB::raw('orders.user_id as user_id'),
             DB::raw('DATEDIFF(day, order_details.start_date, order_details.end_date) as total_time'),
             DB::raw('DATEDIFF(day, order_details.start_date, GETDATE()) as selisih'));
