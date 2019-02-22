@@ -218,19 +218,11 @@ class OrderDetail extends Model
         ];
 
         $room_or_box = null;
-        if ($this->room_or_box_id) { 
-          if ($this->room) {
-            $room_or_box = [
-              'id'   => $this->room->id_name,
-              'name' => $this->room->name
-            ];
-          } 
-          else if ($this->box) {
-            $room_or_box = [
-              'id'   => $this->box->id_name,
-              'name' => $this->box->name
-            ];
-          }
+        if ($this->box) {
+          $room_or_box = [
+            'id'   => $this->box->id_name,
+            'name' => $this->box->name
+          ];
         }
 
         $show = true;
@@ -248,6 +240,7 @@ class OrderDetail extends Model
             'start_date'           => $this->start_date,
             'end_date'             => $this->end_date,
             'show_button_extend'   => $show,
+            'room_or_box'          => $room_or_box,
             'status_id'            => $this->status->id,
             'status'               => $this->status->name,
             'types_of_box_room_id' => $type_box_room,
