@@ -62,6 +62,7 @@ class OrderDetailController extends Controller
 
     public function my_item(Request $request)
     {
+
         $user   = $request->user();
         $params = array();
         $params['user_id'] = $user->id;
@@ -70,8 +71,24 @@ class OrderDetailController extends Controller
         $orders = $this->orderDetail->findPaginateMyItem($params);
 
         if($orders) {
+            // foreach ($orders as $k => $v) {
+            //     $orders[$k] = $v->toSearchableArray();
+            // }
+            $cekOrderId = 0;
+            $no = 0;
             foreach ($orders as $k => $v) {
-                $orders[$k] = $v->toSearchableArray();
+                if (in_array($v->status_id, array(4))) {
+                    if($cekOrderId != $v->order_id){
+                        $orders[$k] = $v->toSearchableArray();
+                        $no++;
+                    } else {
+                        unset($orders[$k]);
+                    }
+                } else {
+                    $orders[$k] = $v->toSearchableArray();
+                    $no++;
+                }
+                $cekOrderId = $v->order_id;
             }
         } else {
             return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
