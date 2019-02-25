@@ -62,10 +62,14 @@ class ChangeBoxController extends Controller
                     if($order_detail_box){
                         $order_detail      = OrderDetail::findOrFail($data['order_detail_id']);
                         if($order_detail){
+                            // box
+                            // 14 : pending payment
+                            // 19 : change request
                             $data_orderdetail["status_id"] = $data['types_of_pickup_id'] == '1' ? 14 : 19;
                             $order_detail->fill($data_orderdetail)->save();
                         }
-                        $data1["status_id"]          = 21;  
+                        // item in box
+                        $data1["status_id"]          = 21;  // status : not actived
                         $order_detail_box->fill($data1)->save();
                     }
                 }else{
@@ -79,5 +83,51 @@ class ChangeBoxController extends Controller
 
         return response()->json(['status' => true, 'message' => 'Create request change box success.', 'data' => new ChangeBoxResource($change)]);
     }
+
+    public function cancelChangeBox($id)
+    {
+       $status = 24; // cancelled
+       $change = ChangeBox::find($id);
+       if (empty($change)) {
+          return response()->json([ 'status' => false, 'message' => 'Data Not found!'], 422);
+       }
+
+       if ($change->status != 14 || $change->status != 19) {
+          return response()->json([ 'status' => false, 'message' => 'Request can\'t cancelled.'], 422);
+       }
+
+       $order_detail_id     = $change->order_detail_id;
+       $order_detail_box_id = $change->order_detail_box_id;
+       $types_of_pickup_id  = $change->types_of_pickup_id;
+
+       DB::beginTransaction();
+       try {
+          $odb = OrderDetailBox::findOrFail($order_detail_box_id);
+          if ($odb) {
+            $odb->status = 20; // actived
+            $odb->save();
+          }
+  
+          $od = OrderDetail::findOrFail($order_detail_id);
+          if ($od) {
+            $od->status = 20; // actived
+            $od->save();
+          }
+  
+          $changebox = ChangeBox::find($id);
+          $changebox->status = 24; // cancelled
+          $changebox->save();
+
+          DB::commit();
+       } catch (\Exception $x) {
+          DB::rollback();
+          return response()->json([ 'status' => false, 'message' => $x->getMessage()], 401);
+       }
+
+       return response()->json(['status' => true, 'message' => 'Cancel request change box success.', 'data' => null]);
+    }
+
+
+
 
 }
