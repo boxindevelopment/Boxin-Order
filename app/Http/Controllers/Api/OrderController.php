@@ -23,6 +23,7 @@ use App\Repositories\Contracts\SpaceSmallRepository;
 use App\Repositories\Contracts\PriceRepository;
 use DB;
 use PDF;
+use Exception;
 
 class OrderController extends Controller
 {
