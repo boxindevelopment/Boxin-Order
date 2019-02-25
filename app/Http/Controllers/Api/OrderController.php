@@ -200,15 +200,17 @@ class OrderController extends Controller
             ], 401);
         }
 
+
+        DB::beginTransaction();
         try {
-            $order              = new Order;
-            $order->user_id     = $user->id;
-            $order->payment_expired = Carbon::now()->addDays(1)->toDateTimeString();
+            $order                         = new Order;
+            $order->user_id                = $user->id;
+            $order->payment_expired        = Carbon::now()->addDays(1)->toDateTimeString();
             $order->payment_status_expired = 0;
-            $order->area_id     = $request->area_id;
-            $order->status_id   = 14;
-            $order->total       = 0;
-            $order->qty         = $data['order_count'];
+            $order->area_id                = $request->area_id;
+            $order->status_id              = 14;
+            $order->total                  = 0;
+            $order->qty                    = $data['order_count'];
             $order->save();
 
             $pickup                 = new PickupOrder;
@@ -261,8 +263,9 @@ class OrderController extends Controller
                         $room_or_box_id = $boxes[0]->id;
                         //change status box to fill
                         DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 9]);
-                    }else{
-                        return response()->json(['status' => false, 'message' => 'The box is not available.']);
+                    } else {
+                        throw new Exception('The box is not available.');
+                        // return response()->json(['status' => false, 'message' => 'The box is not available.']);
                     }
 
                     // get price box
@@ -273,7 +276,8 @@ class OrderController extends Controller
                     }else{
                         // change status room to empty when order failed to create
                         Box::where('id', $room_or_box_id)->update(['status_id' => 10]);
-                        return response()->json(['status' => false, 'message' => 'Not found price box.']);
+                        throw new Exception('Not found price box.');
+                        // return response()->json(['status' => false, 'message' => 'Not found price box.']);
                     }
                 }
 
@@ -290,7 +294,8 @@ class OrderController extends Controller
                     }else{
                         // change status room to empty when order failed to create
                         SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 10]);
-                        return response()->json(['status' => false, 'message' => 'The room is not available.']);
+                        throw new Exception('The room is not available.');
+                        // return response()->json(['status' => false, 'message' => 'The room is not available.']);
                     }
 
                     // get price room
@@ -301,10 +306,11 @@ class OrderController extends Controller
                     }else{
                         // change status room to empty when order failed to create
                         SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 10]);
-                        return response()->json([
-                            'status' =>false,
-                            'message' => 'Not found price room.'
-                        ], 401);
+                        throw new Exception('Not found price room.');
+                        // return response()->json([
+                        //     'status' =>false,
+                        //     'message' => 'Not found price room.'
+                        // ], 401);
                     }
                 }
 
@@ -357,10 +363,11 @@ class OrderController extends Controller
             $order = Order::with('order_detail.type_size', 'payment')->findOrFail($order->id);
             // MessageInvoice::dispatch($order, $user)->onQueue('processing');
             // $response = Requests::post($this->url . 'api/payment-email/' . $order->id, [], $params, []);
-
-        } catch (\Exception $e) {
+            DB::commit();
+        } catch (Exception $e) {
             // delete order when order_detail failed to create
-            Order::where('id', $order->id)->delete();
+            // Order::where('id', $order->id)->delete();
+            DB::rollback();
             return response()->json([
                 'status' =>false,
                 'message' => $e->getMessage()
