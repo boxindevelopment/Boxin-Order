@@ -51,6 +51,7 @@ Route::group(['namespace' => 'Api'], function() {
 
     Route::prefix('change-box')->group(function() {
         Route::post('start', 'ChangeBoxController@startChangeBox')->name('api.change-box.startChangeBox')->middleware('auth:api');
+        Route::get('cancel/{id}', 'ChangeBoxController@cancelChangeBox')->name('api.change-box.cancelChangeBox')->middleware('auth:api');
     });
 
     Route::prefix('category')->group(function() {
