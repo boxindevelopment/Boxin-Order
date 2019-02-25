@@ -439,8 +439,8 @@ class OrderController extends Controller
     public function cancelOrder($id, Request $request)
     {
 
-        $order                      = Order::find($id);
-        $status                     = 24;
+        $order  = Order::find($id);
+        $status = 24;
         if($order){
             $user = $request->user();
             if($user->id != $order->user_id){
@@ -454,6 +454,11 @@ class OrderController extends Controller
                 $order->save();
                 DB::table('pickup_orders')->where('order_id', $order->id)->update(['status_id' => $status]);
                 DB::table('order_details')->where('order_id', $order->id)->update(['status_id' => $status]);
+
+                $ods = DB::table('order_details')->where('order_id', $order->id)->pluck('room_or_box_id')->toArray();
+                if ($ods) {
+                  DB::table('boxes')->whereIn('id', $ods)->update(['status_id' => 10]);
+                }
 
                 return response()->json([
                     'status' => true,
