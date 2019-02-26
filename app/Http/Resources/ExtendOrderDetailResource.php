@@ -26,6 +26,9 @@ class ExtendOrderDetailResource extends JsonResource
         'payment_expired'        => $this->payment_expired,
         'payment_status_expired' => $this->payment_status_expired,
         'user_id'                => $this->user_id,
+        'new_end_date'           => $this->new_end_date,
+        'new_duration'           => $this->new_duration,
+        'total_amount'           => $this->total_amount,
         'status'                 => new StatusResource($this->status),
         'order'                  => $this->order,
         'order_detail'           => $this->order_detail

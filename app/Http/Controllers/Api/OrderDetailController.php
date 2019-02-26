@@ -202,27 +202,24 @@ class OrderDetailController extends Controller
           return response()->json(['status' => false, 'message' => 'Not found price ' . $type . '.']);
         }
 
+        // hitung jumlah amount sebelum dan sesudah extend
+        $total_amount = $nominal * $new_duration;
+
         $extend_order                         = new ExtendOrderDetail;
         $extend_order->order_detail_id        = $order_detail_id;
         $extend_order->order_id               = $orders->order_id;
         $extend_order->user_id                = $user->id;
-        $extend_order->extend_duration        = $request->duration;  // durasi inputan
-        $extend_order->remaining_duration     = $orders->duration;   // durasi sebelumnya
+        $extend_order->extend_duration        = $request->duration;                             // durasi inputan
+        $extend_order->remaining_duration     = $orders->duration;                              // durasi sebelumnya
         $extend_order->amount                 = $amount;
         $extend_order->end_date_before        = $orders->end_date;
+        $extend_order->new_end_date           = $new_end_date;
+        $extend_order->new_duration           = $new_duration;
+        $extend_order->total_amount           = $total_amount;
         $extend_order->payment_expired        = Carbon::now()->addDays(1)->toDateTimeString();
         $extend_order->payment_status_expired = 0;
         $extend_order->status_id              = 14;
         $extend_order->save();
-
-        // // hitung jumlah amount sebelum dan sesudah extend
-        // $total_amount = $nominal * $new_duration;
-
-        // $orderDetails           = OrderDetail::findOrFail($order_detail_id);
-        // $orderDetails->amount   = $total_amount; // total amount dari durasi baru dan lama
-        // $orderDetails->end_date = $new_end_date; // durasi tanggal berakhir yang baru
-        // $orderDetails->duration = $new_duration; // total durasi
-        // $orderDetails->save();
 
         DB::commit();
       } catch (\Exception $x) {
