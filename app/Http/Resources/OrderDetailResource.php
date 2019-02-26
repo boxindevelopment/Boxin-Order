@@ -183,6 +183,7 @@ class OrderDetailResource extends JsonResource
             'return_box_payment'   => $return_box_payment,
             'change_box'           => $change_box,
             'change_box_payment'   => $change_box_payment,
+            'extend_order_detail'  => $this->extend
         ];
 
         return $data;

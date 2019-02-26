@@ -86,6 +86,7 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('order/start-payment', 'PaymentController@startPayment')->name('api.payment.startPayment')->middleware('auth:api');
         Route::post('return/start-payment', 'ReturnBoxPaymentController@startPayment')->name('api.returnBoxPayment.startPayment')->middleware('auth:api');
         Route::post('change-box/start-payment', 'ChangeBoxPaymentController@startPayment')->name('api.changeBoxPayment.startPayment')->middleware('auth:api');
+        Route::post('extend/start-payment', 'PaymentController@startPaymentOrderDetail')->name('api.extend.startPayment')->middleware('auth:api');
     });
 
     Route::prefix('setting')->group(function() {
