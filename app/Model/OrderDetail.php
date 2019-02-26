@@ -73,6 +73,11 @@ class OrderDetail extends Model
         return $this->hasMany('App\Model\ChangeBox', 'order_detail_id', 'id');
     }
 
+    public function extend()
+    {
+       return $this->hasOne('App\Model\ExtendOrderDetail', 'order_detail_id', 'id');
+    }
+
     public function toSearchableArray()
     {
         $url = (env('DB_DATABASE') == 'coredatabase') ? 'https://boxin-dev-webbackend.azurewebsites.net/' : 'https://boxin-prod-webbackend.azurewebsites.net/';
@@ -258,6 +263,7 @@ class OrderDetail extends Model
             'return_box_payment'   => $return_box_payment,
             'change_box'           => $change_box,
             'change_box_payment'   => $change_box_payment,
+            'extend_order_detail'   => $this->extend
         ];
 
         return $data;
