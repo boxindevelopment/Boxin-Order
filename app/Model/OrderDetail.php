@@ -242,7 +242,7 @@ class OrderDetail extends Model
         } else if($this->types_of_box_room_id == 2){
             if ($this->space_small) {
                 $room_or_box = [
-                    'id'   => $this->space_small->code_box,
+                    'id'   => $this->space_small->code_space_small,
                     'name' => $this->space_small->name
                 ];
             }
