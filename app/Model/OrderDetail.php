@@ -25,7 +25,12 @@ class OrderDetail extends Model
 
     public function room()
     {
-        return $this->belongsTo('App\Model\Room', 'room_or_box_id', 'id');
+        return $this->belongsTo('App\Model\SpaceSmall', 'room_or_box_id', 'id');
+    }
+
+    public function space_small()
+    {
+        return $this->belongsTo('App\Model\SpaceSmall', 'room_or_box_id', 'id');
     }
 
     public function type_box_room()
@@ -227,11 +232,20 @@ class OrderDetail extends Model
         ];
 
         $room_or_box = null;
-        if ($this->box) {
-          $room_or_box = [
-            'id'   => $this->box->code_box,
-            'name' => $this->box->name
-          ];
+        if($this->types_of_box_room_id == 1){
+            if ($this->box) {
+                $room_or_box = [
+                    'id'   => $this->box->code_box,
+                    'name' => $this->box->name
+                ];
+            }
+        } else if($this->types_of_box_room_id == 2){
+            if ($this->space_small) {
+                $room_or_box = [
+                    'id'   => $this->space_small->code_box,
+                    'name' => $this->space_small->name
+                ];
+            }
         }
 
         $show = true;
