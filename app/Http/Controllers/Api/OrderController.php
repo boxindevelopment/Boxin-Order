@@ -287,14 +287,13 @@ class OrderController extends Controller
                     $type = 'space';
                     // get space small
                     $spaceSmall = $this->spaceSmall->getData(['status_id' => 10, 'area_id' => $request->area_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
-                    if(isset($spaceSmall->id)){
+                    if(!empty($spaceSmall->id)){
                         $code_space_small = $spaceSmall->code_space_small;
                         $room_or_box_id = $spaceSmall->id;
                         //change status room to fill
                         SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 9]);
                     }else{
                         // change status room to empty when order failed to create
-                        SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 10]);
                         throw new Exception('The room is not available.');
                         // return response()->json(['status' => false, 'message' => 'The room is not available.']);
                     }
