@@ -34,11 +34,11 @@ class ChangeBoxPaymentController extends Controller
 
         try {
             $order_detail = OrderDetail::find($request->order_detail_id);
-            if($order_detail){
+            if ($order_detail){
                 $check = ChangeBoxPayment::where('order_detail_id', $request->order_detail_id)->where('status_id', '7')->get();
-                if(count($check)>0){
+                if (count($check)>0) {
                     return response()->json(['status' => false, 'message' => 'Request has been paid.'], 401);
-                }else{
+                } else {
                     $data                    = $request->all();
                     $payment                 = new ChangeBoxPayment;
                     $payment->order_detail_id= $request->order_detail_id;
@@ -58,11 +58,11 @@ class ChangeBoxPaymentController extends Controller
                     $payment->id_name        = 'PAYCB'.$this->id_name();
                     $payment->save();
 
-                    if($payment){
-                        //change status order detail
-                        $order_detail->status_id       = 15;
-                        $order_detail->save();                        
-                    }
+                    // if($payment){
+                    //     //change status order detail
+                    //     $order_detail->status_id       = 15;
+                    //     $order_detail->save();                        
+                    // }
                 }
                 
             }else {
