@@ -30,8 +30,8 @@ class ExtendOrderDetailResource extends JsonResource
         'new_duration'           => $this->new_duration,
         'total_amount'           => $this->total_amount,
         'status'                 => new StatusResource($this->status),
-        'order'                  => $this->order,
-        'order_detail'           => $this->order_detail
+        // 'order'                  => $this->order,
+        // 'order_detail'           => $this->order_detail
       ];
 
     }
