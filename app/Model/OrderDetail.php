@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Resources\ExtendOrderDetailResource;
 use Carbon\Carbon;
 
 class OrderDetail extends Model
@@ -80,7 +81,7 @@ class OrderDetail extends Model
 
     public function extend()
     {
-       return $this->hasOne('App\Model\ExtendOrderDetail', 'order_detail_id', 'id');
+       return $this->hasMany('App\Model\ExtendOrderDetail', 'order_detail_id', 'id');
     }
 
     public function toSearchableArray()
@@ -277,7 +278,7 @@ class OrderDetail extends Model
             'return_box_payment'   => $return_box_payment,
             'change_box'           => $change_box,
             'change_box_payment'   => $change_box_payment,
-            'extend_order_detail'   => $this->extend
+            'extend_order_detail'  => ExtendOrderDetailResource::collection($this->extend)
         ];
 
         return $data;
