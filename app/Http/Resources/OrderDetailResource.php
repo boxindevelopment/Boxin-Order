@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\ExtendOrderDetailResource;
 use Carbon\Carbon;
 
 class OrderDetailResource extends JsonResource
@@ -183,7 +184,7 @@ class OrderDetailResource extends JsonResource
             'return_box_payment'   => $return_box_payment,
             'change_box'           => $change_box,
             'change_box_payment'   => $change_box_payment,
-            'extend_order_detail'  => $this->extend
+            'extend_order_detail'  => new ExtendOrderDetailResource($this->extend)
         ];
 
         return $data;
