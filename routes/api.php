@@ -82,11 +82,19 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
     });
 
+    Route::prefix('additem')->group(function() {
+      Route::post('add', 'AddItemBoxController@add_items')->name('api.add.additem')->middleware('auth:api');
+      Route::get('cancel/{id}', 'AddItemBoxController@cancelAdditem')->name('api.cancel.additem')->middleware('auth:api');
+    });
+
+    Route::get('history/box/{id}', 'HistoryItemController@get_by_box')->name('api.history.item')->middleware('auth:api');
+
     Route::prefix('payment')->group(function() {
         Route::post('order/start-payment', 'PaymentController@startPayment')->name('api.payment.startPayment')->middleware('auth:api');
         Route::post('return/start-payment', 'ReturnBoxPaymentController@startPayment')->name('api.returnBoxPayment.startPayment')->middleware('auth:api');
         Route::post('change-box/start-payment', 'ChangeBoxPaymentController@startPayment')->name('api.changeBoxPayment.startPayment')->middleware('auth:api');
         Route::post('extend/start-payment', 'PaymentController@startPaymentOrderDetail')->name('api.extend.startPayment')->middleware('auth:api');
+        Route::post('additem/start-payment', 'AddItemBoxPaymentController@startPayment')->name('api.additem.startPayment')->middleware('auth:api');
     });
 
     Route::prefix('setting')->group(function() {

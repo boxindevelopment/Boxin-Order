@@ -60,6 +60,8 @@ class ChangeBoxController extends Controller
                     //update status order detail box 
                     $order_detail_box      = OrderDetailBox::findOrFail($data['order_detail_box_id'.$a]);
                     if($order_detail_box){
+                        /*
+                        Tidak disimpan pada order detailnya, jadi jangan update status order detailnya 
                         $order_detail      = OrderDetail::findOrFail($data['order_detail_id']);
                         if($order_detail){
                             // box
@@ -67,9 +69,10 @@ class ChangeBoxController extends Controller
                             // 19 : change request
                             $data_orderdetail["status_id"] = $data['types_of_pickup_id'] == '1' ? 14 : 19;
                             $order_detail->fill($data_orderdetail)->save();
-                        }
+                        } 
                         // item in box
-                        $data1["status_id"]          = 21;  // status : not actived
+                        */
+                        $data1["status_id"] = 21;  // status : not actived
                         $order_detail_box->fill($data1)->save();
                     }
                 }else{
@@ -108,11 +111,11 @@ class ChangeBoxController extends Controller
             $odb->save();
           }
   
-          $od = OrderDetail::findOrFail($order_detail_id);
-          if ($od) {
-            $od->status = 20; // actived
-            $od->save();
-          }
+          // $od = OrderDetail::findOrFail($order_detail_id);
+          // if ($od) {
+          //   $od->status = 20; // actived
+          //   $od->save();
+          // }
   
           $changebox = ChangeBox::find($id);
           $changebox->status = 24; // cancelled

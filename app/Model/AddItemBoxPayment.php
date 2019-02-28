@@ -9,13 +9,13 @@ class AddItemBoxPayment extends Model
   protected $table = 'add_item_box_payments';
 
   protected $fillable = [
-      'order_detail_id', 
-      'user_id', 
-      'payment_type', 
-      'bank', 
-      'amount', 
-      'image_transfer', 
-      'status_id', 
+      'order_detail_id',
+      'user_id',
+      'payment_type',
+      'bank',
+      'amount',
+      'image_transfer',
+      'status_id',
       'id_name'
   ];
 
@@ -33,4 +33,16 @@ class AddItemBoxPayment extends Model
   {
       return $this->belongsTo('App\Model\Status', 'status_id', 'id');
   }
+
+  public function getImageAttribute()
+  {
+    $DEV_URL = 'https://boxin-dev-order.azurewebsites.net/images/payment/additem/';
+    $PROD_URL = 'https://boxin-prod-order.azurewebsites.net/images/payment/additem/';
+
+    $url = (env('DB_DATABASE') == 'coredatabase') ? $DEV_URL : $PROD_URL;
+
+    $image = $this->image_transfer;
+    return $url . $image;
+  }
+
 }
