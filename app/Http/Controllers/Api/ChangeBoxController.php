@@ -59,7 +59,7 @@ class ChangeBoxController extends Controller
           DB::commit();
         } catch (\Exception $th) {
           DB::rollback();          
-          return response()->json([ 'status' => false, 'message' => $e->getMessage()], 401);
+          return response()->json([ 'status' => false, 'message' => $th->getMessage()], 401);
         }
 
         return response()->json(['status' => true, 'message' => 'Create request change box success.', 'data' => new ChangeBoxResource($change)]);
