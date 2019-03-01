@@ -22,10 +22,11 @@ class AddItemBoxPaymentController extends Controller
   {
     $user = Auth::user();
     $validator = Validator::make($request->all(), [
-        'order_detail_id'   => 'required',
-        'amount'            => 'required',
-        'bank'              => 'required',
-        'image'             => 'required',
+        'order_detail_id' => 'required',
+        'add_item_box_id' => 'required',
+        'amount'          => 'required',
+        'bank'            => 'required',
+        'image'           => 'required',
     ]);
 
     if($validator->fails()) {
@@ -39,7 +40,7 @@ class AddItemBoxPaymentController extends Controller
     try {
         $order_detail = OrderDetail::find($request->order_detail_id);
         if ($order_detail) {
-            $check = AddItemBoxPayment::where('order_detail_id', $request->order_detail_id)->where('user_id', $user->id)->where('status_id', '7')->get();
+            $check = AddItemBoxPayment::where('add_item_box_id', $request->add_item_box_id)->where('user_id', $user->id)->where('status_id', '7')->get();
             if (count($check) > 0){
                 return response()->json(['status' => false, 'message' => 'Request has been paid.'], 401);
             } else {
@@ -61,6 +62,12 @@ class AddItemBoxPaymentController extends Controller
                 $payment->image_transfer = $getimageName;
                 $payment->id_name        = 'PAYCB'. $this->id_name();
                 $payment->save();
+
+                $add_item = AddItemBox::find($request->add_item_box_id);
+                if ($add_item) {
+                  $add_item->status_id = 15;
+                  $add_item->save();
+                }
             }
 
         } else {

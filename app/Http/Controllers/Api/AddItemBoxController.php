@@ -50,7 +50,7 @@ class AddItemBoxController extends Controller
       $additembox->address            = $request->address;
       $additembox->date               = $request->date;
       $additembox->time_pickup        = $request->time_pickup;
-      $additembox->status_id          = $types_of_pickup_id == '1' ? 14 : 19;
+      $additembox->status_id          = $types_of_pickup_id == '1' ? 14 : 25;
       $additembox->deliver_fee        = 0;
       $additembox->save();
 
@@ -92,7 +92,7 @@ class AddItemBoxController extends Controller
          return response()->json([ 'status' => false, 'message' => 'Data Not found!'], 422);
       }
 
-      if ($change->status != 14 || $change->status != 19) {
+      if ($change->status != 14 || $change->status != 25) {
          return response()->json([ 'status' => false, 'message' => 'Request can\'t cancelled.'], 422);
       }
 
