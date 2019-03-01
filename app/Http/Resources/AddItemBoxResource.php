@@ -21,6 +21,7 @@ class AddItemBoxResource extends JsonResource
             'types_of_pickup_id' => $this->types_of_pickup_id,
             'address'            => $this->address,
             'date'               => $this->date,
+            'note'               => $this->note,
             'time_pickup'        => $this->time_pickup,
             'deliver_fee'        => $this->deliver_fee,
             'driver_name'        => $this->driver_name,
