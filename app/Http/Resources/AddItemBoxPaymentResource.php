@@ -19,6 +19,7 @@ class AddItemBoxPaymentResource extends JsonResource
             'id'                => $this->id,
             'id_name'           => $this->id_name,
             'order_detail_id'   => $this->order_detail_id,
+            'add_item_box_id'   => $this->add_item_box_id,
             'payment_date'      => $this->created_at->format('Y-m-d H:i:s'),
             'payment_type'      => $this->payment_type,
             'bank'              => $this->bank,

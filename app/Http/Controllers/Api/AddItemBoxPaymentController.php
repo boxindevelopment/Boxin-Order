@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Model\AddItem;
 use App\Model\AddItemBox;
 use App\Model\AddItemBoxPayment;
+use App\Http\Resources\AddItemBoxPaymentResource;
 use Auth;
 use Validator;
 use App\Model\Order;
