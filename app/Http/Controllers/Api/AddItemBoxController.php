@@ -58,10 +58,10 @@ class AddItemBoxController extends Controller
       for ($i=0; $i < count($item_categories); $i++) {
         $getimageName = '';
         if ($request->hasFile('item_image')) {
-          if ($request->file('item_image')->isValid()) {
+          // if ($request->file('item_image')->isValid()) {
             $getimageName = time().'.'.$request->item_image[$i]->getClientOriginalExtension();
             $image = $request->item_image[$i]->move(public_path('images/additem'), $getimageName);
-          }
+          // }
         }
 
         AddItem::create([
