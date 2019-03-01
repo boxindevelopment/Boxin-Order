@@ -52,11 +52,13 @@ class AddItemBoxPaymentController extends Controller
                 $payment->bank            = $request->bank;
                 $payment->amount          = $request->amount;
                 $payment->status_id       = 15;
-                $getimageName = '';
+                $payment->add_item_box_id = $request->add_item_box_id;
+                
+                $getimageName             = '';
                 if ($request->hasFile('image')) {
                     if ($request->file('image')->isValid()) {
                         $getimageName = time().'.'.$request->image->getClientOriginalExtension();
-                        $image = $request->image->move(public_path('images/payment/changebox'), $getimageName);
+                        $image = $request->image->move(public_path('images/payment/additem'), $getimageName);
 
                     }
                 }
