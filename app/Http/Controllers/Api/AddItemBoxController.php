@@ -36,7 +36,7 @@ class AddItemBoxController extends Controller
 
     $item_categories = $request->category_id;
     $item_names      = $request->item_name;
-    $item_notes      = $request->note;
+    $item_notes      = $request->item_note;
 
     $order_detail_id    = $request->order_detail_id;
     $types_of_pickup_id = $request->types_of_pickup_id;
@@ -45,6 +45,7 @@ class AddItemBoxController extends Controller
     if ($request->has('note')) {
       $add_item_note = $request->note;
     }
+
     DB::beginTransaction();
     try {
 
