@@ -20,6 +20,7 @@ class ChangeBoxPaymentController extends Controller
 
         $validator = \Validator::make($request->all(), [
             'order_detail_id'   => 'required',
+            'change_box_id'   => 'required',
             'amount'            => 'required',
             'bank'              => 'required',
             'image'             => 'required',
@@ -33,20 +34,22 @@ class ChangeBoxPaymentController extends Controller
         }
 
         try {
-            $order_detail = OrderDetail::find($request->order_detail_id);
-            if ($order_detail){
-                $check = ChangeBoxPayment::where('order_detail_id', $request->order_detail_id)->where('status_id', '7')->get();
-                if (count($check)>0) {
+            $change_box_id = ChangeBox::find($request->change_box_id);
+            if ($change_box_id){
+                $check = ChangeBoxPayment::where('change_box_id', $request->change_box_id)->where('status_id', '7')->get();
+                if (count($check) > 0) {
                     return response()->json(['status' => false, 'message' => 'Request has been paid.'], 401);
                 } else {
-                    $data                    = $request->all();
-                    $payment                 = new ChangeBoxPayment;
-                    $payment->order_detail_id= $request->order_detail_id;
-                    $payment->user_id        = $user->id;
-                    $payment->payment_type   = 'transfer';
-                    $payment->bank           = $request->bank;
-                    $payment->amount         = $request->amount;
-                    $payment->status_id      = 15;
+                    $data                     = $request->all();
+                    $payment                  = new ChangeBoxPayment;
+                    $payment->order_detail_id = $request->order_detail_id;
+                    $payment->user_id         = $user->id;
+                    $payment->payment_type    = 'transfer';
+                    $payment->bank            = $request->bank;
+                    $payment->amount          = $request->amount;
+                    $payment->status_id       = 15;
+                    $payment->change_box_id   = $request->change_box_id;
+                    
                     if ($request->hasFile('image')) {
                         if ($request->file('image')->isValid()) {
                             $getimageName = time().'.'.$request->image->getClientOriginalExtension();
