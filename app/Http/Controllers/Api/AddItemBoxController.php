@@ -26,8 +26,8 @@ class AddItemBoxController extends Controller
     $validator = Validator::make($request->all(), [
       'order_detail_id'    => 'required',
       'types_of_pickup_id' => 'required',
-      'category_id[]'      => 'required',
-      'item_name[]'        => 'required'
+      'category_id'        => 'required',
+      'item_name'          => 'required'
     ]);
 
     if ($validator->fails()) {

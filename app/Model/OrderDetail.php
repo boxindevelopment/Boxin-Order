@@ -199,16 +199,18 @@ class OrderDetail extends Model
             foreach ($this->change_box as $k => $change_box) {
                 if($change_box->type_pickup->id == 1){
                     $change_box = [
-                        'change_box_id'     => $change_box->id,
-                        'address'           => $change_box->address,
-                        'date'              => $change_box->date,
-                        'note'              => $change_box->note,
-                        'deliver_fee'       => intval($change_box->deliver_fee),
-                        'driver_name'       => $change_box->driver_name,
-                        'driver_phone'      => $change_box->driver_phone,
-                        'time_pickup'       => $change_box->time_pickup,
-                        'type_pickup_id'    => $change_box->type_pickup->id,
-                        'type_pickup_name'  => $change_box->type_pickup->name,
+                        'change_box_id'    => $change_box->id,
+                        'address'          => $change_box->address,
+                        'date'             => $change_box->date,
+                        'note'             => $change_box->note,
+                        'deliver_fee'      => intval($change_box->deliver_fee),
+                        'driver_name'      => $change_box->driver_name,
+                        'driver_phone'     => $change_box->driver_phone,
+                        'status_id'        => $change_box->status->id,
+                        'status'           => $change_box->status->name,
+                        'time_pickup'      => $change_box->time_pickup,
+                        'type_pickup_id'   => $change_box->type_pickup->id,
+                        'type_pickup_name' => $change_box->type_pickup->name,
                     ];
                 }
             }
