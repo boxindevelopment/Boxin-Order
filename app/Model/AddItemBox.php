@@ -16,7 +16,8 @@ class AddItemBox extends Model
       'time_pickup', 
       'deliver_fee', 
       'driver_name', 
-      'driver_phone'
+      'driver_phone',
+      'note'
   ];
 
   public function order_detail()
