@@ -284,6 +284,7 @@ class OrderDetail extends Model
                 'new_end_date'           => $v->new_end_date,
                 'payment_expired'        => $v->payment_expired,
                 'payment_status_expired' => $v->payment_status_expired == 1 ? true : false,
+                'status'                 => $v->status_id,
                 'status'                 => $v->status->name,
                 'new_duration'           => $v->new_duration,
                 'total_amount'           => $v->total_amount
