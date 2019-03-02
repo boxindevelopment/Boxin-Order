@@ -225,6 +225,7 @@ class OrderDetail extends Model
                         'time_pickup'      => $change_boxs->time_pickup,
                         'type_pickup_id'   => $change_boxs->type_pickup->id,
                         'type_pickup_name' => $change_boxs->type_pickup->name,
+                        'items'            => $change_boxs->change_details
                     ];
                 }
             }
@@ -318,7 +319,8 @@ class OrderDetail extends Model
                 'status'           => $v->status->name,
                 'time_pickup'      => $v->time_pickup,
                 'type_pickup_id'   => $v->types_of_pickup_id,
-                'type_pickup_name' => $v->type_pickup->name
+                'type_pickup_name' => $v->type_pickup->name,
+                'items'            => $v->items
               ];
             }
           }
