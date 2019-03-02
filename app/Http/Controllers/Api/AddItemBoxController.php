@@ -46,6 +46,11 @@ class AddItemBoxController extends Controller
       $add_item_note = $request->note;
     }
 
+    $fee = 0;
+    if ($request->has('deliver_fee')) {
+      $fee = $request->deliver_fee;
+    }
+
     DB::beginTransaction();
     try {
 
@@ -56,7 +61,7 @@ class AddItemBoxController extends Controller
       $additembox->date               = $request->date;
       $additembox->time_pickup        = $request->time_pickup;
       $additembox->status_id          = $types_of_pickup_id == '1' ? 14 : 25;
-      $additembox->deliver_fee        = 0;
+      $additembox->deliver_fee        = $fee;
       $additembox->note               = $add_item_note;
       $additembox->save();
 
