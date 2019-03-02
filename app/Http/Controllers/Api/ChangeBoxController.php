@@ -27,6 +27,11 @@ class ChangeBoxController extends Controller
             return response()->json(['status' => false, 'message' => $validator->errors()], 304);
         }
 
+        $fee = 0;
+        if ($request->has('deliver_fee')) {
+          $fee = $request->deliver_fee;
+        }
+
         DB::beginTransaction();
         try {
 
@@ -38,7 +43,7 @@ class ChangeBoxController extends Controller
           $change->note               = $request->note;
           $change->status_id          = $request->types_of_pickup_id == '1' ? 14 : 19;
           $change->address            = $request->address;
-          $change->deliver_fee        = 0;
+          $change->deliver_fee        = $fee;
           $change->save();
 
           $change_id = $change->id;
