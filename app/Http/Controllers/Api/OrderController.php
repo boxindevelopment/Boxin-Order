@@ -376,7 +376,7 @@ class OrderController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Your order has been made. Please complete the payment within 2 hours.',
+            'message' => 'Your order has been made. Please complete the payment within 24 hours.',
             'data' => new OrderResource($order)
         ]);
 
