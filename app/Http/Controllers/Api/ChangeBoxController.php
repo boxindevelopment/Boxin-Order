@@ -56,7 +56,7 @@ class ChangeBoxController extends Controller
 
             $o = OrderDetailBox::find($order_details[$i]);
             if ($o) {
-              $o->status_id = 21;
+              $o->status_id = 19;
               $o->save();
             }
           }
