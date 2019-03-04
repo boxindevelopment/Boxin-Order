@@ -211,7 +211,7 @@ class OrderDetail extends Model
         $change_box = null;
         if($this->change_box){
             foreach ($this->change_box as $k => $change_boxs) {
-                if($change_boxs->type_pickup->id == 1){
+                // if($change_boxs->type_pickup->id == 1){
                     $change_box = [
                         'change_box_id'    => $change_boxs->id,
                         'address'          => $change_boxs->address,
@@ -227,7 +227,7 @@ class OrderDetail extends Model
                         'type_pickup_name' => $change_boxs->type_pickup->name,
                         'items'            => $change_boxs->change_details
                     ];
-                }
+                // }
             }
         }
 
@@ -307,7 +307,7 @@ class OrderDetail extends Model
         $add_item = null;
         if ($this->add_item) {
           foreach ($this->add_item as $k => $v) {
-            if ($v->types_of_pickup_id == 1){
+            // if ($v->types_of_pickup_id == 1){
               $add_item = [
                 'id'               => $v->id,
                 'address'          => $v->address,
@@ -322,7 +322,7 @@ class OrderDetail extends Model
                 'type_pickup_name' => $v->type_pickup->name,
                 'items'            => $v->items
               ];
-            }
+            // }
           }
         }
 
