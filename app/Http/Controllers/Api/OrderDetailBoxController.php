@@ -43,7 +43,7 @@ class OrderDetailBoxController extends Controller
             $data               = $request->all();
             if ($request->hasFile('item_image')) {
                 if ($request->file('item_image')->isValid()) {
-                    $getimageName = time().'.'.$request->item_image->getClientOriginalExtension();
+                    $getimageName = round(microtime(true) * 1000) .'.'.$request->item_image->getClientOriginalExtension();
                     $image = $request->item_image->move(public_path('images/detail_item_box'), $getimageName);
         
                 }

@@ -70,7 +70,7 @@ class AddItemBoxController extends Controller
         $getimageName = '';
         if ($request->hasFile('item_image')) {
           // if ($request->file('item_image')->isValid()) {
-            $getimageName = time().'.'.$request->item_image[$i]->getClientOriginalExtension();
+            $getimageName = round(microtime(true) * 1000) . $i.'.'.$request->item_image[$i]->getClientOriginalExtension();
             $image = $request->item_image[$i]->move(public_path('images/detail_item_box'), $getimageName);
           // }
         }
