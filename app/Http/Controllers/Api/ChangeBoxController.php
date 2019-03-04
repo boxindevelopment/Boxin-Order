@@ -159,7 +159,7 @@ class ChangeBoxController extends Controller
        try {
           $odb = OrderDetailBox::findOrFail($order_detail_box_id);
           if ($odb) {
-            $odb->status = 20; // actived
+            $odb->status = 9; // fill
             $odb->save();
           }
   
