@@ -42,7 +42,7 @@ class AddItemBoxPayment extends Model
 
   public function getImageAttribute()
   {
-    $DEV_URL = 'https://boxin-dev-order.azurewebsites.net/images/payment/additem/';
+    $DEV_URL  = 'https://boxin-dev-order.azurewebsites.net/images/payment/additem/';
     $PROD_URL = 'https://boxin-prod-order.azurewebsites.net/images/payment/additem/';
 
     $url = (env('DB_DATABASE') == 'coredatabase') ? $DEV_URL : $PROD_URL;
