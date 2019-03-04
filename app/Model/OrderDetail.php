@@ -307,6 +307,16 @@ class OrderDetail extends Model
         $add_item = null;
         if ($this->add_item) {
           foreach ($this->add_item as $k => $v) {
+              $items = array();
+              foreach ($v->items as $kk => $vv) {
+                $items[] = [
+                  'id'         => $vv->id,
+                  'category'   => $vv->category,
+                  'item_name'  => $vv->item_name,
+                  'item_image' => $vv->image,
+                  'note'       => $vv->note,
+                ];
+              }
             // if ($v->types_of_pickup_id == 1){
               $add_item = [
                 'id'               => $v->id,
@@ -320,7 +330,7 @@ class OrderDetail extends Model
                 'time_pickup'      => $v->time_pickup,
                 'type_pickup_id'   => $v->types_of_pickup_id,
                 'type_pickup_name' => $v->type_pickup->name,
-                'items'            => $v->items
+                'items'            => $items
               ];
             // }
           }
