@@ -214,8 +214,7 @@ class OrderController extends Controller
             $order->qty                    = $data['order_count'];
             $order->save();
 
-            $pickup                 = new PickupOrder;
-            $pickup->date           = $request->date;
+            $order_id_today = $order->id;
 
             $amount = 0;
             $total = 0;
@@ -230,7 +229,7 @@ class OrderController extends Controller
                 $order_detail->types_of_box_room_id   = $data['types_of_box_room_id'.$a];
                 $order_detail->types_of_size_id       = $data['types_of_size_id'.$a];
                 $order_detail->duration               = $data['duration'.$a];
-                $order_detail->start_date             = $pickup->date;
+                $order_detail->start_date             = $request->date;
 
                 // weekly
                 if ($order_detail->types_of_duration_id == 2 || $order_detail->types_of_duration_id == '2') {
@@ -272,9 +271,9 @@ class OrderController extends Controller
                     // get price box
                     $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order->area_id);
 
-                    if($price){
-                        $amount = $price->price*$order_detail->duration;
-                    }else{
+                    if ($price){
+                        $amount = $price->price * $order_detail->duration;
+                    } else {
                         // change status room to empty when order failed to create
                         Box::where('id', $room_or_box_id)->update(['status_id' => 10]);
                         throw new Exception('Not found price box.');
@@ -292,7 +291,7 @@ class OrderController extends Controller
                         $room_or_box_id = $spaceSmall->id;
                         //change status room to fill
                         SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 9]);
-                    }else{
+                    } else {
                         // change status room to empty when order failed to create
                         throw new Exception('The room is not available.');
                         // return response()->json(['status' => false, 'message' => 'The room is not available.']);
@@ -301,9 +300,9 @@ class OrderController extends Controller
                     // get price room
                     $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order->area_id);
 
-                    if($price){
-                        $amount = $price->price*$order_detail->duration;
-                    }else{
+                    if ($price) {
+                        $amount = $price->price * $order_detail->duration;
+                    } else {
                         // change status room to empty when order failed to create
                         SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 10]);
                         throw new Exception('Not found price room.');
@@ -331,16 +330,18 @@ class OrderController extends Controller
                 // }
             }
 
-            $pickup->order_id       = $order->id;
+            $pickup                     = new PickupOrder;
+            $pickup->date               = $request->date;
+            $pickup->order_id           = $order_id_today;
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
-            $pickup->address        = $request->address;
-            $pickup->longitude      = $request->longitude;
-            $pickup->latitude       = $request->latitude;
-            $pickup->time           = $request->time;
-            $pickup->time_pickup    = $request->time_pickup;
-            $pickup->note           = $request->note;
-            $pickup->pickup_fee     = $request->pickup_fee;
-            $pickup->status_id      = 14;
+            $pickup->address            = $request->address;
+            $pickup->longitude          = $request->longitude;
+            $pickup->latitude           = $request->latitude;
+            $pickup->time               = $request->time;
+            $pickup->time_pickup        = $request->time_pickup;
+            $pickup->note               = $request->note;
+            $pickup->pickup_fee         = $request->pickup_fee;
+            $pickup->status_id          = 14;
             $pickup->save();
 
             //update total order
@@ -352,10 +353,10 @@ class OrderController extends Controller
             }
 
             //voucher
-            if(strtoupper($request->voucher) == 'DIBOXININAJA'){
-                    $tot = $total_all - (0.1 * $total_all);
-            }else{
-                $tot = $total_all;
+            if (strtoupper($request->voucher) == 'DIBOXININAJA'){
+              $tot = $total_all - (0.1 * $total_all);
+            } else {
+              $tot = $total_all;
             }
 
             Order::where('id', $order->id)->update(['total' => $tot, 'deliver_fee' => intval($request->pickup_fee)]);
