@@ -441,7 +441,7 @@ class OrderController extends Controller
 
         $order  = Order::find($id);
         $status = 24;
-        if($order){
+        if ($order) {
             $user = $request->user();
             if($user->id != $order->user_id){
                 return response()->json([
@@ -449,22 +449,31 @@ class OrderController extends Controller
                     'message' => "Order can't canceled, you're not ordering of this order"
                 ]);
             }
-            if($order->status_id == 7 || $order->status_id == 14){
-                $order->status_id   = $status;
+
+            DB::beginTransaction();
+            try {
+              if ($order->status_id == 7 || $order->status_id == 14){
+                $order->status_id = $status;
                 $order->save();
                 DB::table('pickup_orders')->where('order_id', $order->id)->update(['status_id' => $status]);
                 DB::table('order_details')->where('order_id', $order->id)->update(['status_id' => $status]);
 
-                $ods = DB::table('order_details')->where('order_id', $order->id)->pluck('room_or_box_id')->toArray();
-                if ($ods) {
-                  DB::table('boxes')->whereIn('id', $ods)->update(['status_id' => 10]);
+                $ods = OrderDetail::where('order_id', $order->id)->get();
+                foreach ($ods as $key => $value) {
+                  self::backToEmpty($value->types_of_box_room_id, $value->room_or_box_id);
                 }
 
+                DB::commit();
                 return response()->json([
-                    'status' => true,
+                    'status'  => true,
                     'message' => 'Update status to cancelled success.',
-                    'data' => $order
+                    'data'    => $order
                 ]);
+              }
+            } catch (Exception $th) {
+              //throw $th;
+              DB::rollback();
+              return response()->json(['status' => false, 'message' => "Order can't canceled"]);
             }
 
         }
@@ -475,6 +484,29 @@ class OrderController extends Controller
             'message' => "Order can't canceled"
         ]);
 
+    }
+
+    protected function backToEmpty($types_of_box_room_id, $id)
+    {
+      if ($types_of_box_room_id == 1 || $types_of_box_room_id == "1") {
+        // order box
+        $box = Box::find($id);
+        if ($box) {
+          $box->status_id = 10;
+          $box->save();
+        }
+        // Box::where('id', $id)->update(['status_id' => 10]);
+      }
+      else if ($types_of_box_room_id == 2 || $types_of_box_room_id == "2") {
+        // order room
+        // change status room to empty
+        $box = SpaceSmall::find($id);
+        if ($box) {
+          $box->status_id = 10;
+          $box->save();
+        }
+        // SpaceSmall::where('id', $id)->update(['status_id' => 10]);
+      }
     }
 
     public function checkExpiredOrder()
