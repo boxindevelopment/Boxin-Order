@@ -35,6 +35,7 @@ class OrderDetailBoxRepository implements OrderDetailBoxRepositoryInterface
         $orders = OrderDetailBox::select('order_detail_boxes.*')
             ->leftJoin('order_details', 'order_details.id', '=', 'order_detail_boxes.order_detail_id')
             ->where('order_detail_boxes.order_detail_id', $order_detail_id)
+            ->where('order_detail_boxes.status_id', '<>', 21)
             ->get();
         return $orders;
     }

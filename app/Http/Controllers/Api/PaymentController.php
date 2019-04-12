@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Model\Order;
 use App\Model\OrderDetail;
+use App\Model\ExtendOrderDetail;
+use App\Model\ExtendOrderPayment;
 use App\Model\Payment;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentResource;
+use App\Http\Resources\ExtendOrderPaymentResource;
+use App\Http\Resources\ExtendOrderDetailResource;
 use Illuminate\Http\Request;
 use DB;
 
@@ -49,7 +53,6 @@ class PaymentController extends Controller
                     if ($request->file('image')->isValid()) {
                         $getimageName = time().'.'.$request->image->getClientOriginalExtension();
                         $image = $request->image->move(public_path('images/payment/order'), $getimageName);
-            
                     }
                 }
                 $payment->image_transfer = $getimageName;
@@ -92,5 +95,74 @@ class PaymentController extends Controller
         return $code;
 
     }
+
+    public function startPaymentOrderDetail(Request $request)
+    {
+        $user = $request->user();
+        $validator = \Validator::make($request->all(), [
+            'extend_id' => 'required',
+            'amount'    => 'required',
+            'bank'      => 'required',
+            'image'     => 'required',
+        ]);
+
+        if($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => $validator->errors()
+            ]);
+        }
+
+        try {
+            $ex_order = ExtendOrderDetail::find($request->extend_id);
+            if ($ex_order){
+                $check = ExtendOrderPayment::where('extend_id', $request->extend_id)->get();
+                if (count($check)>0){
+                    return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
+                }
+
+                $data                     = $request->all();
+                $payment                  = new ExtendOrderPayment;
+                $payment->extend_id       = $request->extend_id;
+                $payment->order_detail_id = $ex_order->order_detail_id;
+                $payment->user_id         = $user->id;
+                $payment->payment_type    = 'transfer';
+                $payment->bank            = $request->bank;
+                $payment->amount          = $request->amount;
+                $payment->status_id       = 15;
+                if ($request->hasFile('image')) {
+                    if ($request->file('image')->isValid()) {
+                        $getimageName = time().'.'.$request->image->getClientOriginalExtension();
+                        $image = $request->image->move(public_path('images/payment/order/detail'), $getimageName);
+                    }
+                }
+                $payment->image_transfer = $getimageName;
+                $payment->id_name        = 'PAY'.$this->id_name();
+                $payment->save();
+
+                if ($payment) {
+                    $ex_order->status_id = 15;
+                    $ex_order->save();
+                    // $status_order = DB::table('order_details')->where('order_id', $request->order_id)->update(['status_id' => 15]);
+                }
+                
+            }else {
+                return response()->json(['status' => false, 'message' => 'Order Detail Id not found'], 401);
+            }
+            
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
+            'data' => new ExtendOrderPaymentResource($payment->fresh())
+        ]);
+    }
+
 
 }
