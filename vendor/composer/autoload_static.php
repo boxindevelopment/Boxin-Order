@@ -464,6 +464,11 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
     );
 
     public static $classMap = array (
+        'App\\Console\\Commands\\PaymentAddItemBoxCommand' => __DIR__ . '/../..' . '/app/Console/Commands/PaymentAddItemBoxCommand.php',
+        'App\\Console\\Commands\\PaymentChangeBoxCommand' => __DIR__ . '/../..' . '/app/Console/Commands/PaymentChangeBoxCommand.php',
+        'App\\Console\\Commands\\PaymentExtendOrderCommand' => __DIR__ . '/../..' . '/app/Console/Commands/PaymentExtendOrderCommand.php',
+        'App\\Console\\Commands\\PaymentOrderCommand' => __DIR__ . '/../..' . '/app/Console/Commands/PaymentOrderCommand.php',
+        'App\\Console\\Commands\\PaymentReturnBoxCommand' => __DIR__ . '/../..' . '/app/Console/Commands/PaymentReturnBoxCommand.php',
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Core\\Model\\Searchable' => __DIR__ . '/../..' . '/app/Core/Model/Searchable.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
@@ -498,6 +503,7 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
         'App\\Http\\Controllers\\Auth\\RegisterController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/RegisterController.php',
         'App\\Http\\Controllers\\Auth\\ResetPasswordController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/ResetPasswordController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\Vtdirect' => __DIR__ . '/../..' . '/app/Http/Controllers/Vtdirect.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
         'App\\Http\\Middleware\\EncryptCookies' => __DIR__ . '/../..' . '/app/Http/Middleware/EncryptCookies.php',
         'App\\Http\\Middleware\\RedirectIfAuthenticated' => __DIR__ . '/../..' . '/app/Http/Middleware/RedirectIfAuthenticated.php',
@@ -575,6 +581,7 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
         'App\\Model\\TypePickup' => __DIR__ . '/../..' . '/app/Model/TypePickup.php',
         'App\\Model\\TypeSize' => __DIR__ . '/../..' . '/app/Model/TypeSize.php',
         'App\\Model\\User' => __DIR__ . '/../..' . '/app/Model/User.php',
+        'App\\Model\\UserDevice' => __DIR__ . '/../..' . '/app/Model/UserDevice.php',
         'App\\Model\\Voucher' => __DIR__ . '/../..' . '/app/Model/Voucher.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
         'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',

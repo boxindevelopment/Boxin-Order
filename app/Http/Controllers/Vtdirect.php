@@ -17,10 +17,11 @@ use App\Model\Price;
 class Vtdirect extends Controller
 {
   
-    public function purchaseOrder($user, $order_created_at, $invoice, $total, $ids,  $name )
+    public function purchase($user, $order_created_at, $invoice, $total, $ids,  $name )
     {
+      $expr = date("Y-m-d H:i:s O", strtotime($order_created_at));
       $array = [
-        'start_time'   => date("Y-m-d H:i:s O", strtotime($order_created_at)),
+        'start_time'   => $order_created_at,
         'redirect_url' => ''
       ];
 
@@ -29,7 +30,7 @@ class Vtdirect extends Controller
           'gross_amount' => $total
       ];   
       $customer_details = self::customer($user); 
-      $custom_expiry = self::expired($array['start_time']);
+      $custom_expiry = self::expired($expr);
       $item_details = [
           'id'            => $ids,
           'quantity'      => 1,
@@ -45,14 +46,23 @@ class Vtdirect extends Controller
           'customer_details'    => $customer_details,
           'expiry'              => $custom_expiry
       ];
+      
+      $redirect_url = Veritrans::vtwebCharge($transaction_data);
+      if (!empty($redirect_url)) {
+        $array['redirect_url'] = $redirect_url;
+      }
 
-      $array['redirect_url'] = Veritrans::vtwebCharge($transaction_data);
       return $array;
     }
 
     public function checkstatus($orderId) {
       $check = Veritrans::status($orderId);
-      return $check;
+      // $type = gettype($check);
+      if (is_null($check)) {
+        return array();
+      }
+      return (array) $check;
+      // return $type;
     }
 
     protected function customer($user) {
