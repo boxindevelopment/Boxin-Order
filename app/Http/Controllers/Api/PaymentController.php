@@ -37,43 +37,6 @@ class PaymentController extends Controller
     $this->url = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
   }
 
-    public function testPayment()
-    {
-      $class = new Vtdirect();
-      // return $class->purchase();
-      return response()->json([
-        'status' => false,
-        'message' => 'tes web charge',
-        'data' => $class->purchase()
-      ]);
-    }
-
-    public function testPaymentDirect()
-    {
-      $class = new Vtdirect();
-      // return $class->purchase();
-      return response()->json([
-        'status' => false,
-        'message' => 'tes DIRECT',
-        'data' => $class->purchaseDirect()
-      ]);
-    }
-    
-    public function checkPayment(Request $request)
-    {
-      $orderId = $request->orderId;
-      $class = new Vtdirect();
-      $data = $class->checkstatus($orderId);
-      $arrData = (array) $data;
-
-      // return $class->purchase();
-      return response()->json([
-        'status' => false,
-        'message' => 'tes',
-        'data' => $arrData
-      ]);
-    }
-
     // public function startPayment_backup(Request $request)
     // {
     //     $user = $request->user();

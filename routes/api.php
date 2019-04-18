@@ -13,10 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post('payment/webcharge', 'Api\PaymentController@testPayment')->name('api.payment.testPayment');
-Route::post('payment/direct', 'Api\PaymentController@testPaymentDirect')->name('api.payment.testPaymentDirect');
-Route::post('payment/check', 'Api\PaymentController@checkPayment')->name('api.payment.checkPayment');
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
