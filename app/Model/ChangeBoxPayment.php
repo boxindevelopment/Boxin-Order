@@ -18,7 +18,11 @@ class ChangeBoxPayment extends Model
         'image_transfer', 
         'status_id', 
         'id_name',
-        'change_box_id'
+        'change_box_id',
+        'midtrans_url',
+        'midtrans_status',
+        'midtrans_start_transaction',
+        'midtrans_expired_transaction'
     ];
 
     public function change_box()

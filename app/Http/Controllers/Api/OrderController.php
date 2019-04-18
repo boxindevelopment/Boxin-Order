@@ -9,6 +9,7 @@ use App\Model\OrderDetail;
 use App\Model\ExtendOrderDetail;
 use App\Model\DeliveryFee;
 use App\Model\Price;
+use App\Model\Payment;
 use App\Model\PickupOrder;
 use App\Jobs\MessageInvoice;
 use App\Http\Controllers\Controller;
@@ -159,7 +160,6 @@ class OrderController extends Controller
     public function startStoring(Request $request)
     {
         $user = $request->user();
-
         $validator = \Validator::make($request->all(), [
             'area_id'           => 'required|exists:areas,id',
             'order_count'       => 'required',
@@ -170,37 +170,32 @@ class OrderController extends Controller
         ]);
 
         if($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => $validator->errors()
-            ]);
+          return response()->json(['status' => false, 'message' => $validator->errors()]);
         }
 
         $data = $request->all();
-        if(isset($data['order_count'])) {
-            for ($a = 1; $a <= $data['order_count']; $a++) {
+        if (isset($data['order_count'])) {
+          for ($a = 1; $a <= $data['order_count']; $a++) {
+            $validator = \Validator::make($request->all(), [
+              'types_of_size_id'.$a => 'required',
+              'types_of_box_room_id'.$a => 'required',
+              'types_of_duration_id'.$a => 'required',
+              'duration'.$a => 'required',
+            ]);
 
-                $validator = \Validator::make($request->all(), [
-                    'types_of_size_id'.$a => 'required',
-                    'types_of_box_room_id'.$a => 'required',
-                    'types_of_duration_id'.$a => 'required',
-                    'duration'.$a => 'required',
-                ]);
-
-                if($validator->fails()) {
-                    return response()->json([
-                        'status' => false,
-                        'message' => $validator->errors()
-                    ]);
-                }
+            if ($validator->fails()) {
+              return response()->json([
+                  'status' => false,
+                  'message' => $validator->errors()
+              ]);
             }
+          }
         } else {
-            return response()->json([
-                'status' =>false,
-                'message' => 'Not found order count.'
-            ], 401);
+          return response()->json([
+            'status' =>false,
+            'message' => 'Not found order count.'
+          ], 401);
         }
-
 
         DB::beginTransaction();
         try {
@@ -222,33 +217,33 @@ class OrderController extends Controller
             $id_name = '';
 
             for ($a = 1; $a <= $data['order_count']; $a++) {
-                $order_detail                         = new OrderDetail;
-                $order_detail->order_id               = $order->id;
-                $order_detail->status_id              = 14;
-                $order_detail->types_of_duration_id   = $data['types_of_duration_id'.$a];
-                $order_detail->types_of_box_room_id   = $data['types_of_box_room_id'.$a];
-                $order_detail->types_of_size_id       = $data['types_of_size_id'.$a];
-                $order_detail->duration               = $data['duration'.$a];
-                $order_detail->start_date             = $request->date;
+                $order_detail                       = new OrderDetail;
+                $order_detail->order_id             = $order->id;
+                $order_detail->status_id            = 14;
+                $order_detail->types_of_duration_id = $data['types_of_duration_id'.$a];
+                $order_detail->types_of_box_room_id = $data['types_of_box_room_id'.$a];
+                $order_detail->types_of_size_id     = $data['types_of_size_id'.$a];
+                $order_detail->duration             = $data['duration'.$a];
+                $order_detail->start_date           = $request->date;
 
                 // weekly
                 if ($order_detail->types_of_duration_id == 2 || $order_detail->types_of_duration_id == '2') {
-                    $end_date                   = $order_detail->duration*7;
-                    $order_detail->end_date     = date('Y-m-d', strtotime('+'.$end_date.' days', strtotime($order_detail->start_date)));
+                    $end_date               = $order_detail->duration*7;
+                    $order_detail->end_date = date('Y-m-d', strtotime('+'.$end_date.' days', strtotime($order_detail->start_date)));
                 }
                 // monthly
                 else if ($order_detail->types_of_duration_id == 3 || $order_detail->types_of_duration_id == '3') {
-                    $order_detail->end_date     = date('Y-m-d', strtotime('+'.$order_detail->duration.' month', strtotime($order_detail->start_date)));
+                    $order_detail->end_date = date('Y-m-d', strtotime('+'.$order_detail->duration.' month', strtotime($order_detail->start_date)));
                 }
                 // 6month
                 else if ($order_detail->types_of_duration_id == 7 || $order_detail->types_of_duration_id == '7') {
-                    $end_date                   = $order_detail->duration*6;
-                    $order_detail->end_date     = date('Y-m-d', strtotime('+'.$end_date.' month', strtotime($order_detail->start_date)));
+                    $end_date               = $order_detail->duration*6;
+                    $order_detail->end_date = date('Y-m-d', strtotime('+'.$end_date.' month', strtotime($order_detail->start_date)));
                 }
                 // annual
                 else if ($order_detail->types_of_duration_id == 8 || $order_detail->types_of_duration_id == '8') {
-                    $end_date                   = $order_detail->duration*12;
-                    $order_detail->end_date     = date('Y-m-d', strtotime('+'.$end_date.' month', strtotime($order_detail->start_date)));
+                    $end_date               = $order_detail->duration*12;
+                    $order_detail->end_date = date('Y-m-d', strtotime('+'.$end_date.' month', strtotime($order_detail->start_date)));
                 }
 
 
@@ -360,6 +355,9 @@ class OrderController extends Controller
             }
 
             Order::where('id', $order->id)->update(['total' => $tot, 'deliver_fee' => intval($request->pickup_fee)]);
+
+            // make payment
+
 
             $order = Order::with('order_detail.type_size', 'payment')->findOrFail($order->id);
             // MessageInvoice::dispatch($order, $user)->onQueue('processing');
@@ -536,6 +534,14 @@ class OrderController extends Controller
             ]);
         }
         // Order::whereDate('payment_expired', '=', Carbon::now()->toDateTimeString())->get();
+    }
+
+    protected function id_name()
+    {
+        $sql    = Payment::orderBy('number', 'desc')->whereRaw("MONTH(created_at) = " . date('m'))->first(['id_name', DB::raw('substring(id_name,10,12) as number')]);
+        $number = isset($sql->number) ? $sql->number : 0;
+        $code   = date('ymd') . str_pad($number + 1, 3, "0", STR_PAD_LEFT);
+        return $code;
     }
 
 }
