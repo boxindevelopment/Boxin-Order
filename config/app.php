@@ -152,6 +152,7 @@ return [
          */
          App\Providers\RepositoryServiceProvider::class,
          Barryvdh\DomPDF\ServiceProvider::class,
+         Marprinhm\Midtrans\MidtransServiceProvider::class,
         /*
          * Application Service Providers...
          */
@@ -210,6 +211,8 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
+        'Midtrans' => Marprinhm\Midtrans\Facades\Midtrans::class,
+        'Veritrans' => Marprinhm\Midtrans\Facades\Veritrans::class,
     ],
 
 ];

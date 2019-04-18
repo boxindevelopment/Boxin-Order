@@ -17,7 +17,11 @@ class AddItemBoxPayment extends Model
       'image_transfer',
       'status_id',
       'id_name',
-      'add_item_box_id'
+      'add_item_box_id',
+      'midtrans_url',
+      'midtrans_status',
+      'midtrans_start_transaction',
+      'midtrans_expired_transaction'
   ];
 
   public function order_detail()

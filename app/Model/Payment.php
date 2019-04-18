@@ -10,7 +10,18 @@ class Payment extends Model
     protected $table = 'payments';
 
     protected $fillable = [
-        'order_id', 'user_id', 'payment_type', 'bank', 'amount', 'image_transfer', 'status_id', 'id_name'
+        'order_id', 
+        'user_id', 
+        'payment_type', 
+        'bank', 
+        'amount', 
+        'image_transfer', 
+        'status_id', 
+        'id_name',
+        'midtrans_url',
+        'midtrans_status',
+        'midtrans_start_transaction',
+        'midtrans_expired_transaction'
     ];
 
     public function order()
