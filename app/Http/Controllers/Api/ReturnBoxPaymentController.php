@@ -7,6 +7,7 @@ use App\Model\ReturnBoxPayment;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReturnBoxPaymentResource;
 use Illuminate\Http\Request;
+use DB;
 
 class ReturnBoxPaymentController extends Controller
 {
@@ -30,8 +31,12 @@ class ReturnBoxPaymentController extends Controller
         }
 
         try {
-            $id = OrderDetail::find($request->order_detail_id);
-            if($id){
+            $order_detail = OrderDetail::find($request->order_detail_id);
+            if($order_detail){
+                $check = ReturnBoxPayment::where('order_detail_id', $request->order_detail_id)->get();
+                if(count($check)>0){
+                    return response()->json(['status' => false, 'message' => 'Order return box has been paid.'], 401);
+                }
                 $data                    = $request->all();
                 $payment                 = new ReturnBoxPayment;
                 $payment->order_detail_id= $request->order_detail_id;
@@ -48,7 +53,16 @@ class ReturnBoxPaymentController extends Controller
                     }
                 }
                 $payment->image_transfer = $getimageName;
+                $payment->id_name        = 'PAYRB'.$this->id_name();
                 $payment->save();
+
+                if($payment){
+                    //change status order detail
+                    $order_detail->status_id       = 15;
+                    $order_detail->save();
+                    //change status order
+                    $status_order = DB::table('orders')->where('id', $order_detail->order_id)->update(['status_id' => 15]);
+                }
             }else {
                 return response()->json([
                     'status' => false,
@@ -65,10 +79,20 @@ class ReturnBoxPaymentController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Create data payment success.',
+            'message' => 'Create data return box payment success.',
             'data' => new ReturnBoxPaymentResource($payment->fresh())
         ]);
     }
 
+    private function id_name()
+    {
+
+        $sql    = ReturnBoxPayment::orderBy('number', 'desc')->whereRaw("MONTH(created_at) = " . date('m'))->first(['id_name', DB::raw('substring(id_name,12,14) as number')]);
+        $number = isset($sql->number) ? $sql->number : 0;
+        $code   = date('ymd') . str_pad($number + 1, 3, "0", STR_PAD_LEFT);
+
+        return $code;
+
+    }
 
 }

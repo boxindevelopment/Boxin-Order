@@ -49,6 +49,29 @@ class Status extends Model
     {
         return $this->hasMany('App\Model\Box', 'status_id', 'id');
     }
-    
 
+    public function change_box()
+    {
+        return $this->hasMany('App\Model\ChangeBox', 'status_id', 'id');
+    }
+    
+    public function order_detail_box()
+    {
+        return $this->hasMany('App\Model\OrderDetailBox', 'status_id', 'id');
+    }
+
+    public function change_box_payment()
+    {
+        return $this->hasMany('App\Model\ChangeBoxPayment', 'status_id', 'id');
+    }
+
+    public function voucher()
+    {
+        return $this->hasMany('App\Model\Voucher', 'status_id', 'id');
+    }
+
+    public function banner()
+    {
+        return $this->hasMany('App\Model\Banner', 'status_id', 'id');
+    }
 }

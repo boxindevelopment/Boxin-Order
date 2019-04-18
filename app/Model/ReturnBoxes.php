@@ -29,7 +29,7 @@ class ReturnBoxes extends Model
 
     public function toSearchableArray()
     {
-        $url = 'https://boxin-dev-webbackend.azurewebsites.net/';
+        $url = 'https://boxin-prod-webbackend.azurewebsites.net/';
 
         if (!is_null($this->order_detail_id)) {
             if (!is_null($this->types_of_duration_id)) {

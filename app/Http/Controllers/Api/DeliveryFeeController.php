@@ -38,4 +38,17 @@ class DeliveryFeeController extends Controller
 
     }
 
+    public function minFee(){
+        $fee = $this->repository->minFee();
+        $arr            = array();
+        $arr['id']      = $fee->id;
+        $arr['fee']     = intval($fee->fee);
+
+        if($arr) {
+            return response()->json(['status' => true, 'data' => $arr,]);
+        }
+
+        return response()->json(['status' => false, 'message' => 'Data not found']);
+    }
+
 }

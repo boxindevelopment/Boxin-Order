@@ -16,7 +16,8 @@ class PaymentResource extends JsonResource
     {
 
         $data = [
-            'id'                => $this->id,
+            'id'                => $this->id,            
+            'id_name'           => $this->id_name,
             'order_id'          => $this->order_id,
             'payment_date'      => $this->created_at->format('Y-m-d H:i:s'), 
             'payment_type'      => $this->payment_type, 

@@ -3,58 +3,67 @@
 namespace App\Http\Controllers\Api;
 
 use App\Model\Order;
-use App\Model\Space;
+use App\Model\SpaceSmall;
 use App\Model\Box;
 use App\Model\OrderDetail;
+use App\Model\ExtendOrderDetail;
 use App\Model\DeliveryFee;
 use App\Model\Price;
 use App\Model\PickupOrder;
+use App\Jobs\MessageInvoice;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BoxResource;
-use App\Http\Resources\RoomResource;
 use App\Http\Resources\SpaceResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\PriceResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\BoxRepository;
-use App\Repositories\Contracts\SpaceRepository;
+use App\Repositories\Contracts\SpaceSmallRepository;
 use App\Repositories\Contracts\PriceRepository;
 use DB;
+use PDF;
+use Exception;
 
 class OrderController extends Controller
 {
-    protected $space;
+    protected $spaceSmall;
     protected $boxes;
     protected $price;
 
-    public function __construct(BoxRepository $boxes, SpaceRepository $space, PriceRepository $price)
+    private $url;
+    CONST DEV_URL = 'https://boxin-dev-notification.azurewebsites.net/';
+    CONST LOC_URL = 'http://localhost:5252/';
+    CONST PROD_URL = 'https://boxin-prod-notification.azurewebsites.net/';
+
+    public function __construct(BoxRepository $boxes, SpaceSmallRepository $spaceSmall, PriceRepository $price)
     {
-        $this->boxes = $boxes;
-        $this->space = $space;
-        $this->price = $price;
+        $this->boxes      = $boxes;
+        $this->spaceSmall = $spaceSmall;
+        $this->price      = $price;
+        $this->url        = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
     }
 
     public function chooseProduct($area_id)
     {
-        $choose1 = $this->price->getChooseProduct(1, 1, $area_id);
-        $choose2 = $this->price->getChooseProduct(2, 1, $area_id);
+        $choose1 = $this->price->getChooseProduct(1, 2, $area_id);
+        $choose2 = $this->price->getChooseProduct(2, 2, $area_id);
 
         $arr1           = array();
-        $arr1['name']   = $choose1->name;
-        $arr1['min']    = intval($choose1->min);
-        $arr1['max']    = intval($choose1->max);
-        $arr1['time']   = $choose1->alias;
+        $arr1['name']   = ($choose1) ? $choose1->name : null;
+        $arr1['min']    = ($choose1) ? intval($choose1->min) : 0;
+        $arr1['max']    = ($choose1) ? intval($choose1->max) : 0;
+        $arr1['time']   = ($choose1) ? $choose1->alias  : null;
         $arr1['type_of_box_room_id'] = 1;
 
         $arr2 = array();
-        $arr2['name']   = $choose2->name;
-        $arr2['min']    = intval($choose2->min);
-        $arr2['max']    = intval($choose2->max);
-        $arr2['time']   = $choose2->alias;
+        $arr2['name']   = ($choose2) ? $choose2->name : null;
+        $arr2['min']    = ($choose2) ? intval($choose2->min) : 0;
+        $arr2['max']    = ($choose2) ? intval($choose2->max) : 0;
+        $arr2['time']   = ($choose2) ? $choose2->alias : null;
         $arr2['type_of_box_room_id'] = 2;
 
-        if(($choose1)) {
+        if($choose1) {
             return response()->json([
                 'status'    => true,
                 'data_box'  => $arr1,
@@ -62,18 +71,15 @@ class OrderController extends Controller
             ]);
         }
 
-        return response()->json([
-            'status' => false,
-            'message' => 'Data not found'
-        ]);
+        return response()->json(['status' => false, 'message' => 'Data not found']);
     }
 
     public function checkOrder($types_of_box_room_id, $area_id, $types_of_size_id)
-    {   
+    {
         if($types_of_box_room_id == 1) {
             $check = $this->boxes->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
         } else if ($types_of_box_room_id == 2) {
-            $totalSpace = $this->space->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
+            $totalSpace = $this->spaceSmall->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
             if(count($totalSpace) > 0){
                 $check = $totalSpace;
             } else {
@@ -81,7 +87,7 @@ class OrderController extends Controller
                     'status' => false,
                     'message' => 'Kapasitas penuh, Anda dapat menyewa di...'
                 ]);
-            }            
+            }
         }
 
         if(count($check) > 0) {
@@ -103,13 +109,13 @@ class OrderController extends Controller
     }
 
     public function listAvailable($types_of_box_room_id, $types_of_size_id, $city_id)
-    {   
+    {
         if($types_of_box_room_id == 1) {
             $check = $this->boxes->getAvailable($types_of_size_id, $city_id);
         } else if ($types_of_box_room_id == 2) {
-            $checkBoxInSpace = $this->space->anyBoxInSpace();
+            $checkBoxInSpace = $this->spaceSmall->anyBoxInSpace();
             if(count($checkBoxInSpace) > 0){
-                $check = $this->space->getAvailable($types_of_size_id, $city_id);
+                $check = $this->spaceSmall->getAvailable($types_of_size_id, $city_id);
             }
         }
 
@@ -155,7 +161,7 @@ class OrderController extends Controller
         $user = $request->user();
 
         $validator = \Validator::make($request->all(), [
-            'area_id'           => 'required',
+            'area_id'           => 'required|exists:areas,id',
             'order_count'       => 'required',
             'types_of_pickup_id'=> 'required',
             'date'              => 'required',
@@ -195,17 +201,20 @@ class OrderController extends Controller
             ], 401);
         }
 
+
+        DB::beginTransaction();
         try {
-            $order              = new Order;
-            $order->user_id     = $user->id;
-            $order->area_id     = $request->area_id;
-            $order->status_id   = 14;
-            $order->total       = 0;
-            $order->qty         = $data['order_count'];
+            $order                         = new Order;
+            $order->user_id                = $user->id;
+            $order->payment_expired        = Carbon::now()->addDays(1)->toDateTimeString();
+            $order->payment_status_expired = 0;
+            $order->area_id                = $request->area_id;
+            $order->status_id              = 14;
+            $order->total                  = 0;
+            $order->qty                    = $data['order_count'];
             $order->save();
 
-            $pickup                 = new PickupOrder;
-            $pickup->date           = $request->date;
+            $order_id_today = $order->id;
 
             $amount = 0;
             $total = 0;
@@ -220,21 +229,26 @@ class OrderController extends Controller
                 $order_detail->types_of_box_room_id   = $data['types_of_box_room_id'.$a];
                 $order_detail->types_of_size_id       = $data['types_of_size_id'.$a];
                 $order_detail->duration               = $data['duration'.$a];
-                $order_detail->start_date             = $pickup->date;
+                $order_detail->start_date             = $request->date;
 
-                // daily
-                if ($order_detail->types_of_duration_id == 1 || $order_detail->types_of_duration_id == '1') {
-                    $order_detail->end_date     = date('Y-m-d', strtotime('+'.$order_detail->duration.' days', strtotime($order_detail->start_date)));
-
-                }
                 // weekly
-                else if ($order_detail->types_of_duration_id == 2 || $order_detail->types_of_duration_id == '2') {
+                if ($order_detail->types_of_duration_id == 2 || $order_detail->types_of_duration_id == '2') {
                     $end_date                   = $order_detail->duration*7;
                     $order_detail->end_date     = date('Y-m-d', strtotime('+'.$end_date.' days', strtotime($order_detail->start_date)));
                 }
                 // monthly
                 else if ($order_detail->types_of_duration_id == 3 || $order_detail->types_of_duration_id == '3') {
                     $order_detail->end_date     = date('Y-m-d', strtotime('+'.$order_detail->duration.' month', strtotime($order_detail->start_date)));
+                }
+                // 6month
+                else if ($order_detail->types_of_duration_id == 7 || $order_detail->types_of_duration_id == '7') {
+                    $end_date                   = $order_detail->duration*6;
+                    $order_detail->end_date     = date('Y-m-d', strtotime('+'.$end_date.' month', strtotime($order_detail->start_date)));
+                }
+                // annual
+                else if ($order_detail->types_of_duration_id == 8 || $order_detail->types_of_duration_id == '8') {
+                    $end_date                   = $order_detail->duration*12;
+                    $order_detail->end_date     = date('Y-m-d', strtotime('+'.$end_date.' month', strtotime($order_detail->start_date)));
                 }
 
 
@@ -249,88 +263,112 @@ class OrderController extends Controller
                         $room_or_box_id = $boxes[0]->id;
                         //change status box to fill
                         DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 9]);
-                    }else{
-                        return response()->json(['status' => false, 'message' => 'Not found box available.']);
+                    } else {
+                        throw new Exception('The box is not available.');
+                        // return response()->json(['status' => false, 'message' => 'The box is not available.']);
                     }
 
                     // get price box
                     $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order->area_id);
 
-                    if($price){
-                        $amount = $price->price*$order_detail->duration;
-                    }else{
+                    if ($price){
+                        $amount = $price->price * $order_detail->duration;
+                    } else {
                         // change status room to empty when order failed to create
-                        DB::table('boxes')->where('id', $room_or_box_id)->update(['status_id' => 10]);
-                        return response()->json(['status' => false, 'message' => 'Not found price box.']);
+                        Box::where('id', $room_or_box_id)->update(['status_id' => 10]);
+                        throw new Exception('Not found price box.');
+                        // return response()->json(['status' => false, 'message' => 'Not found price box.']);
                     }
                 }
 
                 // order room
                 if ($order_detail->types_of_box_room_id == 2 || $order_detail->types_of_box_room_id == "2") {
-                    $type = 'room';
-                    // get room
-                    $rooms = $this->space->getAvailableByArea($request->area_id, $data['types_of_size_id'.$a]);
-
-                    if(isset($rooms[0]->id)){
-                        $id_name = $rooms[0]->id_name;
-                        $room_or_box_id = $rooms[0]->id;
+                    $type = 'space';
+                    // get space small
+                    $spaceSmall = $this->spaceSmall->getData(['status_id' => 10, 'area_id' => $request->area_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
+                    if(!empty($spaceSmall->id)){
+                        $code_space_small = $spaceSmall->code_space_small;
+                        $room_or_box_id = $spaceSmall->id;
                         //change status room to fill
-                        DB::table('spaces')->where('id', $room_or_box_id)->update(['status_id' => 9]);
-                    }else{
-                        return response()->json(['status' => false, 'message' => 'Not found room available.']);
+                        SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 9]);
+                    } else {
+                        // change status room to empty when order failed to create
+                        throw new Exception('The room is not available.');
+                        // return response()->json(['status' => false, 'message' => 'The room is not available.']);
                     }
 
                     // get price room
                     $price = $this->price->getPrice($order_detail->types_of_box_room_id, $order_detail->types_of_size_id, $order_detail->types_of_duration_id, $order->area_id);
 
-                    if($price){
-                        $amount = $price->price*$order_detail->duration;
-                    }else{
+                    if ($price) {
+                        $amount = $price->price * $order_detail->duration;
+                    } else {
                         // change status room to empty when order failed to create
-                        DB::table('spaces')->where('id', $room_or_box_id)->update(['status_id' => 10]);
-                        return response()->json([
-                            'status' =>false,
-                            'message' => 'Not found price room.'
-                        ], 401);
+                        SpaceSmall::where('id', $room_or_box_id)->update(['status_id' => 10]);
+                        throw new Exception('Not found price room.');
+                        // return response()->json([
+                        //     'status' =>false,
+                        //     'message' => 'Not found price room.'
+                        // ], 401);
                     }
                 }
 
                 $order_detail->name           = 'New '. $type .' '. $a;
                 $order_detail->room_or_box_id = $room_or_box_id;
                 $order_detail->amount         = $amount;
-                $order_detail->id_name        = $id_name.''.$order->id;
+                $order_detail->id_name        = date('Ymd') . $order->id;
 
                 $total += $order_detail->amount;
-                
-                if($order_detail->save()){ 
-                    $find      = OrderDetail::findOrFail($order_detail->id);
-                    if($find){
-                        $update["id_name"]           = $id_name.$order_detail->id;
-                        $find->fill($update)->save();
-                    }
-                }
+                $order_detail->save();
+
+                // if($order_detail->save()){
+                //     $find      = OrderDetail::findOrFail($order_detail->id);
+                //     if($find){
+                //         $update["id_name"]           = $code_space_small.$order_detail->id;
+                //         $find->fill($update)->save();
+                //     }
+                // }
             }
-            
-            $pickup->order_id       = $order->id;
+
+            $pickup                     = new PickupOrder;
+            $pickup->date               = $request->date;
+            $pickup->order_id           = $order_id_today;
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
-            $pickup->address        = $request->address;
-            $pickup->longitude      = $request->longitude;
-            $pickup->latitude       = $request->latitude;            
-            $pickup->time           = $request->time;
-            $pickup->time_pickup    = $request->time_pickup;
-            $pickup->note           = $request->note;
-            $pickup->pickup_fee     = $request->pickup_fee;
-            $pickup->status_id      = 11;
+            $pickup->address            = $request->address;
+            $pickup->longitude          = $request->longitude;
+            $pickup->latitude           = $request->latitude;
+            $pickup->time               = $request->time;
+            $pickup->time_pickup        = $request->time_pickup;
+            $pickup->note               = $request->note;
+            $pickup->pickup_fee         = $request->pickup_fee;
+            $pickup->status_id          = 14;
             $pickup->save();
 
             //update total order
             $total_amount += $total;
-            $total_all = $total_amount + $request->pickup_fee;
-            DB::table('orders')->where('id', $order->id)->update(['total' => $total_all]);
+            if($request->types_of_pickup_id == 1){
+                $total_all = $total_amount + intval($request->pickup_fee);
+            } else {
+                $total_all = $total_amount;
+            }
 
-        } catch (\Exception $e) {
+            //voucher
+            if (strtoupper($request->voucher) == 'DIBOXININAJA'){
+              $tot = $total_all - (0.1 * $total_all);
+            } else {
+              $tot = $total_all;
+            }
+
+            Order::where('id', $order->id)->update(['total' => $tot, 'deliver_fee' => intval($request->pickup_fee)]);
+
+            $order = Order::with('order_detail.type_size', 'payment')->findOrFail($order->id);
+            // MessageInvoice::dispatch($order, $user)->onQueue('processing');
+            // $response = Requests::post($this->url . 'api/payment-email/' . $order->id, [], $params, []);
+            DB::commit();
+        } catch (Exception $e) {
             // delete order when order_detail failed to create
-            DB::table('orders')->where('id', $order->id)->delete();
+            // Order::where('id', $order->id)->delete();
+            DB::rollback();
             return response()->json([
                 'status' =>false,
                 'message' => $e->getMessage()
@@ -339,7 +377,7 @@ class OrderController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Create order success.',
+            'message' => 'Your order has been made. Please complete the payment within 24 hours.',
             'data' => new OrderResource($order)
         ]);
 
@@ -383,6 +421,121 @@ class OrderController extends Controller
             'data' => $order
         ]);
 
+    }
+
+    public function extend(Request $request)
+    {
+        $user = $request->user();
+
+        $validator = \Validator::make($request->all(), [
+            'order_id'           => 'required|exists:order,id',
+            'types_of_pickup_id'=> 'required',
+            'date'              => 'required',
+            'time'              => 'required',
+        ]);
+
+    }
+
+    public function cancelOrder($id, Request $request)
+    {
+
+        $order  = Order::find($id);
+        $status = 24;
+        if ($order) {
+            $user = $request->user();
+            if($user->id != $order->user_id){
+                return response()->json([
+                    'status' => false,
+                    'message' => "Order can't canceled, you're not ordering of this order"
+                ]);
+            }
+
+            DB::beginTransaction();
+            try {
+              if ($order->status_id == 7 || $order->status_id == 14){
+                $order->status_id = $status;
+                $order->save();
+                DB::table('pickup_orders')->where('order_id', $order->id)->update(['status_id' => $status]);
+                DB::table('order_details')->where('order_id', $order->id)->update(['status_id' => $status]);
+
+                $ods = OrderDetail::where('order_id', $order->id)->get();
+                foreach ($ods as $key => $value) {
+                  self::backToEmpty($value->types_of_box_room_id, $value->room_or_box_id);
+                }
+
+                DB::commit();
+                return response()->json([
+                    'status'  => true,
+                    'message' => 'Update status to cancelled success.',
+                    'data'    => $order
+                ]);
+              }
+            } catch (Exception $th) {
+              //throw $th;
+              DB::rollback();
+              return response()->json(['status' => false, 'message' => "Order can't canceled"]);
+            }
+
+        }
+
+
+        return response()->json([
+            'status' => false,
+            'message' => "Order can't canceled"
+        ]);
+
+    }
+
+    protected function backToEmpty($types_of_box_room_id, $id)
+    {
+      if ($types_of_box_room_id == 1 || $types_of_box_room_id == "1") {
+        // order box
+        $box = Box::find($id);
+        if ($box) {
+          $box->status_id = 10;
+          $box->save();
+        }
+        // Box::where('id', $id)->update(['status_id' => 10]);
+      }
+      else if ($types_of_box_room_id == 2 || $types_of_box_room_id == "2") {
+        // order room
+        // change status room to empty
+        $box = SpaceSmall::find($id);
+        if ($box) {
+          $box->status_id = 10;
+          $box->save();
+        }
+        // SpaceSmall::where('id', $id)->update(['status_id' => 10]);
+      }
+    }
+
+    public function checkExpiredOrder()
+    {
+        try {
+            Order::whereDate('payment_expired', '=', Carbon::now()->toDateTimeString())
+                    ->where('payment_status_expired', '=', 0)
+                    ->update([
+                        'payment_status_expired' => 1,
+                        'status_id'              => 8
+                    ]);
+
+            ExtendOrderDetail::whereDate('payment_expired', '=', Carbon::now()->toDateTimeString())
+                    ->where('payment_status_expired', '=', 0)
+                    ->update([
+                        'payment_status_expired' => 1,
+                        'status_id'              => 8
+                    ]);
+            return response()->json([
+                'status'  => true,
+                'message' => 'success'
+            ]);
+        } catch (Exception $x) {
+            return response()->json([
+                'status' => false,
+                'message' => $x->getMessage()
+            ]);
+        }
+        // Order::whereDate('payment_expired', '=', Carbon::now()->toDateTimeString())->get();
     }
 
 }

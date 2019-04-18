@@ -10,7 +10,7 @@ class ReturnBoxPayment extends Model
     protected $table = 'return_box_payments';
 
     protected $fillable = [
-        'order_detail_id', 'user_id', 'payment_type', 'bank', 'amount', 'image_transfer', 'status_id'
+        'order_detail_id', 'user_id', 'payment_type', 'bank', 'amount', 'image_transfer', 'status_id', 'id_name'
     ];
 
     public function order_detail()

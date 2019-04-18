@@ -38,7 +38,6 @@ class BoxRepository implements BoxRepositoryInterface
         $query = $this->model->query();
         $query->select('boxes.*');
         $query->leftJoin('shelves', 'shelves.id', '=', 'boxes.shelves_id');
-        $query->leftJoin('spaces', 'spaces.id', '=', 'shelves.space_id');
 
         if(isset($args['orderColumns']) && isset($args['orderDir'])){
             $query->orderBy($args['orderColumns'], $args['orderDir']);
@@ -47,7 +46,7 @@ class BoxRepository implements BoxRepositoryInterface
             $query->where('boxes.status_id', $args['status_id']);
         }
         if(isset($args['area_id'])){
-            $query->where('spaces.area_id', $args['area_id']);
+            $query->where('shelves.area_id', $args['area_id']);
         }
         if(isset($args['types_of_size_id'])){
             $query->where('boxes.types_of_size_id', $args['types_of_size_id']);
@@ -60,7 +59,7 @@ class BoxRepository implements BoxRepositoryInterface
         }
         $query->where('boxes.deleted_at', NULL);
         $box = $query->get();
-        
+
         return $box;
 
     }
@@ -69,8 +68,7 @@ class BoxRepository implements BoxRepositoryInterface
     {
         $box = $this->model->select('boxes.types_of_size_id', 'boxes.shelves_id', DB::raw('COUNT(boxes.types_of_size_id) as available'))
                 ->leftJoin('shelves', 'shelves.id', '=', 'boxes.shelves_id')
-                ->leftJoin('spaces', 'spaces.id', '=', 'shelves.space_id')
-                ->leftJoin('areas', 'areas.id', '=', 'spaces.area_id')
+                ->leftJoin('areas', 'areas.id', '=', 'shelves.area_id')
                 ->where('boxes.status_id', 10)
                 ->where('boxes.types_of_size_id', $types_of_size_id)
                 ->where('areas.city_id', $city_id)
@@ -85,9 +83,8 @@ class BoxRepository implements BoxRepositoryInterface
     {
         $box = $this->model->select('boxes.types_of_size_id', DB::raw('COUNT(boxes.types_of_size_id) as available'))
                 ->leftJoin('shelves', 'shelves.id', '=', 'boxes.shelves_id')
-                ->leftJoin('spaces', 'spaces.id', '=', 'shelves.space_id')
                 ->where('boxes.status_id', 10)
-                ->where('spaces.area_id', $area_id)
+                ->where('shelves.area_id', $area_id)
                 ->where('boxes.deleted_at', NULL)
                 ->groupBy('boxes.types_of_size_id')
                 ->get();
