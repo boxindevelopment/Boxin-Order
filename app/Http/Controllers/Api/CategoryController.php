@@ -16,16 +16,14 @@ class CategoryController extends Controller
         $this->repository = $repository;
     }
 
-    public function index()
-    {
+    public function index(){
 
         $cat = $this->repository->all();
         if(count($cat) > 0) {
             $data = CategoryResource::collection($cat);
             return response()->json([
                 'status' => true,
-                'data' => $data,
-                'database' => env('DB_DATABASE')
+                'data' => $data
             ]);
         }
 
