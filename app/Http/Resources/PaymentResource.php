@@ -15,21 +15,15 @@ class PaymentResource extends JsonResource
      */
     public function toArray($request)
     {
-        $start = $this->midtrans_start_transaction;
-        if (!is_array($start)) {
-          $start = [
-            'date'     => $this->midtrans_start_transaction,
-            'timezone' => Carbon::parse($this->midtrans_start_transaction)->timezoneName
-          ];
-        }
+        $start = [
+          'date'     => $this->midtrans_start_transaction,
+          'timezone' => Carbon::parse($this->midtrans_start_transaction)->timezoneName
+        ];
 
-        $end = $this->midtrans_expired_transaction;
-        if (!is_array($end)) {
-          $end = [
-            'date'     => $this->midtrans_expired_transaction,
-            'timezone' => Carbon::parse($this->midtrans_expired_transaction)->timezoneName
-          ];
-        }
+        $end = [
+          'date'     => $this->midtrans_expired_transaction,
+          'timezone' => Carbon::parse($this->midtrans_expired_transaction)->timezoneName
+        ];
 
         $data = [
             'id'                           => $this->id,

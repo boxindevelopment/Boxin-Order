@@ -201,8 +201,8 @@ class PaymentController extends Controller
             $payment->status_id                    = 14;
             $payment->midtrans_url                 = $midtrans_data['redirect_url'];
             $payment->midtrans_status              = 'pending';
-            $payment->midtrans_start_transaction   = $start_transaction;
-            $payment->midtrans_expired_transaction = $expired_transaction;
+            $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
+            $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();
             $payment->id_name                      = $invoice;
             $payment->save();
 
@@ -284,7 +284,10 @@ class PaymentController extends Controller
           $userDevice = UserDevice::where('user_id', $order->user_id)->get();
           if(count($userDevice) > 0){
             $client = new \GuzzleHttp\Client();
-            $response = $client->request('POST', $this->url . 'api/confirm-payment/' . $order->user_id, ['form_params' => []]);
+            $response = $client->request('POST', $this->url . 'api/confirm-payment/' . $order->user_id, ['form_params' => [
+              'status_id'       => $status,
+              'order_detail_id' => $value->id
+            ]]);
             // $response = Request::post($this->url . 'api/confirm-payment/' . $order->user_id, [], $params, []);
           }
         }
@@ -523,7 +526,12 @@ class PaymentController extends Controller
             $user_id = $ex_order_details->user_id;
             $userDevice = UserDevice::where('user_id', $user_id)->get();
             if(count($userDevice) > 0){
-                $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
+                // $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
+              $client = new \GuzzleHttp\Client();
+              $response = $client->request('POST', $this->url . 'api/confirm-payment/' . $order->user_id, ['form_params' => [
+                'status_id'       => $status,
+                'order_detail_id' => $ex_order_details->order_detail_id
+              ]]);
             }
           }
       }
