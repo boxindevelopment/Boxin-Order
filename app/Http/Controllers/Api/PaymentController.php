@@ -37,6 +37,13 @@ class PaymentController extends Controller
     $this->url = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
   }
 
+  // === invoice ===
+  // ADDIT
+  // CHBOX
+  // RTBOX
+  // XTEND
+  // ORDER
+
     // public function startPayment_backup(Request $request)
     // {
     //     $user = $request->user();
@@ -377,6 +384,7 @@ class PaymentController extends Controller
     
     public function startPaymentOrderDetail(Request $request)
     {
+        $midtrans = new Vtdirect();
         $user = $request->user();
         $validator = \Validator::make($request->all(), [
             'extend_id' => 'required',
@@ -440,7 +448,7 @@ class PaymentController extends Controller
             }
 
             //* data payment baru
-            $invoice = 'PAY-EXTEND' . $request->extend_id . '-' . $this->id_name_extend();
+            $invoice = 'PAY-XTEND' . $request->extend_id . '-' . $this->id_name_extend();
             $itemID = 'EXTENDID'. $request->extend_id;
             $info = 'Payment for extend box id ' . $request->extend_id;
             $midtrans_data = $midtrans->purchase($user, $ex_order->created_at, $invoice, $amount, $itemID, $info);

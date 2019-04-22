@@ -8,6 +8,7 @@ use App\Model\ReturnBox;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReturnBoxPaymentResource;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Vtdirect;
 use DB;
 
 class ReturnBoxPaymentController extends Controller
@@ -97,6 +98,7 @@ class ReturnBoxPaymentController extends Controller
     
     public function startPayment(Request $request)
     {
+        $midtrans = new Vtdirect();
         $user = $request->user();
         $validator = \Validator::make($request->all(), [
             'order_detail_id' => 'required',

@@ -15,6 +15,7 @@ use App\Model\OrderDetail;
 use App\Model\OrderDetailBox;
 use DB;
 use Carbon\Carbon;
+use App\Http\Controllers\Vtdirect;
 
 class AddItemBoxPaymentController extends Controller
 {
@@ -31,6 +32,7 @@ class AddItemBoxPaymentController extends Controller
 
   public function startPayment(Request $request)
   {
+    $midtrans = new Vtdirect();
     $user = Auth::user();
     $validator = Validator::make($request->all(), [
         'order_detail_id' => 'required',
@@ -97,7 +99,7 @@ class AddItemBoxPaymentController extends Controller
         }
 
         //* data payment baru
-        $invoice = 'PAY-ADDITEM' . $request->add_item_box_id . '-' . $this->id_name();
+        $invoice = 'PAY-ADDIT' . $request->add_item_box_id . '-' . $this->id_name();
         $itemID = 'ADDITEMID'. $request->add_item_box_id;
         $info = 'Payment for adding item box id ' . $request->add_item_box_id;
         $midtrans_data = $midtrans->purchase($user, $additems_box->created_at, $invoice, $amount, $itemID, $info);
