@@ -156,8 +156,10 @@ class PaymentController extends Controller
                       // $order->save();
                       // //change status order detail
                       // $status_order = DB::table('order_details')->where('order_id', (int)$request->order_id)->update(['status_id' => 15]);
-                  // }  
-                  if ($newStatus == 'settlement' || $newStatus == 'success') {
+                  // }
+                  if ($newStatus == 'pending') {
+
+                  } else if ($newStatus == 'settlement' || $newStatus == 'success') {
                       // status code 5 = success
                       $checkPayment->status_id = 5;
                       $checkPayment->save();
@@ -201,8 +203,8 @@ class PaymentController extends Controller
             $payment->status_id                    = 14;
             $payment->midtrans_url                 = $midtrans_data['redirect_url'];
             $payment->midtrans_status              = 'pending';
-            $payment->midtrans_start_transaction   = $start_transaction;
-            $payment->midtrans_expired_transaction = $expired_transaction;
+            $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
+            $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();
             $payment->id_name                      = $invoice;
             $payment->save();
 
@@ -284,7 +286,10 @@ class PaymentController extends Controller
           $userDevice = UserDevice::where('user_id', $order->user_id)->get();
           if(count($userDevice) > 0){
             $client = new \GuzzleHttp\Client();
-            $response = $client->request('POST', $this->url . 'api/confirm-payment/' . $order->user_id, ['form_params' => []]);
+            $response = $client->request('POST', $this->url . 'api/confirm-payment/' . $order->user_id, ['form_params' => [
+              'status_id'       => $status,
+              'order_detail_id' => $value->id
+            ]]);
             // $response = Request::post($this->url . 'api/confirm-payment/' . $order->user_id, [], $params, []);
           }
         }
@@ -424,7 +429,9 @@ class PaymentController extends Controller
                       // $ex_order->status_id = 15;
                       // $ex_order->save();
                   // } 
-                  if ($newStatus == 'settlement' || $newStatus == 'success') {
+                  if ($newStatus == 'pending') {
+
+                  } else if ($newStatus == 'settlement' || $newStatus == 'success') {
                       // status code 5 = success
                       $checkPayment->status_id = 5;
                       $checkPayment->save();
@@ -470,8 +477,8 @@ class PaymentController extends Controller
             $payment->id_name                      = $invoice;
             $payment->midtrans_url                 = $midtrans_data['redirect_url'];
             $payment->midtrans_status              = 'pending';
-            $payment->midtrans_start_transaction   = $start_transaction;
-            $payment->midtrans_expired_transaction = $expired_transaction;
+            $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
+            $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();
             $payment->save();
                 
             DB::commit();
@@ -523,7 +530,12 @@ class PaymentController extends Controller
             $user_id = $ex_order_details->user_id;
             $userDevice = UserDevice::where('user_id', $user_id)->get();
             if(count($userDevice) > 0){
-                $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
+                // $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
+              $client = new \GuzzleHttp\Client();
+              $response = $client->request('POST', $this->url . 'api/confirm-payment/' . $order->user_id, ['form_params' => [
+                'status_id'       => $status,
+                'order_detail_id' => $ex_order_details->order_detail_id
+              ]]);
             }
           }
       }
