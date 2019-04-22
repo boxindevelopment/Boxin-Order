@@ -547,7 +547,15 @@ class OrderController extends Controller
 
     public function cronExpired()
     {
-      $date_now = Carbon::now();
+      $date_now = Carbon::now()->toDateTimeString();
+      $array_id_order_detail = OrderDetail::whereDate('end_date', '>=', $date_now)->pluck('id')->toArray();
+      $query_id_order = OrderDetail::selectRaw('DISTINCT(order_id) as order_id')->whereDate('end_date', '>=', $date_now)->pluck('order_id')->toArray();
+      $array_id_order = array_map('intval', $query_id_order);
+      
+
+      dd($numArray);
     }
+
+
 
 }
