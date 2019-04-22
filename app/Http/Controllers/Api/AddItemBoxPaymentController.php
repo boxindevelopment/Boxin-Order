@@ -68,6 +68,7 @@ class AddItemBoxPaymentController extends Controller
           $sukses_response = array('200', '201', '202');
           $newStatus = $midtrans_data['transaction_status'];
           $checkPayment->midtrans_status = $newStatus;
+          $checkPayment->payment_type    = $midtrans_data['payment_type'];
           $checkPayment->save(); 
             if (in_array($midtrans_data['status_code'], $sukses_response)) {
               if ($newStatus == 'pending') {
@@ -88,6 +89,13 @@ class AddItemBoxPaymentController extends Controller
                   $additems_box->status_id = 6;
                   $additems_box->save();
               }
+            } else {
+              $checkPayment->status_id = 6;
+              $checkPayment->save();
+              // status code 6 = failed
+              //change status on table add_item
+              $additems_box->status_id = 6;
+              $additems_box->save();
             }
           }
 
