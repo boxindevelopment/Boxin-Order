@@ -507,6 +507,7 @@ class OrderController extends Controller
       }
     }
 
+    // this must be cron job
     public function checkExpiredOrder()
     {
         try {
