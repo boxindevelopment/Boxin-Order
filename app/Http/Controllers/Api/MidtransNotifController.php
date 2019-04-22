@@ -99,6 +99,12 @@ class MidtransNotifController extends Controller
 
   protected function setPayment($order_id, $type, $status) 
   {
+    
+
+  }
+
+  protected function getInvoiceString($string)
+  {
     // === order id ===
     // PAY-ADDIT
     // PAY-CHBOX
@@ -106,11 +112,7 @@ class MidtransNotifController extends Controller
     // PAY-XTEND
     // PAY-ORDER
 
-  }
-
-  protected function getInvoiceString($string)
-  {
-    // $vars = $string
+    $vars = $string
   }
 
 }
