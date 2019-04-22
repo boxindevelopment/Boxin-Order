@@ -133,6 +133,15 @@ class ChangeBoxPaymentController extends Controller
             //* jika data sudah ada
             if ($checkPayment) {
               $midtrans_data = $midtrans->checkstatus($checkPayment->id_name);
+              if (count($midtrans_data) < 1) {
+                return response()->json([
+                  'status'         => true,
+                  'message'        => 'Check status midtrans failed',
+                  'data'           => new ChangeBoxPaymentResource($checkPayment),
+                  'midtrans_check' => $midtrans_data
+                ]);
+              }
+
               if ($checkPayment->status_id != 5 || $checkPayment->status_id != 6) {
               $sukses_response = array('200', '201', '202');
               $newStatus = $midtrans_data['transaction_status'];
