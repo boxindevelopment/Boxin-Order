@@ -15,6 +15,16 @@ class AddItemBoxPaymentResource extends JsonResource
     public function toArray($request)
     {
         // return parent::toArray($request);
+        $start = [
+          'date'     => $this->midtrans_start_transaction,
+          'timezone' => Carbon::parse($this->midtrans_start_transaction)->timezoneName
+        ];
+
+        $end = [
+          'date'     => $this->midtrans_expired_transaction,
+          'timezone' => Carbon::parse($this->midtrans_expired_transaction)->timezoneName
+        ];
+
         $data = [
             'id'                           => $this->id,
             'id_name'                      => $this->id_name,
@@ -25,8 +35,8 @@ class AddItemBoxPaymentResource extends JsonResource
             'bank'                         => $this->bank,
             'midtrans_url'                 => $this->midtrans_url,
             'midtrans_status'              => $this->midtrans_status,
-            'midtrans_start_transaction'   => $this->midtrans_start_transaction,
-            'midtrans_expired_transaction' => $this->midtrans_expired_transaction,
+            'midtrans_start_transaction'   => $start,
+            'midtrans_expired_transaction' => $end,
             'amount'                       => $this->amount,
             'status_id'                    => new StatusResource($this->status),
             'user'                         => new UserResource($this->user),
