@@ -45,14 +45,19 @@ class MidtransNotifController extends Controller
       // PAY-XTEND
       // PAY-ORDER
       $vt = new Veritrans;
-      echo 'notification handler';
+      // echo 'notification handler';
       $json_result = file_get_contents('php://input');
       $result      = json_decode($json_result);
 
+      $notif = null;
       if ($result) {
         $notif = $vt->status($result->order_id);
+      } 
+      
+      if (empty($notif)) {
+        error_log(print_r($result,TRUE));
+        abort(404);
       }
-      error_log(print_r($result,TRUE));
 
       $transaction = $notif->transaction_status;
       $type        = $notif->payment_type;
@@ -440,6 +445,11 @@ class MidtransNotifController extends Controller
         $box->save();
       }
     }
+  }
+
+  public function finish()
+  {
+    return view('thankyou');
   }
 
 }
