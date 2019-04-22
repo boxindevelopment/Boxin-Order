@@ -156,8 +156,10 @@ class PaymentController extends Controller
                       // $order->save();
                       // //change status order detail
                       // $status_order = DB::table('order_details')->where('order_id', (int)$request->order_id)->update(['status_id' => 15]);
-                  // }  
-                  if ($newStatus == 'settlement' || $newStatus == 'success') {
+                  // }
+                  if ($newStatus == 'pending') {
+
+                  } else if ($newStatus == 'settlement' || $newStatus == 'success') {
                       // status code 5 = success
                       $checkPayment->status_id = 5;
                       $checkPayment->save();
@@ -427,7 +429,9 @@ class PaymentController extends Controller
                       // $ex_order->status_id = 15;
                       // $ex_order->save();
                   // } 
-                  if ($newStatus == 'settlement' || $newStatus == 'success') {
+                  if ($newStatus == 'pending') {
+
+                  } else if ($newStatus == 'settlement' || $newStatus == 'success') {
                       // status code 5 = success
                       $checkPayment->status_id = 5;
                       $checkPayment->save();
@@ -473,8 +477,8 @@ class PaymentController extends Controller
             $payment->id_name                      = $invoice;
             $payment->midtrans_url                 = $midtrans_data['redirect_url'];
             $payment->midtrans_status              = 'pending';
-            $payment->midtrans_start_transaction   = $start_transaction;
-            $payment->midtrans_expired_transaction = $expired_transaction;
+            $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
+            $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();
             $payment->save();
                 
             DB::commit();

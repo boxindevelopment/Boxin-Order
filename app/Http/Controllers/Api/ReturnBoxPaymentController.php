@@ -136,7 +136,9 @@ class ReturnBoxPaymentController extends Controller
                   $newStatus = $midtrans_data['transaction_status'];
                   $checkPayment->midtrans_status = $newStatus;
                   $checkPayment->save();
-                  if ($newStatus == 'settlement' || $newStatus == 'success') {
+                  if ($newStatus == 'pending') {
+
+                  } else if ($newStatus == 'settlement' || $newStatus == 'success') {
                       // status code 5 = success
                       $checkPayment->status_id = 5;
                       $checkPayment->save();
@@ -187,8 +189,8 @@ class ReturnBoxPaymentController extends Controller
             $payment->id_name                      = $invoice;
             $payment->midtrans_url                 = $midtrans_data['redirect_url'];
             $payment->midtrans_status              = 'pending';
-            $payment->midtrans_start_transaction   = $start_transaction;
-            $payment->midtrans_expired_transaction = $expired_transaction;
+            $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
+            $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();
             $payment->save();
 
             DB::commit();
