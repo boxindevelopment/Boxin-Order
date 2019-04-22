@@ -143,10 +143,10 @@ class PaymentController extends Controller
               $midtrans_data = $midtrans->checkstatus($checkPayment->id_name);
               if ($checkPayment->status_id != 5 || $checkPayment->status_id != 6) {
               $sukses_response = array('200', '201', '202');
+              $newStatus = $midtrans_data['transaction_status'];
+              $checkPayment->midtrans_status = $newStatus;
+              $checkPayment->save();
                 if (in_array($midtrans_data['status_code'], $sukses_response)) {
-                  $newStatus = $midtrans_data['transaction_status'];
-                  $checkPayment->midtrans_status = $newStatus;
-                  $checkPayment->save();
                   // if ($newStatus == 'pending') {
                       // // change status payment
                       // $checkPayment->status_id = 15;
@@ -417,10 +417,10 @@ class PaymentController extends Controller
               $midtrans_data = $midtrans->checkstatus($checkPayment->id_name);
               if ($checkPayment->status_id != 5 || $checkPayment->status_id != 6) {
               $sukses_response = array('200', '201', '202');
+              $newStatus = $midtrans_data['transaction_status'];
+              $checkPayment->midtrans_status = $newStatus;
+              $checkPayment->save();
                 if (in_array($midtrans_data['status_code'], $sukses_response)) {
-                  $newStatus = $midtrans_data['transaction_status'];
-                  $checkPayment->midtrans_status = $newStatus;
-                  $checkPayment->save();
                   // if ($newStatus == 'pending') {
                       // // change status payment
                       // $checkPayment->status_id = 15;

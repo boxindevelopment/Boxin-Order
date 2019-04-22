@@ -17,6 +17,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::post('/midtrans/notification', 'Api\MidtransNotifController@notification');
+Route::get('/midtrans/finish', 'Api\MidtransNotifController@finish');
+
 Route::group(['namespace' => 'Api'], function() {
     Route::post('test-email', 'TestController@mail')->name('api.test.mail');
     Route::prefix('product')->group(function() {
@@ -106,8 +109,6 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('voucher/{voucher_id}', 'VoucherController@detail')->name('api.voucher.detail');
         Route::get('banner/list', 'BannerController@index')->name('api.banner.index');
     });
-
-    Route::post('/midtrans/notification', 'MidtransNotifController@notification');
 
 
     // midtrans
