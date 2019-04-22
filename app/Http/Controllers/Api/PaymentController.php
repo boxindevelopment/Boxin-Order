@@ -411,7 +411,7 @@ class PaymentController extends Controller
             }
 
             $amount = (int) $request->amount;
-            $checkPayment = ExtendOrderPayment::where('order_id', (int)$request->extend_id)->where('amount', $amount)->first();
+            $checkPayment = ExtendOrderPayment::where('extend_id', (int)$request->extend_id)->where('amount', $amount)->first();
             //* jika data sudah ada
             if ($checkPayment) {
               $midtrans_data = $midtrans->checkstatus($checkPayment->id_name);
