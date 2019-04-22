@@ -20,6 +20,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('/midtrans/notification', 'Api\MidtransNotifController@notification');
 Route::get('/midtrans/finish', 'Api\MidtransNotifController@finish');
 
+Route::get('/cron/order/expired', 'Api\OrderController@cronExpired');
+
 Route::group(['namespace' => 'Api'], function() {
     Route::post('test-email', 'TestController@mail')->name('api.test.mail');
     Route::prefix('product')->group(function() {
