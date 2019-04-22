@@ -11,6 +11,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ChangeBoxPaymentResource;
 use Illuminate\Http\Request;
 use DB;
+use App\Http\Controllers\Vtdirect;
 
 class ChangeBoxPaymentController extends Controller
 {
@@ -99,6 +100,7 @@ class ChangeBoxPaymentController extends Controller
     
     public function startPayment(Request $request)
     {
+        $midtrans = new Vtdirect();
         $user = $request->user();
         $validator = \Validator::make($request->all(), [
             'order_detail_id' => 'required',

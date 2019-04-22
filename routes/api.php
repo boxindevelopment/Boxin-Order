@@ -107,6 +107,9 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('banner/list', 'BannerController@index')->name('api.banner.index');
     });
 
+    Route::post('/midtrans/notification', 'MidtransNotifController@notification');
+
+
     // midtrans
     // Route::get('/vtweb', 'PagesController@vtweb');
 
