@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Vtdirect;
 use DB;
 use Carbon\Carbon;
+use Exception;
 
 class ReturnBoxPaymentController extends Controller
 {
@@ -113,19 +114,27 @@ class ReturnBoxPaymentController extends Controller
             ], 422);
         }
 
+        $order_detail = OrderDetail::find($request->order_detail_id);
+        if (!$order_detail) {
+          return response()->json([
+            'status' => false,
+            'message' => 'Order detail id not found'
+          ], 422);
+          // throw new Exception("Order detail id not found");
+        }
+
+        //? check return box
+        $returnbox = ReturnBoxes::where('order_detail_id', $request->order_detail_id)->where('status_id', 14)->first();
+        if (empty($returnbox)) {
+          return response()->json([
+            'status' => false,
+            'message' => 'Return box id not found'
+          ], 422);
+          // throw new Exception("Return box id not found");
+        }
+
         DB::beginTransaction();
         try {
-            $order_detail = OrderDetail::find($request->order_detail_id);
-            if (!$order_detail) {
-              throw new Exception("Order detail id not found");
-            }
-
-            //? check return box
-            $returnbox = ReturnBoxes::where('order_detail_id', $request->order_detail_id)->where('status_id', 14)->first();
-            if (!$returnbox) {
-              throw new Exception("Return box id not found");
-            }
-
             $amount = (int) $request->amount;
             $checkPayment = ReturnBoxPayment::where('order_detail_id', $request->order_detail_id)->where('user_id', $user->id)->first();
             //* jika data sudah ada
@@ -218,7 +227,7 @@ class ReturnBoxPaymentController extends Controller
               'message' => 'Success submit to midtrans',
               'data' => new ReturnBoxPaymentResource($payment)
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollback();
             return response()->json([
                 'status' => false,

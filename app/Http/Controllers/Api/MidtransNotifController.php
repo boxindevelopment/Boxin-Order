@@ -23,6 +23,7 @@ use App\Model\ExtendOrderDetail;
 use App\Model\ExtendOrderPayment;
 use Veritrans;
 use DB;
+use Exception;
 
 class MidtransNotifController extends Controller
 {

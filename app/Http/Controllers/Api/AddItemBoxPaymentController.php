@@ -16,6 +16,7 @@ use App\Model\OrderDetailBox;
 use DB;
 use Carbon\Carbon;
 use App\Http\Controllers\Vtdirect;
+use Exception;
 
 class AddItemBoxPaymentController extends Controller
 {
