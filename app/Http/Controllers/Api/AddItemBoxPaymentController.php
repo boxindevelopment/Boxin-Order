@@ -128,7 +128,7 @@ class AddItemBoxPaymentController extends Controller
         $start_transaction = Carbon::parse($midtrans_data['start_time']);
         $expired_transaction = Carbon::parse($midtrans_data['start_time'])->addDays(1);
 
-        $payment                               = new Payment;
+        $payment                               = new AddItemBoxPayment;
         $payment->add_item_box_id              = $request->add_item_box_id;
         $payment->order_detail_id              = $request->order_detail_id;
         $payment->user_id                      = $user->id;
