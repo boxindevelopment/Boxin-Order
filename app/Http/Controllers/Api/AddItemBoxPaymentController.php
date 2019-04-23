@@ -64,17 +64,16 @@ class AddItemBoxPaymentController extends Controller
         //* jika data sudah ada
         if ($checkPayment) {
           $midtrans_data = $midtrans->checkstatus($checkPayment->id_name);
-          if (count($midtrans_data) < 1) {
-            return response()->json([
-              'status'         => true,
-              'message'        => 'Check status midtrans failed',
-              'data'           => new AddItemBoxPaymentResource($checkPayment),
-              'midtrans_check' => $midtrans_data
-            ]);
-          }
-
           if ($checkPayment->status_id != 5 || $checkPayment->status_id != 6) {
           $sukses_response = array('200', '201', '202');
+            if (!array_key_exists('transaction_status', $midtrans_data)) {
+              return response()->json([
+                'status'         => true,
+                'message'        => 'Success get data',
+                'data'           => new AddItemBoxPaymentResource($checkPayment),
+                'midtrans_check' => $midtrans_data
+              ]);
+            }
           $newStatus = $midtrans_data['transaction_status'];
           $checkPayment->midtrans_status = $newStatus;
           $checkPayment->payment_type    = $midtrans_data['payment_type'];
