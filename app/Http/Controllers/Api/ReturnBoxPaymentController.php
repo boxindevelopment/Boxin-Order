@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Model\OrderDetail;
 use App\Model\ReturnBoxPayment;
-use App\Model\ReturnBox;
+use App\Model\ReturnBoxes;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReturnBoxPaymentResource;
 use Illuminate\Http\Request;
@@ -121,7 +121,7 @@ class ReturnBoxPaymentController extends Controller
             }
 
             //? check return box
-            $returnbox = ReturnBox::where('order_detail_id', $request->order_detail_id)->where('user_id', $user->id)->first();
+            $returnbox = ReturnBoxes::where('order_detail_id', $request->order_detail_id)->where('user_id', $user->id)->first();
             if (!$returnbox) {
               throw new Exception("Return box id not found");
             }
