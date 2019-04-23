@@ -319,7 +319,7 @@ class MidtransNotifController extends Controller
           $ex_order_details->status_id = intval($status);
           $ex_order_details->save();
 
-          if ($request->status_id == 5) {
+          if ($status == 5) {
               $orderDetails           = OrderDetail::findOrFail($ex_order_details->order_detail_id);
               $orderDetails->amount   = $ex_order_details->total_amount;                              // total amount dari durasi baru dan lama
               $orderDetails->end_date = $ex_order_details->new_end_date;                              // durasi tanggal berakhir yang baru
@@ -327,7 +327,7 @@ class MidtransNotifController extends Controller
               $orderDetails->save();
           }
 
-          if ($request->status_id == 5 || $request->status_id == 6){
+          if ($status == 5 || $status == 6){
             $params['status_id'] =  $status;
             $params['order_detail_id'] = $ex_order_details->order_detail_id;
             $user_id = $ex_order_details->user_id;
