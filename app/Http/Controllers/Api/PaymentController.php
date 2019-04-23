@@ -496,7 +496,7 @@ class PaymentController extends Controller
             $start_transaction = Carbon::parse($midtrans_data['start_time']);
             $expired_transaction = Carbon::parse($midtrans_data['start_time'])->addDays(1);
 
-            $payment                               = new Payment;
+            $payment                               = new ExtendOrderPayment;
             $payment->extend_id                    = $request->extend_id;
             $payment->order_detail_id              = $ex_order->order_detail_id;
             $payment->user_id                      = $user->id;
