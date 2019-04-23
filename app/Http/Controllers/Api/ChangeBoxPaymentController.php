@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use DB;
 use App\Http\Controllers\Vtdirect;
 use Carbon\Carbon;
+use Exception;
 
 class ChangeBoxPaymentController extends Controller
 {
