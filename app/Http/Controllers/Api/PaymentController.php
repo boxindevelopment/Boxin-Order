@@ -23,6 +23,7 @@ use Illuminate\Http\Request;
 use DB;
 use App\Http\Controllers\Vtdirect;
 use Carbon\ Carbon;
+use Exception;
 // use Requests;
 
 class PaymentController extends Controller
