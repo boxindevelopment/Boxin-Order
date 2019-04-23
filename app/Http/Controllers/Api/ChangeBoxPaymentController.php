@@ -144,10 +144,10 @@ class ChangeBoxPaymentController extends Controller
 
               if ($checkPayment->status_id != 5 || $checkPayment->status_id != 6) {
               $sukses_response = array('200', '201', '202');
-              $newStatus = $midtrans_data['transaction_status'];
-              $checkPayment->midtrans_status = $newStatus;
-              $checkPayment->payment_type    = $midtrans_data['payment_type'];
-              $checkPayment->save();
+              // $newStatus = $midtrans_data['transaction_status'];
+              // $checkPayment->midtrans_status = $newStatus;
+              // $checkPayment->payment_type    = $midtrans_data['payment_type'];
+              // $checkPayment->save();
                 if (in_array($midtrans_data['status_code'], $sukses_response)) {
                   if ($newStatus == 'pending') {
 
