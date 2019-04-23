@@ -10,6 +10,7 @@ use App\Model\ExtendOrderDetail;
 use App\Model\DeliveryFee;
 use App\Model\Price;
 use App\Model\Payment;
+use App\Model\ReturnBoxes;
 use App\Model\PickupOrder;
 use App\Jobs\MessageInvoice;
 use App\Http\Controllers\Controller;
@@ -545,17 +546,63 @@ class OrderController extends Controller
         return $code;
     }
 
-    public function cronExpired()
+    public function cronOrderExpired()
     {
-      $date_now = Carbon::now()->toDateTimeString();
-      $array_id_order_detail = OrderDetail::whereDate('end_date', '>=', $date_now)->pluck('id')->toArray();
-      $query_id_order = OrderDetail::selectRaw('DISTINCT(order_id) as order_id')->whereDate('end_date', '>=', $date_now)->pluck('order_id')->toArray();
-      $array_id_order = array_map('intval', $query_id_order);
+      $types_of_pickup_id = 2;                                               // diambil sendiri
+      $time_now           = Carbon::now()->add(1, 'hours')->toTimeString();
+      $time_pickup        = Carbon::now()->add(5, 'hours')->toTimeString();
+      $note               = '';
+      $status_id          = 16;
+      $address            = '';
+      $long               = null;
+      $lat                = null;
+      $deliver_fee        = 0;
+      $date_return        = Carbon::now()->toDateString();
       
+      $date_now      = Carbon::now()->toDateTimeString();
+      $order_details = OrderDetail::whereDate('end_date', '>=', $date_now)->get();
+      // $array_id_order_detail = OrderDetail::whereDate('end_date', '>=', $date_now)->pluck('id')->toArray();
+      // $query_id_order = OrderDetail::selectRaw('DISTINCT(order_id) as order_id')->whereDate('end_date', '>=', $date_now)->pluck('order_id')->toArray();
+      // $array_id_order = array_map('intval', $query_id_order);
+      
+      DB::beginTransaction();
+      try {
 
-      dd($numArray);
+        if (count($order_details) > 0) {
+          foreach ($order_details as $key => $value) {
+            $return                         = new ReturnBoxes;
+            $return->types_of_pickup_id     = $types_of_pickup_id;
+            $return->date                   = $date;
+            $return->time                   = $time_now;
+            $return->time_pickup            = $time_pickup;
+            $return->note                   = $note;
+            $return->status_id              = $status_id;
+            $return->address                = $address;
+            $return->order_detail_id        = $value->id;
+            $return->longitude              = $long;
+            $return->latitude               = $lat;
+            $return->deliver_fee            = $deliver_fee;
+            $return->save();
+
+            //update status order detail to
+            $order_detail  = OrderDetail::findOrFail($return->order_detail_id);
+            if($order_detail){
+                $data1["is_returned"]        = 1;                     
+                $data1["status_id"]          = $data['types_of_pickup_id'] == '1' ? 14 : 16;      
+                $order_detail->fill($data1)->save();
+            }
+
+            $value->is_returned = 1;
+            $value->status_id   = 16;
+            $value->save();
+          }
+        }
+        DB::commit();
+        return response()->json(['status' => true, 'message' => 'Successfully running.']);
+      } catch (\Exception $th) {
+        DB::rollback();
+        return response()->json([ 'status' =>false, 'message' => $e->getMessage()], 422);
+      }
     }
-
-
 
 }
