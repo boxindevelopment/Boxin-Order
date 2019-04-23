@@ -563,7 +563,7 @@ class PaymentController extends Controller
             if(count($userDevice) > 0){
                 // $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
               $client = new \GuzzleHttp\Client();
-              $response = $client->request('POST', $this->url . 'api/confirm-payment/' . $order->user_id, ['form_params' => [
+              $response = $client->request('POST', $this->url . 'api/confirm-payment/' . $user_id, ['form_params' => [
                 'status_id'       => $status,
                 'order_detail_id' => $ex_order_details->order_detail_id
               ]]);
