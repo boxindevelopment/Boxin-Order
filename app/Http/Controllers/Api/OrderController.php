@@ -550,7 +550,7 @@ class OrderController extends Controller
     {
       $types_of_pickup_id = 2;                                               // diambil sendiri
       $time_now           = Carbon::now()->add(1, 'hours')->toTimeString();
-      $time_pickup        = Carbon::now()->add(5, 'hours')->toTimeString();
+      $time_pickup        = Carbon::now()->add(9, 'hours')->toTimeString();
       $note               = '';
       $status_id          = 16;
       $address            = '';
@@ -584,19 +584,17 @@ class OrderController extends Controller
             $return->deliver_fee            = $deliver_fee;
             $return->save();
 
-            //update status order detail to
-            $order_detail  = OrderDetail::findOrFail($return->order_detail_id);
-            if($order_detail){
-                $data1["is_returned"]        = 1;                     
-                $data1["status_id"]          = $data['types_of_pickup_id'] == '1' ? 14 : 16;      
-                $order_detail->fill($data1)->save();
-            }
-
             $value->is_returned = 1;
             $value->status_id   = 16;
             $value->save();
+
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', $this->url . 'api/cron/return-request/' . $value->order->user_id, ['form_params' => [
+              'title' => 'Your return request has been processed.',
+            ]]);
           }
         }
+        
         DB::commit();
         return response()->json(['status' => true, 'message' => 'Successfully running.']);
       } catch (\Exception $th) {
