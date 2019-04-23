@@ -121,7 +121,7 @@ class ReturnBoxPaymentController extends Controller
             }
 
             //? check return box
-            $returnbox = ReturnBoxes::where('order_detail_id', $request->order_detail_id)->where('user_id', $user->id)->first();
+            $returnbox = ReturnBoxes::where('order_detail_id', $request->order_detail_id)->where('status_id', 14)->first();
             if (!$returnbox) {
               throw new Exception("Return box id not found");
             }
