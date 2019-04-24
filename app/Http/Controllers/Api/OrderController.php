@@ -565,7 +565,7 @@ class OrderController extends Controller
           foreach ($order_details as $key => $value) {
             $return                         = new ReturnBoxes;
             $return->types_of_pickup_id     = $types_of_pickup_id;
-            $return->date                   = $date;
+            $return->date                   = $date_now;
             $return->time                   = $time_now;
             $return->time_pickup            = $time_pickup;
             $return->note                   = $note;
