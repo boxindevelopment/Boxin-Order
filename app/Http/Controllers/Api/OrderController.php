@@ -581,10 +581,10 @@ class OrderController extends Controller
             $value->status_id   = 16;
             $value->save();
 
-            $client = new \GuzzleHttp\Client();
-            $response = $client->request('POST', $this->url . 'api/cron/return-request/' . $value->order->user_id, ['form_params' => [
-              'title' => 'Your return request has been processed.',
-            ]]);
+            // $client = new \GuzzleHttp\Client();
+            // $response = $client->request('POST', $this->url . 'api/cron/return-request/' . $value->order->user_id, ['form_params' => [
+            //   'title' => 'Your return request has been processed.',
+            // ]]);
           }
         }
         
