@@ -543,8 +543,8 @@ class OrderController extends Controller
     public function cronOrderExpired()
     {
       $types_of_pickup_id = 2;                                               // diambil sendiri
-      $time_now           = Carbon::now()->add(1, 'hours')->toTimeString();
-      $time_pickup        = Carbon::now()->add(9, 'hours')->toTimeString();
+      $time_now           = Carbon::now()->addHours(1)->toTimeString();
+      $time_pickup        = Carbon::now()->addHours(9)->toTimeString();
       $note               = '';
       $status_id          = 16;
       $address            = '';
