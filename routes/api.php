@@ -18,6 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['namespace' => 'Api'], function() {
+    Route::get('/cron/order/expired', 'OrderController@cronOrderExpired');
+
     Route::post('test-email', 'TestController@mail')->name('api.test.mail');
     Route::prefix('product')->group(function() {
         Route::get('size/{types_of_box_room_id}', 'TypeSizeController@list')->name('api.size.list');
