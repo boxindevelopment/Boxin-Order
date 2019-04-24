@@ -554,11 +554,10 @@ class OrderController extends Controller
       $date_return        = Carbon::now()->toDateString();
       
       $date_now      = Carbon::now()->toDateTimeString();
-      $order_details = OrderDetail::whereDate('end_date', '>=', $date_now)->get();
+      $order_details = OrderDetail::whereDate('end_date', '<', $date_now)->get();
       // $array_id_order_detail = OrderDetail::whereDate('end_date', '>=', $date_now)->pluck('id')->toArray();
       // $query_id_order = OrderDetail::selectRaw('DISTINCT(order_id) as order_id')->whereDate('end_date', '>=', $date_now)->pluck('order_id')->toArray();
       // $array_id_order = array_map('intval', $query_id_order);
-      dd($order_details);
       DB::beginTransaction();
       try {
 
