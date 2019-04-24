@@ -599,7 +599,7 @@ class OrderController extends Controller
         return response()->json(['status' => true, 'message' => 'Successfully running.']);
       } catch (\Exception $th) {
         DB::rollback();
-        return response()->json([ 'status' =>false, 'message' => $e->getMessage()], 422);
+        return response()->json([ 'status' =>false, 'message' => $th->getMessage()], 422);
       }
     }
 
