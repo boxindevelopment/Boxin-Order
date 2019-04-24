@@ -10,6 +10,8 @@ use App\Model\ExtendOrderDetail;
 use App\Model\DeliveryFee;
 use App\Model\Price;
 use App\Model\PickupOrder;
+use App\Model\ReturnBoxes;
+use App\Model\ReturnBoxPayment;
 use App\Jobs\MessageInvoice;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BoxResource;
