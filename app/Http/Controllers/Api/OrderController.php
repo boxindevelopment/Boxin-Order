@@ -209,6 +209,7 @@ class OrderController extends Controller
             $order->area_id                = $request->area_id;
             $order->status_id              = 14;
             $order->total                  = 0;
+            $order->voucher_amount         = 0;
             $order->qty                    = $data['order_count'];
             $order->save();
 
@@ -352,10 +353,13 @@ class OrderController extends Controller
 
             //voucher
             $tot = $total_all;
+            $voucher_price = 0;
+            $voucher_id = null;
             if($request->voucher){
                 $voucher_data = $this->voucher->findByCodeVocher($request->voucher, $tot);
                 if($voucher_data){
                     $voucher_price = 0;
+                    $voucher_id = $voucher_data->id;
                     if($voucher_data->type_voucher == 2){
                         $voucher_price = $voucher_data->value;
                     } else {
@@ -368,7 +372,7 @@ class OrderController extends Controller
                 }
             }
 
-            Order::where('id', $order->id)->update(['total' => $tot, 'deliver_fee' => intval($request->pickup_fee)]);
+            Order::where('id', $order->id)->update(['total' => $tot, 'voucher_id' => $voucher_id, 'voucher_amount' => $voucher_price, 'deliver_fee' => intval($request->pickup_fee)]);
 
             // make payment
 
