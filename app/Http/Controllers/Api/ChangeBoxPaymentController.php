@@ -133,73 +133,20 @@ class ChangeBoxPaymentController extends Controller
             $checkPayment = ChangeBoxPayment::where('change_box_id', $request->change_box_id)->where('user_id', $user->id)->first();
             //* jika data sudah ada
             if ($checkPayment) {
-              $midtrans_data = $midtrans->checkstatus($checkPayment->id_name);
-              if ($checkPayment->status_id != 5 || $checkPayment->status_id != 6) {
-              $sukses_response = array('200', '201', '202');
-              if (!array_key_exists('transaction_status', $midtrans_data)) {
-                return response()->json([
-                  'status'         => true,
-                  'message'        => 'Success get data',
-                  'data'           => new ChangeBoxPaymentResource($checkPayment),
-                  'midtrans_check' => $midtrans_data
-                ]);
-              } 
-              
-              $newStatus = $midtrans_data['transaction_status'];
-              $checkPayment->midtrans_status = $newStatus;
-              $checkPayment->payment_type    = $midtrans_data['payment_type'];
-              $checkPayment->save();
-                if (in_array($midtrans_data['status_code'], $sukses_response)) {
-                  if ($newStatus == 'pending') {
-
-                  } else if ($newStatus == 'settlement' || $newStatus == 'success') {
-                      // status code 5 = success
-                      $checkPayment->status_id = 5;
-                      $checkPayment->save();
-
-                      // TODO
-                      $change_box->status_id = 5;
-                      $change_box->save();
-                  } else {
-                      // status code 6 = failed
-                      $checkPayment->status_id = 6;
-                      $checkPayment->save();
-
-                      // TODO
-                      $change_box->status_id = 6;
-                      $change_box->save();
-                  }
-                } else {
-                  // status code 6 = failed
-                  $checkPayment->status_id = 6;
-                  $checkPayment->save();
-
-                  // TODO
-                  $change_box->status_id = 6;
-                  $change_box->save();
-                }
-              }
-
-              DB::commit();
-              return response()->json([
-                'status'         => true,
-                'message'        => 'Success get data',
-                'data'           => new ChangeBoxPaymentResource($checkPayment),
-                'midtrans_check' => $midtrans_data
-              ]);
+              throw new Exception("Change Box has been paid.");
             }
 
             //* data payment baru
-            $invoice = 'PAY-CHBOX' . $request->change_box_id . '-' . $this->id_name();
-            $itemID = 'CHANGEBOXID'. $request->change_box_id;
+            $invoice = 'PAY-CHBOX-' . $request->change_box_id . $this->id_name();
+            $itemID = 'CHANGEBOXID-'. $request->change_box_id;
             $info = 'Payment for changing box id ' . $request->change_box_id;
-            $midtrans_data = $midtrans->purchase($user, $change_box->created_at, $invoice, $amount, $itemID, $info);
-            if (count($midtrans_data) == 0) {
+            $url_redirect = $midtrans->purchase($user, $change_box->created_at, $invoice, $amount, $itemID, $info);
+            if (empty($url_redirect)) {
               throw new Exception('Server is busy, please try again later');
             }
 
-            $start_transaction = Carbon::parse($midtrans_data['start_time']);
-            $expired_transaction = Carbon::parse($midtrans_data['start_time'])->addDays(1);
+            $start_transaction = Carbon::parse($change_box->created_at);
+            $expired_transaction = Carbon::parse($change_box->created_at)->addDays(1);
 
             $payment                               = new ChangeBoxPayment;
             $payment->change_box_id                = $request->change_box_id;

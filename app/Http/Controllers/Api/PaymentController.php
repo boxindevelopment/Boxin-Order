@@ -45,75 +45,6 @@ class PaymentController extends Controller
   // XTEND
   // ORDER
 
-    // public function startPayment_backup(Request $request)
-    // {
-    //     $user = $request->user();
-
-    //     $validator = \Validator::make($request->all(), [
-    //         'order_id'          => 'required',
-    //         'amount'            => 'required',
-    //         'bank'              => 'required',
-    //         'image'             => 'required',
-    //     ]);
-
-    //     if($validator->fails()) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => $validator->errors()
-    //         ]);
-    //     }
-
-    //     try {
-    //         $order = Order::find($request->order_id);
-    //         if($order){
-    //             $check = Payment::where('order_id', $request->order_id)->get();
-    //             if(count($check)>0){
-    //                 return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
-    //             }
-    //             $data                    = $request->all();
-    //             $payment                 = new Payment;
-    //             $payment->order_id       = $request->order_id;
-    //             $payment->user_id        = $user->id;
-    //             $payment->payment_type   = 'transfer';
-    //             $payment->bank           = $request->bank;
-    //             $payment->amount         = $request->amount;
-    //             $payment->status_id      = 15;
-    //             if ($request->hasFile('image')) {
-    //                 if ($request->file('image')->isValid()) {
-    //                     $getimageName = time().'.'.$request->image->getClientOriginalExtension();
-    //                     $image = $request->image->move(public_path('images/payment/order'), $getimageName);
-    //                 }
-    //             }
-    //             $payment->image_transfer = $getimageName;
-    //             $payment->id_name        = 'PAY'.$this->id_name();
-    //             $payment->save();
-
-    //             if($payment) {
-    //                 //change status order
-    //                 $order->status_id       = 15;
-    //                 $order->save();
-    //                 //change status order detail
-    //                 $status_order = DB::table('order_details')->where('order_id', $request->order_id)->update(['status_id' => 15]);
-    //             }
-                
-    //         } else {
-    //             return response()->json(['status' => false, 'message' => 'Order Id not found'], 401);
-    //         }
-            
-    //     } catch (\Exception $e) {
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => $e->getMessage()
-    //         ]);
-    //     }
-
-    //     return response()->json([
-    //         'status' => true,
-    //         'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
-    //         'data' => new PaymentResource($payment->fresh())
-    //     ]);
-    // }
-
     public function startPayment(Request $request)
     {
         $midtrans = new Vtdirect();
@@ -136,79 +67,25 @@ class PaymentController extends Controller
             if (!$order) {
               throw new Exception('Order Id not found');
             }
-
+            
             $amount = (int) $request->amount;
-            $checkPayment = Payment::where('order_id', (int) $request->order_id)->where('amount', $amount)->first();
-            //* jika data sudah ada
-            if ($checkPayment) {
-              $midtrans_data = $midtrans->checkstatus($checkPayment->id_name);
-              if ($checkPayment->status_id != 5 || $checkPayment->status_id != 6) {
-              $sukses_response = array('200', '201', '202');
-              if (!array_key_exists('transaction_status', $midtrans_data)) {
-                return response()->json([
-                  'status'         => true,
-                  'message'        => 'Success get data',
-                  'data'           => new PaymentResource($checkPayment),
-                  'midtrans_check' => $midtrans_data
-                ]);
-              }
-              
-              $newStatus = $midtrans_data['transaction_status'];
-              $checkPayment->midtrans_status = $newStatus;
-              $checkPayment->payment_type    = $midtrans_data['payment_type'];
-              $checkPayment->save();
-                if (in_array($midtrans_data['status_code'], $sukses_response)) {
-                  // if ($newStatus == 'pending') {
-                      // // change status payment
-                      // $checkPayment->status_id = 15;
-                      // $checkPayment->save();
-                      // //change status order
-                      // $order->status_id = 15;
-                      // $order->save();
-                      // //change status order detail
-                      // $status_order = DB::table('order_details')->where('order_id', (int)$request->order_id)->update(['status_id' => 15]);
-                  // }
-                  if ($newStatus == 'pending') {
-
-                  } else if ($newStatus == 'settlement' || $newStatus == 'success') {
-                      // status code 5 = success
-                      $checkPayment->status_id = 5;
-                      $checkPayment->save();
-                      self::paymentStatusOrder($request->order_id, 5);
-                  } else {
-                      $checkPayment->status_id = 6;
-                      $checkPayment->save();
-                      // status code 6 = failed
-                      self::paymentStatusOrder($request->order_id, 6);
-                  }
-                } else {
-                  $checkPayment->status_id = 6;
-                  $checkPayment->save();
-                  // status code 6 = failed
-                  self::paymentStatusOrder($request->order_id, 6);
-                }
-              }
-
-              DB::commit();
-              return response()->json([
-                'status'         => true,
-                'message'        => 'Success get data',
-                'data'           => new PaymentResource($checkPayment),
-                'midtrans_check' => $midtrans_data
-              ]);
+            $check = Payment::where('order_id', $request->order_id)->get();
+            if (count($check) > 0){
+              throw new Exception('Order has been paid.');
+              // return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
             }
 
             //* data payment baru
-            $invoice = 'PAY-ORDER' . $request->order_id . '-' . $this->id_name();
-            $itemID = 'ORDERID'. $request->order_id;
+            $invoice = 'PAY-ORDER-' . $request->order_id . $this->id_name();
+            $itemID = 'ORDERID-'. $request->order_id;
             $info = 'Payment for order box id ' . $request->order_id;
-            $midtrans_data = $midtrans->purchase($user, $order->created_at, $invoice, $amount, $itemID, $info);
-            if (count($midtrans_data) == 0) {
+            $url_redirect = $midtrans->purchase($user, $order->created_at, $invoice, $amount, $itemID, $info);
+            if (empty($url_redirect)) {
               throw new Exception('Server is busy, please try again later');
             }
 
-            $start_transaction = Carbon::parse($midtrans_data['start_time']);
-            $expired_transaction = Carbon::parse($midtrans_data['start_time'])->addDays(1);
+            $start_transaction = Carbon::parse($order->created_at);
+            $expired_transaction = Carbon::parse($order->created_at)->addDays(1);
 
             $payment                               = new Payment;
             $payment->order_id                     = $request->order_id;
@@ -217,8 +94,7 @@ class PaymentController extends Controller
             $payment->bank                         = null;
             $payment->amount                       = $amount;
             $payment->status_id                    = 14;
-            $payment->midtrans_url                 = $midtrans_data['redirect_url'];
-            $payment->midtrans_status              = 'pending';
+            $payment->midtrans_url                 = $url_redirect;
             $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
             $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();
             $payment->id_name                      = $invoice;
@@ -236,7 +112,7 @@ class PaymentController extends Controller
         return response()->json([
             'status' => true,
             // 'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
-            'message' => 'Success submit to midtrans',
+            'message' => 'Payment created.',
             'data' => new PaymentResource($payment)
         ]);
     }
@@ -427,75 +303,24 @@ class PaymentController extends Controller
             }
 
             $amount = (int) $request->amount;
-            $checkPayment = ExtendOrderPayment::where('extend_id', (int)$request->extend_id)->where('amount', $amount)->first();
+            $checkPayment = ExtendOrderPayment::where('extend_id', (int)$request->extend_id)->first();
             //* jika data sudah ada
             if ($checkPayment) {
-              $midtrans_data = $midtrans->checkstatus($checkPayment->id_name);
-              if ($checkPayment->status_id != 5 || $checkPayment->status_id != 6) {
-              $sukses_response = array('200', '201', '202');
-                if (!array_key_exists('transaction_status', $midtrans_data)) {
-                  return response()->json([
-                    'status'         => true,
-                    'message'        => 'Success get data',
-                    'data'           => new ExtendOrderPaymentResource($checkPayment),
-                    'midtrans_check' => $midtrans_data
-                  ]);
-                }
-
-              $newStatus = $midtrans_data['transaction_status'];
-              $checkPayment->midtrans_status = $newStatus;
-              $checkPayment->payment_type    = $midtrans_data['payment_type'];
-              $checkPayment->save();
-                if (in_array($midtrans_data['status_code'], $sukses_response)) {
-                  // if ($newStatus == 'pending') {
-                      // // change status payment
-                      // $checkPayment->status_id = 15;
-                      // $checkPayment->save();
-                      // //change status order
-                      // $ex_order->status_id = 15;
-                      // $ex_order->save();
-                  // } 
-                  if ($newStatus == 'pending') {
-
-                  } else if ($newStatus == 'settlement' || $newStatus == 'success') {
-                      // status code 5 = success
-                      $checkPayment->status_id = 5;
-                      $checkPayment->save();
-                      self::paymentStatusExtend((int)$request->extend_id, 5);
-                  } else {
-                      $checkPayment->status_id = 6;
-                      $checkPayment->save();
-                      // status code 6 = failed
-                      self::paymentStatusExtend((int)$request->extend_id, 6);
-                  }
-                } else {
-                  $checkPayment->status_id = 6;
-                  $checkPayment->save();
-                  // status code 6 = failed
-                  self::paymentStatusExtend((int)$request->extend_id, 6);
-                }
-              }
-
-              DB::commit();
-              return response()->json([
-                'status'         => true,
-                'message'        => 'Success get data',
-                'data'           => new ExtendOrderPaymentResource($checkPayment),
-                'midtrans_check' => $midtrans_data
-              ]);
+              throw new Exception('Order has been paid.');
+              // return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
             }
 
             //* data payment baru
-            $invoice = 'PAY-XTEND' . $request->extend_id . '-' . $this->id_name_extend();
-            $itemID = 'EXTENDID'. $request->extend_id;
+            $invoice = 'PAY-XTEND-' . $request->extend_id . $this->id_name_extend();
+            $itemID = 'EXTENDID-'. $request->extend_id;
             $info = 'Payment for extend box id ' . $request->extend_id;
-            $midtrans_data = $midtrans->purchase($user, $ex_order->created_at, $invoice, $amount, $itemID, $info);
-            if (count($midtrans_data) == 0) {
+            $url_redirect = $midtrans->purchase($user, $ex_order->created_at, $invoice, $amount, $itemID, $info);
+            if (empty($url_redirect)) {
               throw new Exception('Server is busy, please try again later');
             }
 
-            $start_transaction = Carbon::parse($midtrans_data['start_time']);
-            $expired_transaction = Carbon::parse($midtrans_data['start_time'])->addDays(1);
+            $start_transaction = Carbon::parse($ex_order->created_at);
+            $expired_transaction = Carbon::parse($ex_order->created_at)->addDays(1);
 
             $payment                               = new ExtendOrderPayment;
             $payment->extend_id                    = $request->extend_id;
@@ -506,8 +331,7 @@ class PaymentController extends Controller
             $payment->amount                       = $amount;
             $payment->status_id                    = 14;
             $payment->id_name                      = $invoice;
-            $payment->midtrans_url                 = $midtrans_data['redirect_url'];
-            $payment->midtrans_status              = 'pending';
+            $payment->midtrans_url                 = $url_redirect;
             $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
             $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();
             $payment->save();
@@ -523,7 +347,8 @@ class PaymentController extends Controller
 
         return response()->json([
             'status' => true,
-            'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
+            // 'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
+            'message' => 'Payment created.',
             'data' => new ExtendOrderPaymentResource($payment)
         ]);
     }
