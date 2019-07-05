@@ -23,6 +23,8 @@ Route::get('/midtrans/finish', 'Api\MidtransNotifController@finish');
 Route::get('/cron/order/expired', 'Api\OrderController@cronExpired');
 
 Route::group(['namespace' => 'Api'], function() {
+    Route::get('/cron/order/expired', 'OrderController@cronOrderExpired');
+
     Route::post('test-email', 'TestController@mail')->name('api.test.mail');
     Route::prefix('product')->group(function() {
         Route::get('size/{types_of_box_room_id}', 'TypeSizeController@list')->name('api.size.list');
@@ -100,6 +102,10 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('change-box/start-payment', 'ChangeBoxPaymentController@startPayment')->name('api.changeBoxPayment.startPayment')->middleware('auth:api');
         Route::post('extend/start-payment', 'PaymentController@startPaymentOrderDetail')->name('api.extend.startPayment')->middleware('auth:api');
         Route::post('additem/start-payment', 'AddItemBoxPaymentController@startPayment')->name('api.additem.startPayment')->middleware('auth:api');
+        Route::post('notification', 'PaymentController@callbackNotif')->name('api.notif');
+        Route::get('finish', 'PaymentController@showFinish')->name('api.pay.finish');
+        Route::get('unfinish', 'PaymentController@showUnfinish')->name('api.pay.unfinish');
+        Route::get('error', 'PaymentController@showError')->name('api.pay.error');
     });
 
     Route::prefix('setting')->group(function() {

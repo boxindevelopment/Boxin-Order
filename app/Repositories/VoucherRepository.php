@@ -27,6 +27,16 @@ class VoucherRepository implements VoucherRepositoryInterface
         return $this->model->where('code', $code)->first();
     }
 
+    public function findByCodeVocher($code, $amount)
+    {
+        return $this->model->where('code', $code)
+                           ->where('status_id', 20)
+                           ->where('min_amount', '<=', $amount)
+                           ->whereDate('start_date', '<=', date('Y-m-d'))
+                           ->whereDate('end_date', '>=', date('Y-m-d'))
+                           ->first();
+    }
+
     public function all()
     {
         $now = date('Y-m-d');
