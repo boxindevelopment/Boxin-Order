@@ -13,8 +13,14 @@ use App\Repositories\PaymentRepository;
 use App\Repositories\ExtendPaymentRepository;
 use App\Model\ExtendOrderDetail;
 use App\Model\ExtendOrderPayment;
+use App\Model\ChangeBoxPayment;
+use App\Model\ChangeBox;
 use App\Model\HistoryOrderDetailBox;
-
+use App\Model\AddItem;
+use App\Model\AddItemBox;
+use App\Model\AddItemBoxPayment;
+use App\Model\ReturnBoxPayment;
+use App\Model\ReturnBoxes;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentResource;
 use App\Http\Resources\ExtendOrderPaymentResource;
@@ -22,9 +28,10 @@ use App\Http\Resources\ExtendOrderDetailResource;
 use Illuminate\Http\Request;
 use DB;
 use App\Http\Controllers\Vtdirect;
+use App\Veritrans\Veritrans;
 use Carbon\ Carbon;
 use Exception;
-// use Requests;
+use Requests;
 
 class PaymentController extends Controller
 {
@@ -397,5 +404,331 @@ class PaymentController extends Controller
       }
     }
 
+
+    public function callbackNotif(Request $request)
+    {
+      return response()->json(["name" => "wow"]);
+
+      $midtrans = new Vtdirect();
+      $json_result = file_get_contents('php://input');
+      $result = json_decode($json_result);
+
+      $notif = null;
+      if ($result) {
+        $notif = $midtrans->status($result->order_id);
+      }
+      
+      $transaction = $notif->transaction_status;
+      $type        = $notif->payment_type;
+      $order_id    = $notif->order_id;
+      $fraud       = $notif->fraud_status;
+
+      if ($transaction == 'settlement') {
+        // sukses
+        self::konekDB($order_id, 'approved', $notif);
+      } else {
+        self::konekDB($order_id, 'reject', $notif);
+      }
+
+      return "RECEIVEOK";
+    }
+
+
+    private function konekDB($str, $status, $notif)
+    {
+      // PAY-ORDER-
+      // PAY-XTEND-
+      // PAY-CHBOX-
+      // PAY-ADDIT-
+      // PAY-RTBOX-
+      if (strpos($str, '-') !== false) {
+        $db = explode('-',$str);
+        $cek = '';
+        if (count($db) > 0) {
+          $cek = $db[1];
+        }
+        switch ($cek) {
+          case 'ORDER':
+            $varss = self::updatePaymentOrder($str, $status, $notif);
+            break;
+            
+          case 'XTEND':
+            $varss = self::updatePaymentExtend($str, $status, $notif);
+            break;
+            
+          case 'CHBOX':
+            $varss = self::updatePaymentChangebox($str, $status, $notif);
+            break;
+            
+          case 'ADDIT':
+            $varss = self::updatePaymentAdditem($str, $stat, $notif);
+            break;
+            
+          case 'RTBOX':
+            $varss = self::updatePaymentReturnbox($str, $stat, $notif);
+            break;
+          
+          default:
+            # code...
+            break;
+        }
+      }
+    }
+
+    // 5 = Success
+    // 6 = Failed
+    // 7 = Approved (*)
+    // 8 = Rejected (*)
+    protected function updatePaymentOrder($str, $stat, $notif)
+    {
+      $status = 8;
+      if ($stat == 'approved') {
+        $status = 7;
+      }
+
+      DB::beginTransaction();
+      try {
+        $payment = Payment::where('id_name', $str)->first();
+        if (empty($payment)) {
+          throw new Exception("Edit status order payment failed.");
+        }
+
+        $order_id                   = $payment->order_id;
+        $payment->status_id         = intval($status);
+        $payment->midtrans_response = json_encode($notif);
+        $payment->save();
+
+        $order            = Order::find($order_id);
+        $order->status_id = $status;
+        $order->save();
+
+        $po            = PickupOrder::where('order_id', $order_id)->first();
+        $po->status_id = $status;
+        $po->save();
+
+        $array = array();
+        $order_details = OrderDetail::where('order_id', $order_id)->get();
+        foreach ($order_details as $key => $value) {
+          $array[] = array(
+            'room_or_box_id'       => $value->room_or_box_id,
+            'types_of_box_room_id' => $value->types_of_box_room_id
+          );
+          $value->status_id = $status;
+          $value->save();
+        }
+
+        if ($status == 8) {
+          for ($i=0; $i < count($array); $i++) { 
+            self::backToEmpty($array[$i]['types_of_box_room_id'], $array[$i]['room_or_box_id']);
+          }
+        }
+
+        foreach ($order_details as $key => $value) {
+          if ($status == 7 || $status == 8){
+            $params['status_id']       = $status;
+            $params['order_detail_id'] = $value->id;
+            $userDevice = UserDevice::where('user_id', $order->user_id)->get();
+            if(count($userDevice) > 0){
+                $response = Requests::post($this->url . 'api/confirm-payment/' . $order->user_id, [], $params, []);
+            }
+          }
+        }
+
+        DB::commit();
+        return true;
+      } catch (Exception $th) {
+        DB::rollback();
+        return false;
+      }
+    }
+    
+    protected function updatePaymentExtend($str, $stat, $notif)
+    {
+      $status = 8;
+      if ($stat == 'approved') {
+        $status = 7;
+      }
+
+      DB::beginTransaction();
+      try {
+        $payment = ExtendOrderPayment::where('id_name', $str)->first();
+        if (empty($payment)) {
+          throw new Exception("Edit status extend payment failed.");
+        }
+
+        $extend_id = $payment->extend_id;
+        $payment->status_id = $status;
+        $payment->midtrans_response = json_encode($notif);
+        $payment->save();
+        
+        $ex_order_details = ExtendOrderDetail::find($extend_id);
+        if ($ex_order_details) {
+            $ex_order_details->status_id = $status;
+            $ex_order_details->save();
+
+            if ($status == 7) {
+                $orderDetails           = OrderDetail::findOrFail($ex_order_details->order_detail_id);
+                $orderDetails->amount   = $ex_order_details->total_amount;                              // total amount dari durasi baru dan lama
+                $orderDetails->end_date = $ex_order_details->new_end_date;                              // durasi tanggal berakhir yang baru
+                $orderDetails->duration = $ex_order_details->new_duration;                              // total durasi
+                $orderDetails->save();
+            }
+
+            if ($status == 7 || $status == 8){
+              $params['status_id'] =  $status;
+              $params['order_detail_id'] = $ex_order_details->order_detail_id;
+              $userDevice = UserDevice::where('user_id', $ex_order_details->user_id)->get();
+              if(count($userDevice) > 0){
+                  $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
+              }
+            }
+        }
+
+        DB::commit();
+        return true;
+      } catch (\Exception $th) {
+        DB::rollback();
+        return false;
+      }
+    }
+
+    protected function updatePaymentChangebox($str, $stat, $notif)
+    {
+      $status = 8;
+      if ($stat == 'approved') {
+        $status = 7;
+      }
+
+      DB::beginTransaction();
+      try {
+        $payment = ChangeBoxPayment::where('id_name', $str)->first();
+        if (empty($payment)) {
+          throw new Exception("Edit status change box payment failed.");
+        }
+
+        $change_box_id      = $payment->change_box_id;
+        $order_detail_id    = $payment->order_detail_id;
+        $payment->status_id = $status;
+        $payment->midtrans_response = json_encode($notif);
+        $payment->save();
+
+        $cb = ChangeBox::find($change_box_id);
+        if ($cb) {
+          $cb->status_id = $status;
+          $cb->save();
+        }
+        
+        //change status on table change_boxes
+        // $order_detail_box = OrderDetailBox::where('order_detail_id', $order_detail_id)->pluck('id')->toArray();
+        // if (count($order_detail_box) > 0) {
+        //     ChangeBox::whereIn('order_detail_box_id', $order_detail_box)->where('order_detail_id', $order_detail_id)->update(['status_id' => $status]);
+        // }
+
+        DB::commit();
+        return true;
+      } catch (Exception $th) {
+        DB::rollback();
+        return false;
+      }
+
+    }
+
+    protected function updatePaymentAdditem($str, $stat, $notif)
+    {
+      $status = 8;
+      if ($stat == 'approved') {
+        $status = 7;
+      }
+
+      DB::beginTransaction();
+      try {
+        $payment = AddItemBoxPayment::where('id_name', $str)->first();
+        if (empty($payment)) {
+          throw new Exception("Edit status change box payment failed.");
+        }
+
+        $add_item_box_id = $payment->add_item_box_id;
+        $order_detail_id = $payment->order_detail_id;
+        $payment->status_id = $status;
+        $payment->midtrans_response = json_encode($notif);
+        $payment->save();
+
+        //change status on table add_item
+        $add_item = AddItemBox::find($add_item_box_id);
+        if (!empty($add_item)) {
+          $add_item->status_id = $status;
+          $add_item->save();
+        }
+        
+        DB::commit();
+        return true;
+      } catch (Exception $th) {
+        DB::rollback();
+        return false;
+      }
+    }
+
+    protected function updatePaymentReturnbox($str, $stat, $notif)
+    {
+      $status = 8;
+      if ($stat == 'approved') {
+        $status = 7;
+      }
+      
+      DB::beginTransaction();
+      try {
+        $payment = ReturnBoxPayment::where('id_name', $str)->first();
+        if (empty($payment)) {
+          throw new Exception("Edit status return box payment failed.");
+        }
+
+        $order_detail_id            = $payment->order_detail_id;
+        $payment->status_id         = $status;
+        $payment->midtrans_response = json_encode($notif);
+        $payment->save();
+
+        $orderdetail = OrderDetail::find($order_detail_id);
+        if (!empty($orderdetail)) {
+          $orderdetail->status_id = $status;
+          $orderdetail->save();
+        }
+
+        $order = Order::find($orderdetail->order_id);
+        if (!empty($order)) {
+          $order->status_id = $status;
+          $order->save();
+        }
+        
+        $return_box = ReturnBoxes::where('order_detail_id', $order_detail_id)->first();
+        if (!empty($return_box)) {
+          $return_box->status_id = $status;
+          $return_box->save();
+        }
+
+        DB::commit();
+        return true;
+      } catch (Exception $th) {
+        DB::rollback();
+        return false;
+      }
+    
+    }
+
+
+    public function showFinish()
+    {
+       return 'Payment Finish';
+    }
+
+    public function showUnfinish()
+    {
+       return 'Payment Unfinish';
+    }
+    
+    public function showError()
+    {
+       return 'Payment Error';
+    }
+    
 
 }

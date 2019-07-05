@@ -20,7 +20,8 @@ class ReturnBoxPayment extends Model
         'id_name',
         'midtrans_url',
         'midtrans_start_transaction',
-        'midtrans_expired_transaction'
+        'midtrans_expired_transaction',
+        'midtrans_response'
     ];
 
     public function order_detail()
