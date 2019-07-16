@@ -500,7 +500,7 @@ class PaymentController extends Controller
 
         $order_id                   = $payment->order_id;
         $payment->status_id         = intval($status);
-        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_response = $notif;
         $payment->save();
 
         $order            = Order::find($order_id);
@@ -563,7 +563,7 @@ class PaymentController extends Controller
 
         $extend_id = $payment->extend_id;
         $payment->status_id = $status;
-        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_response = $notif;
         $payment->save();
         
         $ex_order_details = ExtendOrderDetail::find($extend_id);
@@ -614,7 +614,7 @@ class PaymentController extends Controller
         $change_box_id      = $payment->change_box_id;
         $order_detail_id    = $payment->order_detail_id;
         $payment->status_id = $status;
-        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_response = $notif;
         $payment->save();
 
         $cb = ChangeBox::find($change_box_id);
@@ -655,7 +655,7 @@ class PaymentController extends Controller
         $add_item_box_id = $payment->add_item_box_id;
         $order_detail_id = $payment->order_detail_id;
         $payment->status_id = $status;
-        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_response = $notif;
         $payment->save();
 
         //change status on table add_item
@@ -689,7 +689,7 @@ class PaymentController extends Controller
 
         $order_detail_id            = $payment->order_detail_id;
         $payment->status_id         = $status;
-        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_response = $notif;
         $payment->save();
 
         $orderdetail = OrderDetail::find($order_detail_id);

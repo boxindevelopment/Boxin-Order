@@ -102,6 +102,7 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('change-box/start-payment', 'ChangeBoxPaymentController@startPayment')->name('api.changeBoxPayment.startPayment')->middleware('auth:api');
         Route::post('extend/start-payment', 'PaymentController@startPaymentOrderDetail')->name('api.extend.startPayment')->middleware('auth:api');
         Route::post('additem/start-payment', 'AddItemBoxPaymentController@startPayment')->name('api.additem.startPayment')->middleware('auth:api');
+        
         Route::post('notification', 'PaymentController@callbackNotif')->name('api.notif');
         Route::get('finish', 'PaymentController@showFinish')->name('api.pay.finish');
         Route::get('unfinish', 'PaymentController@showUnfinish')->name('api.pay.unfinish');
