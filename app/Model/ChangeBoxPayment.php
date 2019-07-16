@@ -20,6 +20,7 @@ class ChangeBoxPayment extends Model
         'id_name',
         'change_box_id',
         'midtrans_url',
+        'midtrans_status',
         'midtrans_start_transaction',
         'midtrans_expired_transaction',
         'midtrans_response'

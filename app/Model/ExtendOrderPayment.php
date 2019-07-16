@@ -19,6 +19,7 @@ class ExtendOrderPayment extends Model
       'status_id', 
       'id_name',
       'midtrans_url',
+      'midtrans_status',
       'midtrans_start_transaction',
       'midtrans_expired_transaction',
       'midtrans_response'

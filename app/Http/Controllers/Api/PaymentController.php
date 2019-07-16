@@ -102,6 +102,7 @@ class PaymentController extends Controller
             $payment->amount                       = $amount;
             $payment->status_id                    = 14;
             $payment->midtrans_url                 = $url_redirect;
+            $payment->midtrans_status              = 'pending';
             $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
             $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();
             $payment->id_name                      = $invoice;
@@ -339,6 +340,7 @@ class PaymentController extends Controller
             $payment->status_id                    = 14;
             $payment->id_name                      = $invoice;
             $payment->midtrans_url                 = $url_redirect;
+            $payment->midtrans_status              = 'pending';
             $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
             $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();
             $payment->save();
