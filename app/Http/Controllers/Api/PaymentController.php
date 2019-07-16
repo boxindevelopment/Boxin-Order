@@ -425,7 +425,10 @@ class PaymentController extends Controller
       $order_id    = $notif->order_id;
       $fraud       = $notif->fraud_status;
 
-      if ($transaction == 'settlement') {
+      if ($transaction == 'pending') {
+        // do nothing
+        return "RECEIVEOK";
+      } else if ($transaction == 'settlement') {
         // sukses
         self::konekDB($order_id, 'approved', $notif);
       } else {
