@@ -30,8 +30,14 @@ Class Veritrans
 
     public function config($params)
     {
-        Veritrans::$serverKey = $params['server_key'];
-        Veritrans::$isProduction = $params['production'];
+        // Veritrans::$serverKey = $params['server_key'];
+        // Veritrans::$isProduction = $params['production'];
+        // Merchant ID	: G642466093
+        // Client Key : SB-Mid-client-YSOTFjf0lq_E3LyO
+        // Server Key : SB-Mid-server-8EPMaViFTi3UFeVE3vjuHDH4
+
+        Veritrans::$serverKey = 'SB-Mid-server-8EPMaViFTi3UFeVE3vjuHDH4';
+        Veritrans::$isProduction = false;
     }
 
     /**

@@ -6,6 +6,11 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Console\\Commands\\PaymentAddItemBoxCommand' => $baseDir . '/app/Console/Commands/PaymentAddItemBoxCommand.php',
+    'App\\Console\\Commands\\PaymentChangeBoxCommand' => $baseDir . '/app/Console/Commands/PaymentChangeBoxCommand.php',
+    'App\\Console\\Commands\\PaymentExtendOrderCommand' => $baseDir . '/app/Console/Commands/PaymentExtendOrderCommand.php',
+    'App\\Console\\Commands\\PaymentOrderCommand' => $baseDir . '/app/Console/Commands/PaymentOrderCommand.php',
+    'App\\Console\\Commands\\PaymentReturnBoxCommand' => $baseDir . '/app/Console/Commands/PaymentReturnBoxCommand.php',
     'App\\Console\\Kernel' => $baseDir . '/app/Console/Kernel.php',
     'App\\Core\\Model\\Searchable' => $baseDir . '/app/Core/Model/Searchable.php',
     'App\\Exceptions\\Handler' => $baseDir . '/app/Exceptions/Handler.php',
@@ -40,6 +45,7 @@ return array(
     'App\\Http\\Controllers\\Auth\\RegisterController' => $baseDir . '/app/Http/Controllers/Auth/RegisterController.php',
     'App\\Http\\Controllers\\Auth\\ResetPasswordController' => $baseDir . '/app/Http/Controllers/Auth/ResetPasswordController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
+    'App\\Http\\Controllers\\Vtdirect' => $baseDir . '/app/Http/Controllers/Vtdirect.php',
     'App\\Http\\Kernel' => $baseDir . '/app/Http/Kernel.php',
     'App\\Http\\Middleware\\EncryptCookies' => $baseDir . '/app/Http/Middleware/EncryptCookies.php',
     'App\\Http\\Middleware\\RedirectIfAuthenticated' => $baseDir . '/app/Http/Middleware/RedirectIfAuthenticated.php',
@@ -117,6 +123,7 @@ return array(
     'App\\Model\\TypePickup' => $baseDir . '/app/Model/TypePickup.php',
     'App\\Model\\TypeSize' => $baseDir . '/app/Model/TypeSize.php',
     'App\\Model\\User' => $baseDir . '/app/Model/User.php',
+    'App\\Model\\UserDevice' => $baseDir . '/app/Model/UserDevice.php',
     'App\\Model\\Voucher' => $baseDir . '/app/Model/Voucher.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
     'App\\Providers\\AuthServiceProvider' => $baseDir . '/app/Providers/AuthServiceProvider.php',

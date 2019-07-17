@@ -5,9 +5,12 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use App\Http\Resources\ExtendOrderDetailResource;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class OrderDetail extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'order_details';
 
     protected $fillable = [

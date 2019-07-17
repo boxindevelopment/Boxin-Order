@@ -10,6 +10,7 @@ use App\Model\ExtendOrderDetail;
 use App\Model\DeliveryFee;
 use App\Model\Price;
 use App\Model\Payment;
+use App\Model\ReturnBoxes;
 use App\Model\PickupOrder;
 use App\Jobs\MessageInvoice;
 use App\Http\Controllers\Controller;
@@ -22,6 +23,7 @@ use Illuminate\Http\Request;
 use App\Repositories\Contracts\BoxRepository;
 use App\Repositories\Contracts\SpaceSmallRepository;
 use App\Repositories\Contracts\PriceRepository;
+use App\Repositories\Contracts\VoucherRepository;
 use DB;
 use PDF;
 use Exception;
@@ -31,17 +33,19 @@ class OrderController extends Controller
     protected $spaceSmall;
     protected $boxes;
     protected $price;
+    protected $voucher;
 
     private $url;
     CONST DEV_URL = 'https://boxin-dev-notification.azurewebsites.net/';
     CONST LOC_URL = 'http://localhost:5252/';
     CONST PROD_URL = 'https://boxin-prod-notification.azurewebsites.net/';
 
-    public function __construct(BoxRepository $boxes, SpaceSmallRepository $spaceSmall, PriceRepository $price)
+    public function __construct(BoxRepository $boxes, SpaceSmallRepository $spaceSmall, PriceRepository $price, VoucherRepository $voucher)
     {
         $this->boxes      = $boxes;
         $this->spaceSmall = $spaceSmall;
         $this->price      = $price;
+        $this->voucher    = $voucher;
         $this->url        = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
     }
 
@@ -206,6 +210,7 @@ class OrderController extends Controller
             $order->area_id                = $request->area_id;
             $order->status_id              = 14;
             $order->total                  = 0;
+            $order->voucher_amount         = 0;
             $order->qty                    = $data['order_count'];
             $order->save();
 
@@ -348,13 +353,27 @@ class OrderController extends Controller
             }
 
             //voucher
-            if (strtoupper($request->voucher) == 'DIBOXININAJA'){
-              $tot = $total_all - (0.1 * $total_all);
-            } else {
-              $tot = $total_all;
+            $tot = $total_all;
+            $voucher_price = 0;
+            $voucher_id = null;
+            if($request->voucher){
+                $voucher_data = $this->voucher->findByCodeVocher($request->voucher, $tot);
+                if($voucher_data){
+                    $voucher_price = 0;
+                    $voucher_id = $voucher_data->id;
+                    if($voucher_data->type_voucher == 2){
+                        $voucher_price = $voucher_data->value;
+                    } else {
+                        $voucher_price = ($voucher_data->value/100) * $tot;
+                        if($voucher_price > $voucher_data->max_value){
+                            $voucher_price = $voucher_data->max_value;
+                        }
+                    }
+                    $tot = $tot - $voucher_price;
+                }
             }
 
-            Order::where('id', $order->id)->update(['total' => $tot, 'deliver_fee' => intval($request->pickup_fee)]);
+            Order::where('id', $order->id)->update(['total' => $tot, 'voucher_id' => $voucher_id, 'voucher_amount' => $voucher_price, 'deliver_fee' => intval($request->pickup_fee)]);
 
             // make payment
 
@@ -507,6 +526,7 @@ class OrderController extends Controller
       }
     }
 
+    // this must be cron job
     public function checkExpiredOrder()
     {
         try {
@@ -542,6 +562,63 @@ class OrderController extends Controller
         $number = isset($sql->number) ? $sql->number : 0;
         $code   = date('ymd') . str_pad($number + 1, 3, "0", STR_PAD_LEFT);
         return $code;
+    }
+
+    public function cronOrderExpired()
+    {
+      $types_of_pickup_id = 2;                                               // diambil sendiri
+      $time_now           = Carbon::now()->addHours(1)->toTimeString();
+      $time_pickup        = Carbon::now()->addHours(9)->toTimeString();
+      $note               = '';
+      $status_id          = 16;
+      $address            = '';
+      $long               = null;
+      $lat                = null;
+      $deliver_fee        = 0;
+      $date_return        = Carbon::now()->toDateString();
+      
+      $date_now      = Carbon::now()->toDateTimeString();
+      $order_details = OrderDetail::whereDate('end_date', '<', $date_now)->get();
+      // $array_id_order_detail = OrderDetail::whereDate('end_date', '>=', $date_now)->pluck('id')->toArray();
+      // $query_id_order = OrderDetail::selectRaw('DISTINCT(order_id) as order_id')->whereDate('end_date', '>=', $date_now)->pluck('order_id')->toArray();
+      // $array_id_order = array_map('intval', $query_id_order);
+      
+      DB::beginTransaction();
+      try {
+
+        if (count($order_details) > 0) {
+          foreach ($order_details as $key => $value) {
+            $return                         = new ReturnBoxes;
+            $return->types_of_pickup_id     = $types_of_pickup_id;
+            $return->date                   = $date_now;
+            $return->time                   = $time_now;
+            $return->time_pickup            = $time_pickup;
+            $return->note                   = $note;
+            $return->status_id              = $status_id;
+            $return->address                = $address;
+            $return->order_detail_id        = $value->id;
+            $return->longitude              = $long;
+            $return->latitude               = $lat;
+            $return->deliver_fee            = $deliver_fee;
+            $return->save();
+
+            $value->is_returned = 1;
+            $value->status_id   = 16;
+            $value->save();
+
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', $this->url . 'api/cron/return-request/' . $value->order->user_id, ['form_params' => [
+              'title' => 'Your return request has been processed.',
+            ]]);
+          }
+        }
+        
+        DB::commit();
+        return response()->json(['status' => true, 'message' => 'Successfully running.']);
+      } catch (\Exception $th) {
+        DB::rollback();
+        return response()->json([ 'status' =>false, 'message' => $th->getMessage()], 422);
+      }
     }
 
 }
