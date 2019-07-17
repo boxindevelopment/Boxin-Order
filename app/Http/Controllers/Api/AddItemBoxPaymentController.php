@@ -64,70 +64,20 @@ class AddItemBoxPaymentController extends Controller
         $checkPayment = AddItemBoxPayment::where('add_item_box_id', $request->add_item_box_id)->where('user_id', $user->id)->first();
         //* jika data sudah ada
         if ($checkPayment) {
-          $midtrans_data = $midtrans->checkstatus($checkPayment->id_name);
-          if ($checkPayment->status_id != 5 || $checkPayment->status_id != 6) {
-          $sukses_response = array('200', '201', '202');
-            if (!array_key_exists('transaction_status', $midtrans_data)) {
-              return response()->json([
-                'status'         => true,
-                'message'        => 'Success get data',
-                'data'           => new AddItemBoxPaymentResource($checkPayment),
-                'midtrans_check' => $midtrans_data
-              ]);
-            }
-          $newStatus = $midtrans_data['transaction_status'];
-          $checkPayment->midtrans_status = $newStatus;
-          $checkPayment->payment_type    = $midtrans_data['payment_type'];
-          $checkPayment->save(); 
-            if (in_array($midtrans_data['status_code'], $sukses_response)) {
-              if ($newStatus == 'pending') {
-
-              } else  if ($newStatus == 'settlement' || $newStatus == 'success') {
-                  // status code 5 = success
-                  $checkPayment->status_id = 5;
-                  $checkPayment->save();
-
-                  //change status on table add_item
-                  $additems_box->status_id = 5;
-                  $additems_box->save();
-              } else {
-                  $checkPayment->status_id = 6;
-                  $checkPayment->save();
-                  // status code 6 = failed
-                  //change status on table add_item
-                  $additems_box->status_id = 6;
-                  $additems_box->save();
-              }
-            } else {
-              $checkPayment->status_id = 6;
-              $checkPayment->save();
-              // status code 6 = failed
-              //change status on table add_item
-              $additems_box->status_id = 6;
-              $additems_box->save();
-            }
-          }
-
-          DB::commit();
-          return response()->json([
-            'status'         => true,
-            'message'        => 'Success get data',
-            'data'           => new AddItemBoxPaymentResource($checkPayment),
-            'midtrans_check' => $midtrans_data
-          ]);
-        }
-
-        //* data payment baru
-        $invoice = 'PAY-ADDIT' . $request->add_item_box_id . '-' . $this->id_name();
-        $itemID = 'ADDITEMID'. $request->add_item_box_id;
-        $info = 'Payment for adding item box id ' . $request->add_item_box_id;
-        $midtrans_data = $midtrans->purchase($user, $additems_box->created_at, $invoice, $amount, $itemID, $info);
-        if (count($midtrans_data) == 0) {
           throw new Exception('Server is busy, please try again later');
         }
 
-        $start_transaction = Carbon::parse($midtrans_data['start_time']);
-        $expired_transaction = Carbon::parse($midtrans_data['start_time'])->addDays(1);
+        //* data payment baru
+        $invoice = 'PAY-ADDIT-' . $request->add_item_box_id . $this->id_name();
+        $itemID = 'ADDITEMID-'. $request->add_item_box_id;
+        $info = 'Payment for adding item box id ' . $request->add_item_box_id;
+        $url_redirect = $midtrans->purchase($user, $additems_box->created_at, $invoice, $amount, $itemID, $info);
+        if (empty($url_redirect)) {
+          throw new Exception('Server is busy, please try again later');
+        }
+
+        $start_transaction = Carbon::parse($url_redirect);
+        $expired_transaction = Carbon::parse($url_redirect)->addDays(1);
 
         $payment                               = new AddItemBoxPayment;
         $payment->add_item_box_id              = $request->add_item_box_id;
@@ -138,7 +88,7 @@ class AddItemBoxPaymentController extends Controller
         $payment->amount                       = $amount;
         $payment->status_id                    = 14;
         $payment->id_name                      = $invoice;
-        $payment->midtrans_url                 = $midtrans_data['redirect_url'];
+        $payment->midtrans_url                 = $url_redirect;
         $payment->midtrans_status              = 'pending';
         $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
         $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();

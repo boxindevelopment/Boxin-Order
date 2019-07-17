@@ -139,73 +139,20 @@ class ReturnBoxPaymentController extends Controller
             $checkPayment = ReturnBoxPayment::where('order_detail_id', $request->order_detail_id)->where('user_id', $user->id)->first();
             //* jika data sudah ada
             if ($checkPayment) {
-              $midtrans_data = $midtrans->checkstatus($checkPayment->id_name);
-              if ($checkPayment->status_id != 5 || $checkPayment->status_id != 6) {
-              $sukses_response = array('200', '201', '202');
-              if (!array_key_exists('transaction_status', $midtrans_data)) {
-                return response()->json([
-                  'status'         => true,
-                  'message'        => 'Success get data',
-                  'data'           => new ReturnBoxPaymentResource($checkPayment),
-                  'midtrans_check' => $midtrans_data
-                ]);
-              }
-
-              $newStatus = $midtrans_data['transaction_status'];
-              $checkPayment->midtrans_status = $newStatus;
-              $checkPayment->payment_type    = $midtrans_data['payment_type'];
-              $checkPayment->save();
-                if (in_array($midtrans_data['status_code'], $sukses_response)) {
-                  if ($newStatus == 'pending') {
-
-                  } else if ($newStatus == 'settlement' || $newStatus == 'success') {
-                      // status code 5 = success
-                      $checkPayment->status_id = 5;
-                      $checkPayment->save();
-
-                      // TODO
-                      $returnbox->status_id = 5;
-                      $returnbox->save();
-                  } else {
-                      // status code 6 = failed
-                      $checkPayment->status_id = 6;
-                      $checkPayment->save();
-
-                      // TODO
-                      $returnbox->status_id = 6;
-                      $returnbox->save();
-                  }
-                } else {
-                  // status code 6 = failed
-                  $checkPayment->status_id = 6;
-                  $checkPayment->save();
-
-                  // TODO
-                  $returnbox->status_id = 6;
-                  $returnbox->save();
-                }
-              }
-
-              DB::commit();
-              return response()->json([
-                'status'         => true,
-                'message'        => 'Success get data',
-                'data'           => new ReturnBoxPaymentResource($checkPayment),
-                'midtrans_check' => $midtrans_data
-              ]);
+              throw new Exception('Return box has been paid.');
             }
 
             //* data payment baru
-            $invoice = 'PAY-RTBOX' . $request->order_detail_id . '-' . $this->id_name();
-            $itemID = 'RETURNBOXID'. $request->order_detail_id;
-            $info = 'Payment for return box id ' . $request->order_detail_id;
-            $midtrans_data = $midtrans->purchase($user, $returnbox->created_at, $invoice, $amount, $itemID, $info);
-            if (count($midtrans_data) == 0) {
+            $invoice       = 'PAY-RTBOX-' . $request->order_detail_id . $this->id_name();
+            $itemID        = 'RETURNBOXID-'. $request->order_detail_id;
+            $info          = 'Payment for return box id ' . $request->order_detail_id;
+            $url_redirect = $midtrans->purchase($user, $returnbox->created_at, $invoice, $amount, $itemID, $info);
+            if (empty($url_redirect)) {
               throw new Exception('Server is busy, please try again later');
             }
 
-            $start_transaction = Carbon::parse($midtrans_data['start_time']);
-            $expired_transaction = Carbon::parse($midtrans_data['start_time'])->addDays(1);
+            $start_transaction = Carbon::parse($url_redirect);
+            $expired_transaction = Carbon::parse($url_redirect)->addDays(1);
 
             $payment                               = new ReturnBoxPayment;
             $payment->order_detail_id              = $request->order_detail_id;
@@ -215,7 +162,7 @@ class ReturnBoxPaymentController extends Controller
             $payment->amount                       = $amount;
             $payment->status_id                    = 14;
             $payment->id_name                      = $invoice;
-            $payment->midtrans_url                 = $midtrans_data['redirect_url'];
+            $payment->midtrans_url                 = $url_redirect;
             $payment->midtrans_status              = 'pending';
             $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
             $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();

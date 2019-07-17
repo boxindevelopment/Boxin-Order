@@ -23,7 +23,6 @@ class ReturnBoxPaymentResource extends JsonResource
             'payment_type'                 => $this->payment_type,
             'bank'                         => $this->bank,
             'midtrans_url'                 => $this->midtrans_url,
-            'midtrans_status'              => $this->midtrans_status,
             'midtrans_start_transaction'   => $this->midtrans_start_transaction,
             'midtrans_expired_transaction' => $this->midtrans_expired_transaction,
             'amount'                       => $this->amount,
