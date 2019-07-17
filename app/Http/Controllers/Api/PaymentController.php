@@ -28,7 +28,6 @@ use App\Http\Resources\ExtendOrderDetailResource;
 use Illuminate\Http\Request;
 use DB;
 use App\Http\Controllers\Vtdirect;
-use App\Veritrans\Veritrans;
 use Carbon\ Carbon;
 use Exception;
 use Requests;
@@ -112,7 +111,7 @@ class PaymentController extends Controller
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([
-                'status' => false,
+                'status'  => false,
                 'message' => $e->getMessage()
             ], 401);
         }
@@ -409,8 +408,6 @@ class PaymentController extends Controller
 
     public function callbackNotif(Request $request)
     {
-      return response()->json(["name" => "wow"]);
-
       $midtrans = new Vtdirect();
       $json_result = file_get_contents('php://input');
       $result = json_decode($json_result);
