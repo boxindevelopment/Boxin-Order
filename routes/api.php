@@ -13,8 +13,6 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/testi', 'Api\PaymentController@test');
-
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
