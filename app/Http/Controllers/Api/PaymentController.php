@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Model\Payment;
 use App\Model\Box;
+use App\Model\User;
 use App\Model\Order;
 use App\Model\OrderDetail;
 use App\Model\SpaceSmall;
