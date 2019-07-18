@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Veritrans\Veritrans;
+
 use App\Model\Order;
 use App\Model\OrderDetail;
 use App\Model\OrderDetailBox;
@@ -13,9 +13,20 @@ use App\Model\Box;
 use App\Model\ExtendOrderDetail;
 use App\Model\DeliveryFee;
 use App\Model\Price;
+// use Veritrans;
+use App\Veritrans\Veritrans;
 
 class Vtdirect extends Controller
 {
+
+    public function __construct()
+    {
+      // Merchant ID	: G642466093
+      // Client Key : SB-Mid-client-YSOTFjf0lq_E3LyO
+      // Server Key : SB-Mid-server-8EPMaViFTi3UFeVE3vjuHDH4
+      Veritrans::$serverKey = 'SB-Mid-server-8EPMaViFTi3UFeVE3vjuHDH4';
+      Veritrans::$isProduction = false;
+    }
   
     public function purchase($user, $order_created_at, $invoice, $total, $ids, $name)
     {
@@ -42,7 +53,7 @@ class Vtdirect extends Controller
           'expiry'              => $custom_expiry
       ];
       
-      $redirect_url = Veritrans::vtwebCharge($transaction_data);
+      $redirect_url = Veritrans::vtweb_charge($transaction_data);
       if (empty($redirect_url)) {
         return "";
       }
