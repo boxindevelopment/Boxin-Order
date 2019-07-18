@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Veritrans\Veritrans;
+use Veritrans;
 use App\Model\Order;
 use App\Model\OrderDetail;
 use App\Model\OrderDetailBox;
