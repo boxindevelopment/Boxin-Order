@@ -422,13 +422,14 @@ class PaymentController extends Controller
         Log::info(print_r($notif, true));
       }
 
+
       Log::info("Order status : " . $notif['transaction_status']);
-      Log::info("Order Type : " . $notif['payment_type'];
-      Log::info("Order Fraun : " . $notif['fraud_status']);
+      // Log::info("Order Type : " . $notif['payment_type'];
+      // Log::info("Order Fraun : " . $notif['fraud_status']);
       $transaction = $notif['transaction_status'];
-      $type        = $notif['payment_type'];
-      $order_id    = $notif['order_id'];
-      $fraud       = $notif['fraud_status'];
+      // $type        = $notif['payment_type'];
+      // $order_id    = $notif['order_id'];
+      // $fraud       = $notif['fraud_status'];
 
       if ($transaction == 'pending') {
         // do nothing
