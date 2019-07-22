@@ -14,3 +14,9 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::prefix('payment')->group(function() {
+    Route::get('finish', 'PaymentController@showFinish')->name('api.pay.finish');
+    Route::get('unfinish', 'PaymentController@showUnfinish')->name('api.pay.unfinish');
+    Route::get('error', 'PaymentController@showError')->name('api.pay.error');
+});
