@@ -77,7 +77,7 @@ class PaymentController extends Controller
             }
 
             $amount = (int) $request->amount;
-            $check = Payment::where('order_id', $request->order_id)->where('status_id', 5)->get();
+            $check = Payment::where('order_id', $request->order_id)->where('status_id', 7)->get();
             if (count($check) > 0){
               throw new Exception('Order has been paid.');
               // return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
