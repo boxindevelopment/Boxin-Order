@@ -39,7 +39,7 @@ class PaymentController extends Controller
 	CONST DEV_URL = 'https://boxin-dev-notification.azurewebsites.net/';
 	CONST LOC_URL = 'http://localhost:5252/';
   CONST PROD_URL = 'https://boxin-prod-notification.azurewebsites.net/';
-  
+
   public function __construct()
   {
     $this->url = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
@@ -74,7 +74,7 @@ class PaymentController extends Controller
             if (!$order) {
               throw new Exception('Order Id not found');
             }
-            
+
             $amount = (int) $request->amount;
             $check = Payment::where('order_id', $request->order_id)->get();
             if (count($check) > 0){
@@ -132,7 +132,7 @@ class PaymentController extends Controller
         $code   = date('ymd') . str_pad($number + 1, 3, "0", STR_PAD_LEFT);
         return $code;
     }
-    
+
     private function id_name_extend()
     {
         $sql    = ExtendOrderPayment::orderBy('number', 'desc')->whereRaw("MONTH(created_at) = " . date('m'))->first(['id_name', DB::raw('substring(id_name, len(id_name)-2,len(id_name)) as number')]);
@@ -144,7 +144,7 @@ class PaymentController extends Controller
     protected function paymentStatusOrder($order_id, $status) {
       /**
        * status:
-       * 
+       *
        * 8 = reject
        * 7 = Approved
        * 5 = success
@@ -152,7 +152,7 @@ class PaymentController extends Controller
        * 11 = pending
        * 14 = pend payment
        * 15 = confirming
-       * 
+       *
        */
       $order            = Order::find($order_id);
       $order->status_id = $status;
@@ -174,7 +174,7 @@ class PaymentController extends Controller
       }
 
       if ($status == 6) {
-        for ($i=0; $i < count($array); $i++) { 
+        for ($i=0; $i < count($array); $i++) {
           self::backToEmpty($array[$i]['types_of_box_room_id'], $array[$i]['room_or_box_id']);
         }
       }
@@ -268,11 +268,11 @@ class PaymentController extends Controller
     //                 $ex_order->save();
     //                 // $status_order = DB::table('order_details')->where('order_id', $request->order_id)->update(['status_id' => 15]);
     //             }
-                
+
     //         }else {
     //             return response()->json(['status' => false, 'message' => 'Order Detail Id not found'], 401);
     //         }
-            
+
     //     } catch (\Exception $e) {
     //         return response()->json([
     //             'status' => false,
@@ -286,7 +286,7 @@ class PaymentController extends Controller
     //         'data' => new ExtendOrderPaymentResource($payment->fresh())
     //     ]);
     // }
-    
+
     public function startPaymentOrderDetail(Request $request)
     {
         $midtrans = new Vtdirect();
@@ -344,7 +344,7 @@ class PaymentController extends Controller
             $payment->midtrans_start_transaction   = $start_transaction->toDateTimeString();
             $payment->midtrans_expired_transaction = $expired_transaction->toDateTimeString();
             $payment->save();
-                
+
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();
@@ -366,7 +366,7 @@ class PaymentController extends Controller
     {
       /**
        * status:
-       * 
+       *
        * 8 = reject
        * 7 = Approved
        * 5 = success
@@ -374,7 +374,7 @@ class PaymentController extends Controller
        * 11 = pending
        * 14 = pend payment
        * 15 = confirming
-       * 
+       *
        */
       $ex_order_details = ExtendOrderDetail::find($extend_id);
       if ($ex_order_details) {
@@ -415,9 +415,9 @@ class PaymentController extends Controller
 
       $notif = null;
       if ($result) {
-        $notif = $midtrans->status($result->order_id);
+        $notif = $midtrans->checkStatus($result->order_id);
       }
-      
+
       $transaction = $notif->transaction_status;
       $type        = $notif->payment_type;
       $order_id    = $notif->order_id;
@@ -454,23 +454,23 @@ class PaymentController extends Controller
           case 'ORDER':
             $varss = self::updatePaymentOrder($str, $status, $notif);
             break;
-            
+
           case 'XTEND':
             $varss = self::updatePaymentExtend($str, $status, $notif);
             break;
-            
+
           case 'CHBOX':
             $varss = self::updatePaymentChangebox($str, $status, $notif);
             break;
-            
+
           case 'ADDIT':
             $varss = self::updatePaymentAdditem($str, $stat, $notif);
             break;
-            
+
           case 'RTBOX':
             $varss = self::updatePaymentReturnbox($str, $stat, $notif);
             break;
-          
+
           default:
             # code...
             break;
@@ -521,7 +521,7 @@ class PaymentController extends Controller
         }
 
         if ($status == 8) {
-          for ($i=0; $i < count($array); $i++) { 
+          for ($i=0; $i < count($array); $i++) {
             self::backToEmpty($array[$i]['types_of_box_room_id'], $array[$i]['room_or_box_id']);
           }
         }
@@ -544,7 +544,7 @@ class PaymentController extends Controller
         return false;
       }
     }
-    
+
     protected function updatePaymentExtend($str, $stat, $notif)
     {
       $status = 8;
@@ -563,7 +563,7 @@ class PaymentController extends Controller
         $payment->status_id = $status;
         $payment->midtrans_response = $notif;
         $payment->save();
-        
+
         $ex_order_details = ExtendOrderDetail::find($extend_id);
         if ($ex_order_details) {
             $ex_order_details->status_id = $status;
@@ -620,7 +620,7 @@ class PaymentController extends Controller
           $cb->status_id = $status;
           $cb->save();
         }
-        
+
         //change status on table change_boxes
         // $order_detail_box = OrderDetailBox::where('order_detail_id', $order_detail_id)->pluck('id')->toArray();
         // if (count($order_detail_box) > 0) {
@@ -662,7 +662,7 @@ class PaymentController extends Controller
           $add_item->status_id = $status;
           $add_item->save();
         }
-        
+
         DB::commit();
         return true;
       } catch (Exception $th) {
@@ -677,7 +677,7 @@ class PaymentController extends Controller
       if ($stat == 'approved') {
         $status = 7;
       }
-      
+
       DB::beginTransaction();
       try {
         $payment = ReturnBoxPayment::where('id_name', $str)->first();
@@ -701,7 +701,7 @@ class PaymentController extends Controller
           $order->status_id = $status;
           $order->save();
         }
-        
+
         $return_box = ReturnBoxes::where('order_detail_id', $order_detail_id)->first();
         if (!empty($return_box)) {
           $return_box->status_id = $status;
@@ -714,7 +714,7 @@ class PaymentController extends Controller
         DB::rollback();
         return false;
       }
-    
+
     }
 
 
@@ -727,11 +727,11 @@ class PaymentController extends Controller
     {
        return 'Payment Unfinish';
     }
-    
+
     public function showError()
     {
        return 'Payment Error';
     }
-    
+
 
 }
