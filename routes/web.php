@@ -16,7 +16,7 @@ Route::get('/', function () {
 });
 
 Route::prefix('payment')->group(function() {
-    Route::get('finish', 'PaymentController@showFinish')->name('api.pay.finish');
-    Route::get('unfinish', 'PaymentController@showUnfinish')->name('api.pay.unfinish');
-    Route::get('error', 'PaymentController@showError')->name('api.pay.error');
+    Route::get('finish', 'PaymentController@showFinish')->name('pay.finish');
+    Route::get('unfinish', 'PaymentController@showUnfinish')->name('pay.unfinish');
+    Route::get('error', 'PaymentController@showError')->name('pay.error');
 });
