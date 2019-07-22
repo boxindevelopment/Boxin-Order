@@ -77,7 +77,7 @@ class PaymentController extends Controller
             }
 
             $amount = (int) $request->amount;
-            $check = Payment::where('order_id', $request->order_id)->where('status_id', 7)->get();
+            $check = Payment::where('order_id', $request->order_id)->where('status_id', 5)->get();
             if (count($check) > 0){
               throw new Exception('Order has been paid.');
               // return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
@@ -436,8 +436,8 @@ class PaymentController extends Controller
         return "RECEIVEOK PENDING";
       } else if ($transaction == 'settlement') {
         // sukses
-        self::konekDB($order_id, 'approved', $notif);
-        return "approved";
+        self::konekDB($order_id, 'Success', $notif);
+        return "Success";
       } else {
         self::konekDB($order_id, 'reject', $notif);
         return "reject";
@@ -495,8 +495,8 @@ class PaymentController extends Controller
     protected function updatePaymentOrder($str, $stat, $notif)
     {
       $status = 8;
-      if ($stat == 'approved') {
-        $status = 7;
+      if ($stat == 'Success') {
+        $status = 5;
       }
 
       DB::beginTransaction();
@@ -505,12 +505,11 @@ class PaymentController extends Controller
         if (empty($payment)) {
           throw new Exception("Edit status order payment failed.");
         }
-
-        $order_id                   = $payment->order_id;
-        $payment->status_id         = intval($status);
-        $payment->midtrans_response = json_encode($notif);
-        $payment->midtrans_status   = $notif['transaction_status'];
-        $payment->save();
+        $dataUpdate     = ['order_id' => $payment->order_id,
+                          'status_id' => intval($status),
+                          'midtrans_response' => json_encode($notif),
+                          'midtrans_status' => $notif['transaction_status']];
+        Payment::where('order_id', $payment->order_id)->update($dataUpdate);
 
         $order            = Order::find($order_id);
         $order->status_id = $status;
@@ -559,8 +558,8 @@ class PaymentController extends Controller
     protected function updatePaymentExtend($str, $stat, $notif)
     {
       $status = 8;
-      if ($stat == 'approved') {
-        $status = 7;
+      if ($stat == 'Success') {
+        $status = 5;
       }
 
       DB::beginTransaction();
@@ -610,8 +609,8 @@ class PaymentController extends Controller
     protected function updatePaymentChangebox($str, $stat, $notif)
     {
       $status = 8;
-      if ($stat == 'approved') {
-        $status = 7;
+      if ($stat == 'Success') {
+        $status = 5;
       }
 
       DB::beginTransaction();
@@ -652,8 +651,8 @@ class PaymentController extends Controller
     protected function updatePaymentAdditem($str, $stat, $notif)
     {
       $status = 8;
-      if ($stat == 'approved') {
-        $status = 7;
+      if ($stat == 'Success') {
+        $status = 5;
       }
 
       DB::beginTransaction();
@@ -688,8 +687,8 @@ class PaymentController extends Controller
     protected function updatePaymentReturnbox($str, $stat, $notif)
     {
       $status = 8;
-      if ($stat == 'approved') {
-        $status = 7;
+      if ($stat == 'Success') {
+        $status = 5;
       }
 
       DB::beginTransaction();
