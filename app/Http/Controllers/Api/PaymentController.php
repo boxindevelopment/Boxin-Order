@@ -32,6 +32,7 @@ use App\Http\Controllers\Vtdirect;
 use Carbon\ Carbon;
 use Exception;
 use Requests;
+use Log;
 
 class PaymentController extends Controller
 {
@@ -409,15 +410,20 @@ class PaymentController extends Controller
 
     public function callbackNotif(Request $request)
     {
+        Log::info("Midtrans Notication");
       $midtrans = new Vtdirect();
       $json_result = file_get_contents('php://input');
       $result = json_decode($json_result);
 
       $notif = null;
       if ($result) {
+        Log::info("Order ID : " . $result->order_id);
         $notif = $midtrans->checkStatus($result->order_id);
       }
 
+      Log::info("Order status : " . $notif->transaction_status);
+      Log::info("Order Type : " . $notif->payment_type);
+      Log::info("Order Fraun : " . $notif->fraud_status);
       $transaction = $notif->transaction_status;
       $type        = $notif->payment_type;
       $order_id    = $notif->order_id;
