@@ -77,7 +77,7 @@ class PaymentController extends Controller
             }
 
             $amount = (int) $request->amount;
-            $check = Payment::where('order_id', $request->order_id)->get();
+            $check = Payment::where('order_id', $request->order_id)->where('status_id', 5)->get();
             if (count($check) > 0){
               throw new Exception('Order has been paid.');
               // return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
@@ -424,21 +424,23 @@ class PaymentController extends Controller
 
 
       Log::info("Order status : " . $notif['transaction_status']);
-      // Log::info("Order Type : " . $notif['payment_type'];
-      // Log::info("Order Fraun : " . $notif['fraud_status']);
+      Log::info("Order Type : " . $notif['payment_type']);
+      Log::info("Order Fraun : " . $notif['fraud_status']);
       $transaction = $notif['transaction_status'];
-      // $type        = $notif['payment_type'];
-      // $order_id    = $notif['order_id'];
-      // $fraud       = $notif['fraud_status'];
+      $type        = $notif['payment_type'];
+      $order_id    = $notif['order_id'];
+      $fraud       = $notif['fraud_status'];
 
       if ($transaction == 'pending') {
         // do nothing
-        return "RECEIVEOK";
+        return "RECEIVEOK PENDING";
       } else if ($transaction == 'settlement') {
         // sukses
         self::konekDB($order_id, 'approved', $notif);
+        return "approved";
       } else {
         self::konekDB($order_id, 'reject', $notif);
+        return "reject";
       }
 
       return "RECEIVEOK";
@@ -506,7 +508,8 @@ class PaymentController extends Controller
 
         $order_id                   = $payment->order_id;
         $payment->status_id         = intval($status);
-        $payment->midtrans_response = $notif;
+        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_status   = $notif['transaction_status'];
         $payment->save();
 
         $order            = Order::find($order_id);
