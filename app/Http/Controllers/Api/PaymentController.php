@@ -509,7 +509,7 @@ class PaymentController extends Controller
                           'status_id' => intval($status),
                           'midtrans_response' => json_encode($notif),
                           'midtrans_status' => $notif['transaction_status']];
-        Payment::where('order_id', $payment->order_id)->update($dataUpdate);
+        Payment::where('id_name', $str)->update($dataUpdate);
 
         $order            = Order::find($order_id);
         $order->status_id = $status;
@@ -570,10 +570,11 @@ class PaymentController extends Controller
         }
 
         $extend_id                  = $payment->extend_id;
-        $payment->status_id         = $status;
-        $payment->midtrans_response = json_encode($notif);
-        $payment->midtrans_status   = $notif['transaction_status'];
-        $payment->save();
+        $dataUpdate     = ['order_id' => $payment->order_id,
+                          'status_id' => intval($status),
+                          'midtrans_response' => json_encode($notif),
+                          'midtrans_status' => $notif['transaction_status']];
+        Payment::where('id_name', $str)->update($dataUpdate);
 
         $ex_order_details = ExtendOrderDetail::find($extend_id);
         if ($ex_order_details) {
@@ -622,10 +623,11 @@ class PaymentController extends Controller
 
         $change_box_id      = $payment->change_box_id;
         $order_detail_id    = $payment->order_detail_id;
-        $payment->status_id = $status;
-        $payment->midtrans_response = json_encode($notif);
-        $payment->midtrans_status   = $notif['transaction_status'];
-        $payment->save();
+        $dataUpdate     = ['order_id' => $payment->order_id,
+                          'status_id' => intval($status),
+                          'midtrans_response' => json_encode($notif),
+                          'midtrans_status' => $notif['transaction_status']];
+        Payment::where('id_name', $str)->update($dataUpdate);
 
         $cb = ChangeBox::find($change_box_id);
         if ($cb) {
@@ -664,10 +666,11 @@ class PaymentController extends Controller
 
         $add_item_box_id = $payment->add_item_box_id;
         $order_detail_id = $payment->order_detail_id;
-        $payment->status_id = $status;
-        $payment->midtrans_response = json_encode($notif);
-        $payment->midtrans_status   = $notif['transaction_status'];
-        $payment->save();
+        $dataUpdate     = ['order_id' => $payment->order_id,
+                          'status_id' => intval($status),
+                          'midtrans_response' => json_encode($notif),
+                          'midtrans_status' => $notif['transaction_status']];
+        Payment::where('id_name', $str)->update($dataUpdate);
 
         //change status on table add_item
         $add_item = AddItemBox::find($add_item_box_id);
@@ -699,10 +702,11 @@ class PaymentController extends Controller
         }
 
         $order_detail_id            = $payment->order_detail_id;
-        $payment->status_id         = $status;
-        $payment->midtrans_response = json_encode($notif);
-        $payment->midtrans_status   = $notif['transaction_status'];
-        $payment->save();
+        $dataUpdate     = ['order_id' => $payment->order_id,
+                          'status_id' => intval($status),
+                          'midtrans_response' => json_encode($notif),
+                          'midtrans_status' => $notif['transaction_status']];
+        Payment::where('id_name', $str)->update($dataUpdate);
 
         $orderdetail = OrderDetail::find($order_detail_id);
         if (!empty($orderdetail)) {
