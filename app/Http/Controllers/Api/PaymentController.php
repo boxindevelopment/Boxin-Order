@@ -410,13 +410,16 @@ class PaymentController extends Controller
 
     public function callbackNotif(Request $request)
     {
+        Log::info("Midtrans Notication");
       $midtrans = new Vtdirect();
       $json_result = file_get_contents('php://input');
       $result = json_decode($json_result);
 
       $notif = null;
       if ($result) {
+        Log::info("Order ID : " . $result->order_id);
         $notif = $midtrans->checkStatus($result->order_id);
+        Log::info(print_r($notif, true));
       }
 
       $transaction = $notif['transaction_status'];
@@ -442,11 +445,6 @@ class PaymentController extends Controller
 
     private function konekDB($str, $status, $notif)
     {
-      // PAY-ORDER-
-      // PAY-XTEND-
-      // PAY-CHBOX-
-      // PAY-ADDIT-
-      // PAY-RTBOX-
       if (strpos($str, '-') !== false) {
         $db = explode('-',$str);
         $cek = '';
@@ -454,22 +452,27 @@ class PaymentController extends Controller
           $cek = $db[1];
         }
         switch ($cek) {
+            // PAY-ORDER-
           case 'ORDER':
             $varss = self::updatePaymentOrder($str, $status, $notif);
             break;
 
+            // PAY-XTEND-
           case 'XTEND':
             $varss = self::updatePaymentExtend($str, $status, $notif);
             break;
 
+            // PAY-CHBOX-
           case 'CHBOX':
             $varss = self::updatePaymentChangebox($str, $status, $notif);
             break;
 
+            // PAY-ADDIT-
           case 'ADDIT':
             $varss = self::updatePaymentAdditem($str, $stat, $notif);
             break;
 
+            // PAY-RTBOX-
           case 'RTBOX':
             $varss = self::updatePaymentReturnbox($str, $stat, $notif);
             break;
@@ -498,11 +501,12 @@ class PaymentController extends Controller
         if (empty($payment)) {
           throw new Exception("Edit status order payment failed.");
         }
-        $dataUpdate     = ['order_id' => $payment->order_id,
-                          'status_id' => intval($status),
-                          'midtrans_response' => json_encode($notif),
-                          'midtrans_status' => $notif['transaction_status']];
-        Payment::where('id_name', $str)->update($dataUpdate);
+
+        $order_id                   = $payment->order_id;
+        $payment->status_id         = intval($status);
+        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_status   = $notif['transaction_status'];
+        $payment->save();
 
         $order            = Order::find($order_id);
         $order->status_id = $status;
@@ -563,11 +567,10 @@ class PaymentController extends Controller
         }
 
         $extend_id                  = $payment->extend_id;
-        $dataUpdate     = ['order_id' => $payment->order_id,
-                          'status_id' => intval($status),
-                          'midtrans_response' => json_encode($notif),
-                          'midtrans_status' => $notif['transaction_status']];
-        Payment::where('id_name', $str)->update($dataUpdate);
+        $payment->status_id         = $status;
+        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_status   = $notif['transaction_status'];
+        $payment->save();
 
         $ex_order_details = ExtendOrderDetail::find($extend_id);
         if ($ex_order_details) {
@@ -616,11 +619,10 @@ class PaymentController extends Controller
 
         $change_box_id      = $payment->change_box_id;
         $order_detail_id    = $payment->order_detail_id;
-        $dataUpdate     = ['order_id' => $payment->order_id,
-                          'status_id' => intval($status),
-                          'midtrans_response' => json_encode($notif),
-                          'midtrans_status' => $notif['transaction_status']];
-        Payment::where('id_name', $str)->update($dataUpdate);
+        $payment->status_id = $status;
+        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_status   = $notif['transaction_status'];
+        $payment->save();
 
         $cb = ChangeBox::find($change_box_id);
         if ($cb) {
@@ -659,11 +661,10 @@ class PaymentController extends Controller
 
         $add_item_box_id = $payment->add_item_box_id;
         $order_detail_id = $payment->order_detail_id;
-        $dataUpdate     = ['order_id' => $payment->order_id,
-                          'status_id' => intval($status),
-                          'midtrans_response' => json_encode($notif),
-                          'midtrans_status' => $notif['transaction_status']];
-        Payment::where('id_name', $str)->update($dataUpdate);
+        $payment->status_id = $status;
+        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_status   = $notif['transaction_status'];
+        $payment->save();
 
         //change status on table add_item
         $add_item = AddItemBox::find($add_item_box_id);
@@ -695,11 +696,10 @@ class PaymentController extends Controller
         }
 
         $order_detail_id            = $payment->order_detail_id;
-        $dataUpdate     = ['order_id' => $payment->order_id,
-                          'status_id' => intval($status),
-                          'midtrans_response' => json_encode($notif),
-                          'midtrans_status' => $notif['transaction_status']];
-        Payment::where('id_name', $str)->update($dataUpdate);
+        $payment->status_id         = $status;
+        $payment->midtrans_response = json_encode($notif);
+        $payment->midtrans_status   = $notif['transaction_status'];
+        $payment->save();
 
         $orderdetail = OrderDetail::find($order_detail_id);
         if (!empty($orderdetail)) {
