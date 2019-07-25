@@ -76,6 +76,7 @@ class MidtransNotifController extends Controller
             else {
               // TODO set payment status in merchant's database to 'Success'
               echo "Transaction order_id: " . $order_id ." successfully captured using " . $type;
+              self::setPayment($order_id, $type, $transaction);
             }
         }
       }
