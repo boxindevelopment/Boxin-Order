@@ -410,16 +410,16 @@ class PaymentController extends Controller
 
     public function callbackNotif(Request $request)
     {
-        Log::info("Midtrans Notication");
+        // Log::info("Midtrans Notication");
       $midtrans = new Vtdirect();
       $json_result = file_get_contents('php://input');
       $result = json_decode($json_result);
 
       $notif = null;
       if ($result) {
-        Log::info("Order ID : " . $result->order_id);
+        // Log::info("Order ID : " . $result->order_id);
         $notif = $midtrans->checkStatus($result->order_id);
-        Log::info(print_r($notif, true));
+        // Log::info(print_r($notif, true));
       }
 
       $transaction = $notif['transaction_status'];
@@ -427,18 +427,28 @@ class PaymentController extends Controller
       $order_id    = $notif['order_id'];
       $fraud       = $notif['fraud_status'];
 
-      if ($transaction == 'pending') {
-        // do nothing
-        return "RECEIVEOK PENDING";
-      } else if ($transaction == 'settlement') {
-        // sukses
-        self::konekDB($order_id, 'Success', $notif);
-        return "Success";
+      if ($transaction == 'capture') {
+        if ($type == 'credit_card') {
+          if ($fraud == 'challenge') {
+              $d = "Transaction order_id: " . $order_id ." is challenged by FDS";
+              Log::info($d);
+          } else {
+            self::konekDB($order_id, 'Success', $notif);
+          }
+        }
       } else {
-        self::konekDB($order_id, 'reject', $notif);
-        return "reject";
+        if ($transaction == 'pending') {
+          // do nothing
+          return "RECEIVEOK PENDING";
+        } else if ($transaction == 'settlement') {
+          // sukses
+          self::konekDB($order_id, 'Success', $notif);
+          return "RECEIVEOK Success";
+        } else {
+          self::konekDB($order_id, 'Reject', $notif);
+          return "RECEIVEOK Reject";
+        }
       }
-
       return "RECEIVEOK";
     }
 
