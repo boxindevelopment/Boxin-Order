@@ -76,14 +76,14 @@ class MidtransNotifController extends Controller
             else {
               // TODO set payment status in merchant's database to 'Success'
               echo "Transaction order_id: " . $order_id ." successfully captured using " . $type;
-              self::setPayment($order_id, $type, $transaction);
+              self::setPayment($order_id, $type, $transaction, $fraud);
             }
         }
       }
       else if ($transaction == 'settlement') {
         // TODO set payment status in merchant's database to 'Settlement'
         echo "Transaction order_id: " . $order_id ." successfully transfered using " . $type;
-        self::setPayment($order_id, $type, $transaction);
+        self::setPayment($order_id, $type, $transaction, $fraud);
       } 
       else if ($transaction == 'pending'){
         // TODO set payment status in merchant's database to 'Pending'
@@ -92,45 +92,45 @@ class MidtransNotifController extends Controller
       } 
       else if ($transaction == 'deny') {
         // TODO set payment status in merchant's database to 'Denied'
-        self::setPayment($order_id, $type, $transaction);
+        self::setPayment($order_id, $type, $transaction, $fraud);
         echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is denied.";
       }
       else if ($transaction == 'expire') {
         // TODO set payment status in merchant's database to 'Expired'
-        self::setPayment($order_id, $type, $transaction);
+        self::setPayment($order_id, $type, $transaction, $fraud);
         echo "Payment using " . $type . " for transaction order_id: " . $order_id . " is expired.";
       }
   
   }
 
-  protected function setPayment($order_id, $type, $status) 
+  protected function setPayment($order_id, $type, $status, $fraud) 
   {
     $arrString = self::getInvoiceString($order_id);
     $type_db   = $arrString['tipe'];
     $id_db     = $arrString['id'];
     switch ($type_db) {
       case 'ADDIT':
-        self::setAdditem($id_db, $type, $status);
+        self::setAdditem($id_db, $type, $status, $fraud);
         break;
 
       case 'CHBOX':
         # code...
-        self::setChangeBox($id_db, $type, $status);
+        self::setChangeBox($id_db, $type, $status, $fraud);
         break;
 
       case 'RTBOX':
         # code...
-        self::setReturnBox($id_db, $type, $status);
+        self::setReturnBox($id_db, $type, $status, $fraud);
         break;
 
       case 'XTEND':
         # code...
-        self::setExtendOrder($id_db, $type, $status);
+        self::setExtendOrder($id_db, $type, $status, $fraud);
         break;
 
       case 'ORDER':
         # code...
-        self::setOrder($id_db, $type, $status);
+        self::setOrder($id_db, $type, $status, $fraud);
         break;
       
       default:
@@ -163,7 +163,7 @@ class MidtransNotifController extends Controller
     }
   }
 
-  protected function setAdditem($id, $type, $status)
+  protected function setAdditem($id, $type, $status, $fraud)
   {
     $checkPayment = AddItemBoxPayment::find($id);
     if ($checkPayment) {
@@ -186,6 +186,20 @@ class MidtransNotifController extends Controller
               $additems_box->save();
             }
         } else {
+          if ($status == 'capture') {
+            if ($fraud != 'challenge') {
+              // status code 5 = success
+              $checkPayment->status_id = 5;
+              $checkPayment->save();
+
+              if ($additems_box) {
+                //change status on table add_item
+                $additems_box->status_id = 5;
+                $additems_box->save();
+              }
+            }
+          } else {
+            // sementara challenge = failed
             $checkPayment->status_id = 6;
             $checkPayment->save();
             // status code 6 = failed
@@ -195,12 +209,13 @@ class MidtransNotifController extends Controller
               $additems_box->status_id = 6;
               $additems_box->save();
             }
+          }
         }
       }
     }
   }
   
-  protected function setChangeBox($id, $type, $status)
+  protected function setChangeBox($id, $type, $status, $fraud)
   {
     $checkPayment = ChangeBoxPayment::find($id);
     if ($checkPayment) {
@@ -223,6 +238,19 @@ class MidtransNotifController extends Controller
               $chbox->save();
             }
         } else {
+          if ($status == 'capture') {
+            if ($fraud != 'challenge') {
+               // status code 5 = success
+                $checkPayment->status_id = 5;
+                $checkPayment->save();
+
+                if ($chbox) {
+                  //change status on table add_item
+                  $chbox->status_id = 5;
+                  $chbox->save();
+                }
+            }
+          } else {
             $checkPayment->status_id = 6;
             $checkPayment->save();
             // status code 6 = failed
@@ -231,13 +259,14 @@ class MidtransNotifController extends Controller
               //change status on table add_item
               $chbox->status_id = 6;
               $chbox->save();
-            }
+            } 
+          }
         }
       }
     }
   }
   
-  protected function setReturnBox($id, $type, $status)
+  protected function setReturnBox($id, $type, $status, $fraud)
   {
     $checkPayment = ReturnBoxPayment::find($id);
     if ($checkPayment) {
@@ -260,6 +289,19 @@ class MidtransNotifController extends Controller
               $returnbox->save();
             }
         } else {
+          if ($status == 'capture') {
+            if ($fraud != 'challenge') {
+               // status code 5 = success
+                $checkPayment->status_id = 5;
+                $checkPayment->save();
+
+                if ($returnbox) {
+                  //change status on table add_item
+                  $returnbox->status_id = 5;
+                  $returnbox->save();
+                }
+            }
+          } else {
             $checkPayment->status_id = 6;
             $checkPayment->save();
             // status code 6 = failed
@@ -269,12 +311,13 @@ class MidtransNotifController extends Controller
               $returnbox->status_id = 6;
               $returnbox->save();
             }
+          }
         }
       }
     }
   }
   
-  protected function setExtendOrder($id, $type, $status)
+  protected function setExtendOrder($id, $type, $status, $fraud)
   {
     $checkPayment = ExtendOrderPayment::find($id);
     if ($checkPayment) {
@@ -290,12 +333,21 @@ class MidtransNotifController extends Controller
             $checkPayment->status_id = 5;
             $checkPayment->save();
             self::paymentStatusExtend($checkPayment->extend_id, 5);
-
         } else {
+          if ($status == 'capture') {
+            if ($fraud != 'challenge') {
+               // status code 5 = success
+                $checkPayment->status_id = 5;
+                $checkPayment->save();
+                self::paymentStatusExtend($checkPayment->extend_id, 5);
+            }
+          } else {
             $checkPayment->status_id = 6;
             $checkPayment->save();
             // status code 6 = failed
             self::paymentStatusExtend($checkPayment->extend_id, 6);
+          }
+           
         }
       }
     }
@@ -345,7 +397,7 @@ class MidtransNotifController extends Controller
       }
   }
 
-  protected function setOrder($id, $type, $status)
+  protected function setOrder($id, $type, $status, $fraud)
   {
     $checkPayment = Payment::find($id);
     if ($checkPayment) {
@@ -363,10 +415,19 @@ class MidtransNotifController extends Controller
             self::paymentStatusOrder($checkPayment->order_id, 5);
 
         } else {
+          if ($status == 'capture') {
+            if ($fraud != 'challenge') {
+               // status code 5 = success
+                $checkPayment->status_id = 5;
+                $checkPayment->save();
+                self::paymentStatusOrder($checkPayment->order_id, 5);
+            }
+          } else {
             $checkPayment->status_id = 6;
             $checkPayment->save();
             // status code 6 = failed
             self::paymentStatusOrder($checkPayment->order_id, 6);
+          }
         }
       }
     }
