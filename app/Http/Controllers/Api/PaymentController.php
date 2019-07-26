@@ -77,10 +77,14 @@ class PaymentController extends Controller
             }
 
             $amount = (int) $request->amount;
-            $check = Payment::where('order_id', $request->order_id)->where('status_id', 5)->get();
-            if (count($check) > 0){
-              throw new Exception('Order has been paid.');
-              // return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
+            $check = Payment::where('order_id', $request->order_id)->where('status_id', 14)->get();
+            if (count($check) > 0) {
+              // throw new Exception('Order has been paid.');
+              return response()->json([
+                'status' => true,
+                'message' => 'Payment already created.',
+                'data' => new PaymentResource($check)
+              ]);
             }
 
             //* data payment baru
@@ -312,11 +316,16 @@ class PaymentController extends Controller
             }
 
             $amount = (int) $request->amount;
-            $checkPayment = ExtendOrderPayment::where('extend_id', (int)$request->extend_id)->first();
+            $checkPayment = ExtendOrderPayment::where('extend_id', (int)$request->extend_id)->where('status_id', 14)->first();
             //* jika data sudah ada
             if ($checkPayment) {
-              throw new Exception('Order has been paid.');
+              // throw new Exception('Order has been paid.');
               // return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
+              return response()->json([
+                'status'  => true,
+                'message' => 'Payment already created.',
+                'data'    => new ExtendOrderPaymentResource($checkPayment)
+              ]);
             }
 
             //* data payment baru

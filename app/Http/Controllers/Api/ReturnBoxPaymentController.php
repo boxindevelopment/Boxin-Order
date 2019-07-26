@@ -136,10 +136,15 @@ class ReturnBoxPaymentController extends Controller
         DB::beginTransaction();
         try {
             $amount = (int) $request->amount;
-            $checkPayment = ReturnBoxPayment::where('order_detail_id', $request->order_detail_id)->where('user_id', $user->id)->first();
+            $checkPayment = ReturnBoxPayment::where('order_detail_id', $request->order_detail_id)->where('user_id', $user->id)->where('status_id', 14)->first();
             //* jika data sudah ada
             if ($checkPayment) {
-              throw new Exception('Return box has been paid.');
+              // throw new Exception('Return box has been paid.');
+              return response()->json([
+                'status'  => true,
+                'message' => 'Payment already created.',
+                'data'    => new ReturnBoxPaymentResource($checkPayment)
+              ]);
             }
 
             //* data payment baru
@@ -169,11 +174,6 @@ class ReturnBoxPaymentController extends Controller
             $payment->save();
 
             DB::commit();
-            return response()->json([
-              'status' => true,
-              'message' => 'Success submit to midtrans',
-              'data' => new ReturnBoxPaymentResource($payment)
-            ]);
         } catch (Exception $e) {
             DB::rollback();
             return response()->json([
@@ -181,6 +181,12 @@ class ReturnBoxPaymentController extends Controller
                 'message' => $e->getMessage()
             ], 401);
         }
+
+      return response()->json([
+        'status' => true,
+        'message' => 'Success submit to midtrans',
+        'data' => new ReturnBoxPaymentResource($payment)
+      ]);
     }
 
     private function id_name()

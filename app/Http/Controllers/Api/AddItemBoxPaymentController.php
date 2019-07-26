@@ -61,10 +61,15 @@ class AddItemBoxPaymentController extends Controller
         }
 
         $amount = (int) $request->amount;
-        $checkPayment = AddItemBoxPayment::where('add_item_box_id', $request->add_item_box_id)->where('user_id', $user->id)->first();
+        $checkPayment = AddItemBoxPayment::where('add_item_box_id', $request->add_item_box_id)->where('user_id', $user->id)->where('status_id', 14)->first();
         //* jika data sudah ada
         if ($checkPayment) {
           throw new Exception('Server is busy, please try again later');
+          return response()->json([
+            'status'  => true,
+            'message' => 'Payment already created.',
+            'data'    => new AddItemBoxPaymentResource($checkPayment)
+          ]);
         }
 
         //* data payment baru

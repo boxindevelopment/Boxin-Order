@@ -130,10 +130,16 @@ class ChangeBoxPaymentController extends Controller
             }
 
             $amount = (int) $request->amount;
-            $checkPayment = ChangeBoxPayment::where('change_box_id', $request->change_box_id)->where('user_id', $user->id)->first();
+            $checkPayment = ChangeBoxPayment::where('change_box_id', $request->change_box_id)->where('user_id', $user->id)->where('status_id', 14)->first();
             //* jika data sudah ada
             if ($checkPayment) {
-              throw new Exception("Change Box has been paid.");
+              return response()->json([
+                'status'  => true,
+                // 'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
+                'message' => 'Payment already created.',
+                'data'    => new ChangeBoxPaymentResource($checkPayment)
+              ]);
+              // throw new Exception("Change Box has been paid.");
             }
 
             //* data payment baru
