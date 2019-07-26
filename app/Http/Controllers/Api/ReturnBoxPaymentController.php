@@ -156,8 +156,8 @@ class ReturnBoxPaymentController extends Controller
               throw new Exception('Server is busy, please try again later');
             }
 
-            $start_transaction = Carbon::parse($url_redirect);
-            $expired_transaction = Carbon::parse($url_redirect)->addDays(1);
+            $start_transaction = Carbon::parse($returnbox->created_at);
+            $expired_transaction = Carbon::parse($returnbox->created_at)->addDays(1);
 
             $payment                               = new ReturnBoxPayment;
             $payment->order_detail_id              = $request->order_detail_id;

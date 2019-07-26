@@ -81,8 +81,8 @@ class AddItemBoxPaymentController extends Controller
           throw new Exception('Server is busy, please try again later');
         }
 
-        $start_transaction = Carbon::parse($url_redirect);
-        $expired_transaction = Carbon::parse($url_redirect)->addDays(1);
+        $start_transaction = Carbon::parse($additems_box->created_at);
+        $expired_transaction = Carbon::parse($additems_box->created_at)->addDays(1);
 
         $payment                               = new AddItemBoxPayment;
         $payment->add_item_box_id              = $request->add_item_box_id;
