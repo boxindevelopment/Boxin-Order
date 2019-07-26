@@ -143,7 +143,7 @@ class ReturnBoxPaymentController extends Controller
               return response()->json([
                 'status'  => true,
                 'message' => 'Payment already created.',
-                'data'    => new ReturnBoxPaymentResource($checkPayment)
+                'data'    => $checkPayment
               ]);
             }
 

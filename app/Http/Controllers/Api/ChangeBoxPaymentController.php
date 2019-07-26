@@ -137,7 +137,7 @@ class ChangeBoxPaymentController extends Controller
                 'status'  => true,
                 // 'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
                 'message' => 'Payment already created.',
-                'data'    => new ChangeBoxPaymentResource($checkPayment)
+                'data'    => $checkPayment
               ]);
               // throw new Exception("Change Box has been paid.");
             }

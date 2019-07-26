@@ -68,7 +68,7 @@ class AddItemBoxPaymentController extends Controller
           return response()->json([
             'status'  => true,
             'message' => 'Payment already created.',
-            'data'    => new AddItemBoxPaymentResource($checkPayment)
+            'data'    => $checkPayment
           ]);
         }
 

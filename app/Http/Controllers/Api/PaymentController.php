@@ -81,9 +81,9 @@ class PaymentController extends Controller
             if (count($check) > 0) {
               // throw new Exception('Order has been paid.');
               return response()->json([
-                'status' => true,
+                'status'  => true,
                 'message' => 'Payment already created.',
-                'data' => new PaymentResource($check)
+                'data'    => $check
               ]);
             }
 
@@ -324,7 +324,7 @@ class PaymentController extends Controller
               return response()->json([
                 'status'  => true,
                 'message' => 'Payment already created.',
-                'data'    => new ExtendOrderPaymentResource($checkPayment)
+                'data'    => $checkPayment
               ]);
             }
 

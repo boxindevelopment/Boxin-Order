@@ -172,10 +172,14 @@ class OrderDetail extends Model
         $payment = null;
         if(!is_null($this->order->payment)){
             $payment = [
-                'id'         => $this->order->payment->id,
-                'order_id'   => $this->order->payment->order_id,
-                'status_id'  => $this->order->payment->status->id,
-                'status'     => $this->order->payment->status->name,
+                'id'                           => $this->order->payment->id,
+                'order_id'                     => $this->order->payment->order_id,
+                'status_id'                    => $this->order->payment->status->id,
+                'status'                       => $this->order->payment->status->name,
+                'midtrans_url'                 => $this->order->payment->midtrans_url,
+                'midtrans_status'              => $this->order->payment->midtrans_status,
+                'midtrans_start_transaction'   => $this->order->payment->midtrans_start_transaction,
+                'midtrans_expired_transaction' => $this->order->payment->midtrans_expired_transaction,
             ];
 
         }
@@ -204,9 +208,13 @@ class OrderDetail extends Model
         if($this->return_box_payment){
             foreach ($this->return_box_payment as $k => $return_box_payment) {
                 $return_box_payment = [
-                    'id'                => $return_box_payment->id,
-                    'status_id'         => $return_box_payment->status->id,
-                    'status'            => $return_box_payment->status->name,
+                    'id'                           => $return_box_payment->id,
+                    'status_id'                    => $return_box_payment->status->id,
+                    'status'                       => $return_box_payment->status->name,
+                    'midtrans_url'                 => $return_box_payment->midtrans_url,
+                    'midtrans_status'              => $return_box_payment->midtrans_status,
+                    'midtrans_start_transaction'   => $return_box_payment->midtrans_start_transaction,
+                    'midtrans_expired_transaction' => $return_box_payment->midtrans_expired_transaction,
                 ];
             }
         }
@@ -238,9 +246,13 @@ class OrderDetail extends Model
         if($this->change_box_payment){
             foreach ($this->change_box_payment as $k => $change_box_payment) {
                 $change_box_payment = [
-                    'id'        => $change_box_payment->id,
-                    'status_id' => $change_box_payment->status->id,
-                    'status'    => $change_box_payment->status->name,
+                    'id'                           => $change_box_payment->id,
+                    'status_id'                    => $change_box_payment->status->id,
+                    'status'                       => $change_box_payment->status->name,
+                    'midtrans_url'                 => $change_box_payment->midtrans_url,
+                    'midtrans_status'              => $change_box_payment->midtrans_status,
+                    'midtrans_start_transaction'   => $change_box_payment->midtrans_start_transaction,
+                    'midtrans_expired_transaction' => $change_box_payment->midtrans_expired_transaction,
                 ];
             }
         }
@@ -300,9 +312,13 @@ class OrderDetail extends Model
         if($this->extend_payment){
           foreach ($this->extend_payment as $k => $v) {
               $extend_payment = [
-                  'id'        => $v->id,
-                  'status_id' => $v->status->id,
-                  'status'    => $v->status->name,
+                  'id'                           => $v->id,
+                  'status_id'                    => $v->status->id,
+                  'status'                       => $v->status->name,
+                  'midtrans_url'                 => $v->midtrans_url,
+                  'midtrans_status'              => $v->midtrans_status,
+                  'midtrans_start_transaction'   => $v->midtrans_start_transaction,
+                  'midtrans_expired_transaction' => $v->midtrans_expired_transaction,
               ];
           }
         }
@@ -343,9 +359,13 @@ class OrderDetail extends Model
         if ($this->add_item_payment) {
           foreach ($this->add_item_payment as $k => $v) {
             $add_item_payment = [
-              'id'        => $v->id,
-              'status_id' => $v->status->id,
-              'status'    => $v->status->name,
+              'id'                           => $v->id,
+              'status_id'                    => $v->status->id,
+              'status'                       => $v->status->name,
+              'midtrans_url'                 => $v->midtrans_url,
+              'midtrans_status'              => $v->midtrans_status,
+              'midtrans_start_transaction'   => $v->midtrans_start_transaction,
+              'midtrans_expired_transaction' => $v->midtrans_expired_transaction,
             ];
           }
         }
