@@ -424,7 +424,7 @@ class PaymentController extends Controller
       $json_result = file_get_contents('php://input');
       $result = json_decode($json_result);
 
-      Log::info("Midtrans Callback");
+      // Log::info("Midtrans Callback");
 
       $notif = null;
       if ($result) {
@@ -433,7 +433,7 @@ class PaymentController extends Controller
         // Log::info(print_r($notif, true));
       }
 
-      Log::info(json_encode($notif));
+      // Log::info(json_encode($notif));
 
       $transaction = $notif['transaction_status'];
       $type        = $notif['payment_type'];
@@ -444,7 +444,7 @@ class PaymentController extends Controller
         if ($type == 'credit_card') {
           if ($fraud == 'challenge') {
               $d = "Transaction order_id: " . $order_id ." is challenged by FDS";
-              Log::info($d);
+              // Log::info($d);
           } else {
             self::konekDB($order_id, 'Success', $notif);
           }
@@ -452,15 +452,15 @@ class PaymentController extends Controller
       } else {
         if ($transaction == 'pending') {
           // do nothing
-          Log::info("PENDING");
+          // Log::info("PENDING");
           return "RECEIVEOK PENDING";
         } else if ($transaction == 'settlement') {
           // sukses
-          Log::info("SUCCESS");
+          // Log::info("SUCCESS");
           self::konekDB($order_id, 'Success', $notif);
           return "RECEIVEOK Success";
         } else {
-            Log::info("ELSE");
+            // Log::info("ELSE");
           self::konekDB($order_id, 'Reject', $notif);
           return "RECEIVEOK Reject";
         }
@@ -477,35 +477,35 @@ class PaymentController extends Controller
         if (count($db) > 0) {
           $cek = $db[1];
         }
-         Log::info("CEK" . $cek);
+         // Log::info("CEK" . $cek);
         switch ($cek) {
             // PAY-ORDER-
           case 'ORDER':
-            Log::info("ORDER");
+            // Log::info("ORDER");
             $varss = self::updatePaymentOrder($str, $status, $notif);
             break;
 
             // PAY-XTEND-
           case 'XTEND':
-            Log::info("XTEND");
+            // Log::info("XTEND");
             $varss = self::updatePaymentExtend($str, $status, $notif);
             break;
 
             // PAY-CHBOX-
           case 'CHBOX':
-            Log::info("CHBOX");
+            // Log::info("CHBOX");
             $varss = self::updatePaymentChangebox($str, $status, $notif);
             break;
 
             // PAY-ADDIT-
           case 'ADDIT':
-            Log::info("ADDIT");
+            // Log::info("ADDIT");
             $varss = self::updatePaymentAdditem($str, $stat, $notif);
             break;
 
             // PAY-RTBOX-
           case 'RTBOX':
-            Log::info("RTBOX");
+            // Log::info("RTBOX");
             $varss = self::updatePaymentReturnbox($str, $stat, $notif);
             break;
 
@@ -529,11 +529,11 @@ class PaymentController extends Controller
 
       DB::beginTransaction();
       try {
-        Log::info("Payment Order");
+        // Log::info("Payment Order");
         $payment = Payment::where('id_name', $str)->first();
         if (empty($payment)) {
           throw new Exception("Edit status order payment failed.");
-          Log::info("Payment Order");
+          // Log::info("Payment Order");
         }
 
         $order_id                   = $payment->order_id;
