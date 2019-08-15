@@ -26,18 +26,18 @@ class Vtdirect extends Controller
       // Client Key : SB-Mid-client-YSOTFjf0lq_E3LyO
       // Server Key : SB-Mid-server-8EPMaViFTi3UFeVE3vjuHDH4
       // =======================================================================
-      // Veritrans::$serverKey = 'SB-Mid-server-8EPMaViFTi3UFeVE3vjuHDH4';
-      // Veritrans::$isProduction = false;
-      
+      Veritrans::$serverKey = 'SB-Mid-server-8EPMaViFTi3UFeVE3vjuHDH4';
+      Veritrans::$isProduction = false;
+
       // PRODUCTION
       // Merchant ID	: G642466093
       // Client Key : Mid-client-bGL86Kik10wCthg-
       // Server Key : Mid-server-TW2vpDjf-i3H9EEnGNs28eGb
       // =======================================================================
-      Veritrans::$serverKey = 'Mid-server-TW2vpDjf-i3H9EEnGNs28eGb';
-      Veritrans::$isProduction = true;
+      // Veritrans::$serverKey = 'Mid-server-TW2vpDjf-i3H9EEnGNs28eGb';
+      // Veritrans::$isProduction = true;
     }
-  
+
     public function purchase($user, $order_created_at, $invoice, $total, $ids, $name)
     {
       $expr = date("Y-m-d H:i:s O", strtotime($order_created_at));
@@ -45,7 +45,7 @@ class Vtdirect extends Controller
           'order_id'     => $invoice,
           'gross_amount' => $total
       ];
-      $customer_details = self::customer($user); 
+      $customer_details = self::customer($user);
       $custom_expiry = self::expired($expr);
       $item_details = [
           'id'            => $ids,
@@ -62,12 +62,12 @@ class Vtdirect extends Controller
           'customer_details'    => $customer_details,
           'expiry'              => $custom_expiry
       ];
-      
+
       $redirect_url = Veritrans::vtweb_charge($transaction_data);
       if (empty($redirect_url)) {
         return "";
       }
-      
+
       return $redirect_url;
     }
 
@@ -88,7 +88,7 @@ class Vtdirect extends Controller
         'phone'      => $user->phone
       ];
     }
-    
+
     private function expired($start_time) {
       return [
         'start_time' => $start_time,
@@ -97,4 +97,4 @@ class Vtdirect extends Controller
       ];
     }
 
-}    
+}
