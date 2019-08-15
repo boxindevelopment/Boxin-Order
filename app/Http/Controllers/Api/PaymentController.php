@@ -434,7 +434,7 @@ class PaymentController extends Controller
       }
 
       Log::info(json_encode($notif));
-      
+
       $transaction = $notif['transaction_status'];
       $type        = $notif['payment_type'];
       $order_id    = $notif['order_id'];
@@ -452,12 +452,15 @@ class PaymentController extends Controller
       } else {
         if ($transaction == 'pending') {
           // do nothing
+          Log::info("PENDING");
           return "RECEIVEOK PENDING";
         } else if ($transaction == 'settlement') {
           // sukses
+          Log::info("SUCCESS");
           self::konekDB($order_id, 'Success', $notif);
           return "RECEIVEOK Success";
         } else {
+            Log::info("ELSE");
           self::konekDB($order_id, 'Reject', $notif);
           return "RECEIVEOK Reject";
         }
