@@ -424,6 +424,8 @@ class PaymentController extends Controller
       $json_result = file_get_contents('php://input');
       $result = json_decode($json_result);
 
+      Log::info("Midtrans Callback");
+
       $notif = null;
       if ($result) {
         // Log::info("Order ID : " . $result->order_id);
@@ -431,6 +433,8 @@ class PaymentController extends Controller
         // Log::info(print_r($notif, true));
       }
 
+      Log::info(json_encode($notif));
+      
       $transaction = $notif['transaction_status'];
       $type        = $notif['payment_type'];
       $order_id    = $notif['order_id'];
@@ -470,6 +474,7 @@ class PaymentController extends Controller
         if (count($db) > 0) {
           $cek = $db[1];
         }
+         Log::info("CEK" . $cek);
         switch ($cek) {
             // PAY-ORDER-
           case 'ORDER':
