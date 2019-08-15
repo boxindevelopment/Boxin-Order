@@ -481,26 +481,31 @@ class PaymentController extends Controller
         switch ($cek) {
             // PAY-ORDER-
           case 'ORDER':
+            Log::info("ORDER");
             $varss = self::updatePaymentOrder($str, $status, $notif);
             break;
 
             // PAY-XTEND-
           case 'XTEND':
+            Log::info("XTEND");
             $varss = self::updatePaymentExtend($str, $status, $notif);
             break;
 
             // PAY-CHBOX-
           case 'CHBOX':
+            Log::info("CHBOX");
             $varss = self::updatePaymentChangebox($str, $status, $notif);
             break;
 
             // PAY-ADDIT-
           case 'ADDIT':
+            Log::info("ADDIT");
             $varss = self::updatePaymentAdditem($str, $stat, $notif);
             break;
 
             // PAY-RTBOX-
           case 'RTBOX':
+            Log::info("RTBOX");
             $varss = self::updatePaymentReturnbox($str, $stat, $notif);
             break;
 
@@ -524,9 +529,11 @@ class PaymentController extends Controller
 
       DB::beginTransaction();
       try {
+        Log::info("Payment Order");
         $payment = Payment::where('id_name', $str)->first();
         if (empty($payment)) {
           throw new Exception("Edit status order payment failed.");
+          Log::info("Payment Order");
         }
 
         $order_id                   = $payment->order_id;
