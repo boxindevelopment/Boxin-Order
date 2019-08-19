@@ -524,7 +524,7 @@ class PaymentController extends Controller
     {
       $status = 8;
       if ($stat == 'Success') {
-        $status = 5;
+        $status = 7;
       }
 
       DB::beginTransaction();
