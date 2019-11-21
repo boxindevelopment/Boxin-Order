@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSpaceSmallsTable extends Migration
+class CreateDistrictsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,16 @@ class CreateSpaceSmallsTable extends Migration
      */
     public function up()
     {
-        Schema::create('space_smalls', function (Blueprint $table) {
+        Schema::create('districts', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('province_id')->unsigned();
+            $table->string('name', 50);
             $table->timestamps();
+            $table->softDeletes();
+
+            $table
+                ->foreign('province_id')->references('id')->on('provinces')
+                ->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -26,6 +33,6 @@ class CreateSpaceSmallsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('space_smalls');
+        Schema::dropIfExists('districts');
     }
 }
