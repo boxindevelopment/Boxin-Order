@@ -15,13 +15,13 @@ class CreateDistrictsTable extends Migration
     {
         Schema::create('districts', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('province_id')->unsigned();
+            $table->integer('regency_id')->unsigned();
             $table->string('name', 50);
             $table->timestamps();
             $table->softDeletes();
 
             $table
-                ->foreign('province_id')->references('id')->on('provinces')
+                ->foreign('regency_id')->references('id')->on('regencies')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
     }

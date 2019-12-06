@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateVillagesTable extends Migration
+class CreateHelpsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,15 @@ class CreateVillagesTable extends Migration
      */
     public function up()
     {
-        Schema::create('villages', function (Blueprint $table) {
+        Schema::create('helps', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('district_id')->unsigned();
-            $table->string('name', 50);
+            $table->string('name',100);
+            $table->string('email',100);
+            $table->string('subject',100);
+            $table->text('message');
             $table->timestamps();
             $table->softDeletes();
 
-            $table
-                ->foreign('district_id')->references('id')->on('districts')
-                ->onUpdate('cascade')->onDelete('cascade');
         });
     }
 
@@ -33,6 +32,6 @@ class CreateVillagesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('villages');
+        Schema::dropIfExists('helps');
     }
 }

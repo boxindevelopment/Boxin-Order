@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSubDistrictsTable extends Migration
+class CreateRegenciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,15 +13,15 @@ class CreateSubDistrictsTable extends Migration
      */
     public function up()
     {
-        Schema::create('sub_districts', function (Blueprint $table) {
+        Schema::create('regencies', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('district_id')->unsigned();
+            $table->integer('province_id')->unsigned();
             $table->string('name', 50);
             $table->timestamps();
             $table->softDeletes();
 
             $table
-                ->foreign('district_id')->references('id')->on('districts')
+                ->foreign('province_id')->references('id')->on('provinces')
                 ->onUpdate('cascade')->onDelete('cascade');
         });
     }
@@ -33,6 +33,6 @@ class CreateSubDistrictsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('sub_districts');
+        Schema::dropIfExists('regencies');
     }
 }

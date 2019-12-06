@@ -26,6 +26,7 @@ class CreateUserAddressesTable extends Migration
             $table->string('rt')->nullable();
             $table->string('rw')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table
                 ->foreign('user_id')->references('id')->on('users')
