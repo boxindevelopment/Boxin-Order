@@ -107,7 +107,7 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
             DB::raw('DATEDIFF(day, order_details.start_date, GETDATE()) as selisih'));
         $query->leftJoin('orders', 'orders.id', '=', 'order_details.order_id');
         $query->leftJoin('boxes', 'boxes.id', '=', 'order_details.room_or_box_id');
-        // $query->where('user_id', $args['user_id']);
+        $query->where('user_id', $args['user_id']);
         if($args['place'] != ''){
             if($args['place'] == 'house'){
                 $query->where('order_details.place', 'house');
