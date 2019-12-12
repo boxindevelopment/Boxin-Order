@@ -65,6 +65,7 @@ class OrderDetailController extends Controller
         $user   = $request->user();
         $params = array();
         $params['user_id'] = $user->id;
+        $params['place'] = ($request->place) ? $request->place : '';
         $params['limit']   = intval($request->limit);
         $orders = $this->orderDetail->findPaginateMyBox($params);
         $orderArrays = array();
