@@ -66,7 +66,12 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('list', 'CategoryController@index')->name('api.category.index');
     });
 
+    Route::prefix('transaction')->group(function() {
+        Route::get('log', 'OrderController@log')->name('api.order.log')->middleware('auth:api');
+    });
+
     Route::prefix('order')->group(function() {
+
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
         Route::get('my-space', 'OrderDetailController@my_space')->name('api.order.my_space')->middleware('auth:api');
         Route::get('my-item', 'OrderDetailController@my_item')->name('api.order.my_item')->middleware('auth:api');
@@ -89,6 +94,7 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('extend-order/{order_detail_id}', 'OrderDetailController@extendOrderDetail')->name('api.order.extendOrderDetail')->middleware('auth:api');
         // route awal yang dimulai parameter harus dibawah dari route static
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
+
     });
 
     Route::prefix('additem')->group(function() {
