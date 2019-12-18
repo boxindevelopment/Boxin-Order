@@ -33,6 +33,7 @@ class OrderDetailController extends Controller
         $params = array();
         $params['user_id'] = $user->id;
         $params['limit']   = intval($request->limit);
+        $params['status_disable']   = 14;
         $orders = $this->orderDetail->findPaginateMySpace($params);
         $orderArrays = array();
 
@@ -67,6 +68,7 @@ class OrderDetailController extends Controller
         $params['user_id'] = $user->id;
         $params['place'] = ($request->place) ? $request->place : '';
         $params['limit']   = intval($request->limit);
+        $params['status_disable']   = 14;
         $orders = $this->orderDetail->findPaginateMyBox($params);
         $orderArrays = array();
 

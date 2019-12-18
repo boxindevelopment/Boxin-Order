@@ -68,6 +68,9 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         $query->leftJoin('orders', 'orders.id', '=', 'order_details.order_id');
         $query->leftJoin('space_smalls', 'space_smalls.id', '=', 'order_details.room_or_box_id');
         $query->where('user_id', $args['user_id']);
+        if($args['status_disable'] != ''){
+            $query->where('orders.status', '<>', $args['status_disable']);
+        }
         $query->where('order_details.types_of_box_room_id', 2);
         $query->where('order_details.status_id', '!=', 4);
         $query->where('order_details.status_id', '!=', 18);
@@ -117,6 +120,9 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
                           ->orWhereRaw('order_details.place is null');
                 });
             }
+        }
+        if($args['status_disable'] != ''){
+            $query->where('orders.status', '<>', $args['status_disable']);
         }
         $query->where('order_details.types_of_box_room_id', 1);
         $query->where('order_details.status_id', '!=', 4);
