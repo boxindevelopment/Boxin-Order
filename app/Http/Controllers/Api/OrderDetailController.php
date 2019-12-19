@@ -320,7 +320,8 @@ class OrderDetailController extends Controller
 
         $orderTake                         = new OrderTake;
         $orderTake->types_of_pickup_id     = $request->types_of_pickup_id;                             // durasi inputan
-        $orderTake->order_detail_id        = $order_detail_id->id;                             // durasi inputan
+        $orderTake->order_detail_id        = $order_detail_id;
+        $orderTake->user_id       = $user->id;                                     // durasi inputan
         $orderTake->date                   = $request->date;                             // durasi inputan
         $orderTake->time                   = $request->time;                             // durasi inputan
         $orderTake->address                = $request->address;                             // durasi inputan
@@ -414,7 +415,8 @@ class OrderDetailController extends Controller
 
         $orderBackWarehouse                         = new OrderBackWarehouse;
         $orderBackWarehouse->types_of_pickup_id     = $request->types_of_pickup_id;                             // durasi inputan
-        $orderBackWarehouse->order_detail_id        = $order_detail_id->id;                             // durasi inputan
+        $orderBackWarehouse->order_detail_id        = $order_detail_id->id;
+        $orderBackWarehouse->user_id                = $user->id;                            // durasi inputan
         $orderBackWarehouse->date                   = $request->date;                             // durasi inputan
         $orderBackWarehouse->time                   = $request->time;                             // durasi inputan
         $orderBackWarehouse->address                = $request->address;                             // durasi inputan

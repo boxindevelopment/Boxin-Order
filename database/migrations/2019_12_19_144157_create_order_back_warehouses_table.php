@@ -18,12 +18,13 @@ class CreateOrderBackWarehousesTable extends Migration
             $table->integer('types_of_pickup_id')->unsigned();
             $table->integer('order_detail_id')->unsigned();
             $table->integer('user_id')->unsigned();
+            $table->integer('status_id')->unsigned();
             $table->date('date');
             $table->time('time');
             $table->string('address');
             $table->double('deliver_fee');
             $table->string('time_pickup', 50);
-            $table->text('note');
+            $table->text('note')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
@@ -33,6 +34,8 @@ class CreateOrderBackWarehousesTable extends Migration
                 ->foreign('order_detail_id')->references('id')->on('order_details');
             $table
                 ->foreign('user_id')->references('id')->on('users');
+            $table
+                ->foreign('status_id')->references('id')->on('status');
         });
     }
 
