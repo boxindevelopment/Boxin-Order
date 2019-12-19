@@ -94,6 +94,8 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('extend-order/{order_detail_id}', 'OrderDetailController@extendOrderDetail')->name('api.order.extendOrderDetail')->middleware('auth:api');
         // route awal yang dimulai parameter harus dibawah dari route static
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
+        Route::post('take/{order_detail_id}', 'OrderDetailController@take')->name('api.order.take')->middleware('auth:api');
+        Route::post('back-warehouse/{order_detail_id}', 'OrderDetailController@backWarehouse')->name('api.order.backWarehouse')->middleware('auth:api');
 
     });
 

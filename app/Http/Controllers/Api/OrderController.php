@@ -19,6 +19,7 @@ use App\Http\Resources\BoxResource;
 use App\Http\Resources\SpaceResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\PriceResource;
+use App\Http\Resources\TransactionLogResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\BoxRepository;
@@ -652,6 +653,7 @@ class OrderController extends Controller
         $transactionLogs            = $this->transactionLog->findPaginate($params);
 
         if($transactionLogs) {
+            $transactionLogs = TransactionLogResource::collection($transactionLogs);
             return response()->json($transactionLogs);
         } else {
             return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
