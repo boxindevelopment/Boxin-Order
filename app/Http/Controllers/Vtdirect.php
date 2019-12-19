@@ -26,7 +26,6 @@ class Vtdirect extends Controller
       // Server Key : SB-Mid-server-8EPMaViFTi3UFeVE3vjuHDH4
       Veritrans::$serverKey = config('midtrans.server_key');
       Veritrans::$isProduction = config('midtrans.is_production');
-      dd(config('midtrans.server_key'));
     }
 
     public function purchase($user, $order_created_at, $invoice, $total, $ids, $name)
