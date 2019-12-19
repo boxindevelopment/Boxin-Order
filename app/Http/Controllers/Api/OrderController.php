@@ -12,6 +12,7 @@ use App\Model\Price;
 use App\Model\Payment;
 use App\Model\ReturnBoxes;
 use App\Model\PickupOrder;
+use App\Model\TransactionLog;
 use App\Jobs\MessageInvoice;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BoxResource;
@@ -24,6 +25,7 @@ use App\Repositories\Contracts\BoxRepository;
 use App\Repositories\Contracts\SpaceSmallRepository;
 use App\Repositories\Contracts\PriceRepository;
 use App\Repositories\Contracts\VoucherRepository;
+use App\Repositories\Contracts\TransactionLogRepository;
 use DB;
 use PDF;
 use Exception;
@@ -40,13 +42,14 @@ class OrderController extends Controller
     CONST LOC_URL = 'http://localhost:5252/';
     CONST PROD_URL = 'https://boxin-prod-notification.azurewebsites.net/';
 
-    public function __construct(BoxRepository $boxes, SpaceSmallRepository $spaceSmall, PriceRepository $price, VoucherRepository $voucher)
+    public function __construct(BoxRepository $boxes, SpaceSmallRepository $spaceSmall, PriceRepository $price, VoucherRepository $voucher, TransactionLogRepository $transactionLog)
     {
-        $this->boxes      = $boxes;
-        $this->spaceSmall = $spaceSmall;
-        $this->price      = $price;
-        $this->voucher    = $voucher;
-        $this->url        = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
+        $this->boxes                = $boxes;
+        $this->spaceSmall           = $spaceSmall;
+        $this->price                = $price;
+        $this->voucher              = $voucher;
+        $this->url                  = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
+        $this->transactionLog       = $transactionLog;
     }
 
     public function chooseProduct($area_id)
@@ -375,6 +378,21 @@ class OrderController extends Controller
             }
 
             Order::where('id', $order->id)->update(['total' => $tot, 'voucher_id' => $voucher_id, 'voucher_amount' => $voucher_price, 'deliver_fee' => intval($request->pickup_fee)]);
+            // Transaction Log Create
+            $transactionLog = new TransactionLog;
+            $transactionLog->user_id                        = $user->id;
+            $transactionLog->transaction_type               = 'start storing';
+            $transactionLog->order_id                       = $order->id;
+            $transactionLog->status                         = 'Pend Payment';
+            $transactionLog->location_warehouse             = 'warehouse';
+            $transactionLog->location_pickup                = 'house';
+            $transactionLog->datetime_pickup                =  Carbon::now();
+            $transactionLog->types_of_box_space_small_id    = $data['types_of_box_room_id1'];
+            $transactionLog->space_small_or_box_id          = $room_or_box_id;
+            $transactionLog->amount                         = $tot;
+            $transactionLog->created_at                     =  Carbon::now();
+            $transactionLog->save();
+
 
             // make payment
 
@@ -620,6 +638,24 @@ class OrderController extends Controller
         DB::rollback();
         return response()->json([ 'status' =>false, 'message' => $th->getMessage()], 422);
       }
+    }
+
+    public function log(Request $request)
+    {
+
+        $user                       = $request->user();
+        $params                     = array();
+        $params['user_id']          = $user->id;
+        $params['place']            = ($request->place) ? $request->place : '';
+        $params['limit']            = intval($request->limit);
+        
+        $transactionLogs            = $this->transactionLog->findPaginate($params);
+
+        if($transactionLogs) {
+            return response()->json($transactionLogs);
+        } else {
+            return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
+        }
     }
 
 }
