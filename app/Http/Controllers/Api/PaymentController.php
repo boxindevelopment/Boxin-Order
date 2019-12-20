@@ -78,7 +78,17 @@ class PaymentController extends Controller
             $amount = (int) $request->amount;
             $check = Payment::where('order_id', $request->order_id)->get();
             if (count($check) > 0){
-              throw new Exception('Order has been paid.');
+              if($check->status_id == 14){
+                  $payment = $check->first();
+                  return response()->json([
+                      'status' => true,
+                      // 'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
+                      'message' => 'Payment created.',
+                      'data' => new PaymentResource($payment)
+                  ]);
+              } else {
+                  throw new Exception('Order has been paid.');
+              }
               // return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
             }
 
