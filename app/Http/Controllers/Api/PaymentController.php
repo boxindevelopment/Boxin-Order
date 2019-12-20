@@ -78,8 +78,8 @@ class PaymentController extends Controller
             $amount = (int) $request->amount;
             $check = Payment::where('order_id', $request->order_id)->get();
             if (count($check) > 0){
-              if($check->status_id == 14){
-                  $payment = $check->first();
+                $payment = $check->first();
+              if($payment->status_id == 14){
                   return response()->json([
                       'status' => true,
                       // 'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
