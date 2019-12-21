@@ -71,6 +71,9 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         if($args['status_disable'] != ''){
             $query->where('orders.status_id', '<>', $args['status_disable']);
         }
+        if (isset($args['search'])) {
+          $query->where('order_details.name',  'like', '%' . $args['search'] . '%');
+        }
         $query->where('order_details.types_of_box_room_id', 2);
         $query->where('order_details.status_id', '!=', 4);
         $query->where('order_details.status_id', '!=', 18);
@@ -123,6 +126,10 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         }
         if($args['status_disable'] != ''){
             $query->where('orders.status_id', '<>', $args['status_disable']);
+        }
+
+        if (isset($args['search'])) {
+          $query->where('order_details.name',  'like', '%' . $args['search'] . '%');
         }
         $query->where('order_details.types_of_box_room_id', 1);
         $query->where('order_details.status_id', '!=', 4);
