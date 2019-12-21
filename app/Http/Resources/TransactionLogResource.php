@@ -26,7 +26,7 @@ class TransactionLogResource extends JsonResource
             'user_id'                       => $this->user_id,
             'transaction_type'              => $this->transaction_type,
             'order_id'                      => $this->order_id,
-            'order'                         => $order,
+            'transaction'                   => $order,
             'status'                        => $this->status,
             'location_warehouse'            => $this->location_warehouse,
             'location_pickup'               => $this->location_pickup,
