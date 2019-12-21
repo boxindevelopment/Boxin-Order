@@ -649,12 +649,11 @@ class OrderController extends Controller
         $params['user_id']          = $user->id;
         $params['place']            = ($request->place) ? $request->place : '';
         $params['limit']            = intval($request->limit);
-        
-        $transactionLogs            = $this->transactionLog->findPaginate($params);
 
+        $transactionLogs            = $this->transactionLog->findPaginate($params);
         if($transactionLogs) {
-            $transactionLogs = TransactionLogResource::collection($transactionLogs);
-            return response()->json($transactionLogs);
+            // $data = TransactionLogResource::collection($transactionLogs);
+            return TransactionLogResource::collection($transactionLogs);
         } else {
             return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
         }
