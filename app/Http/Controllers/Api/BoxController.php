@@ -19,8 +19,8 @@ class BoxController extends Controller
 
     public function listByArea($area_id)
     {
-        $boxes = $this->boxes->getByArea($area_id); 
-        
+        $boxes = $this->boxes->getByArea($area_id);
+
         if(count($boxes) > 0) {
             $data = BoxResource::collection($boxes);
 
@@ -39,7 +39,7 @@ class BoxController extends Controller
 
     public function getBox($duration)
     {
-        $boxes = $this->boxes->getBox($duration); 
+        $boxes = $this->boxes->getBox($duration);
 
         if(count($boxes) > 0) {
             $data =PriceResource::collection($boxes);
@@ -49,7 +49,32 @@ class BoxController extends Controller
                 'data' => $data
             ]);
         }
-        
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
+        ]);
+
+    }
+
+    public function getPagination(Request $request)
+    {
+        $params = array();
+        $params['user_id'] = $user->id;
+        $params['limit']   = intval($request->limit);
+        $params['status_disable']   = 14;
+        $params['search'] = ($request->search) ? $request->search : '';
+        $boxes = $this->boxes->getBoxPagination($params);
+
+        if(count($boxes) > 0) {
+            $data =PriceResource::collection($boxes);
+
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        }
+
         return response()->json([
             'status' => false,
             'message' => 'Data not found'

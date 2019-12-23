@@ -38,6 +38,7 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('box')->group(function() {
+        Route::get('/', 'BoxController@getPagination')->name('api.box.getBoxPagination');
         Route::get('list-area/{area_id}', 'BoxController@listByArea')->name('api.box.listByArea');
         Route::get('list/{duration}', 'BoxController@getBox')->name('api.box.getBox');
     });
@@ -94,8 +95,10 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('extend-order/{order_detail_id}', 'OrderDetailController@extendOrderDetail')->name('api.order.extendOrderDetail')->middleware('auth:api');
         // route awal yang dimulai parameter harus dibawah dari route static
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
-        Route::post('take/{order_detail_id}', 'OrderDetailController@take')->name('api.order.take')->middleware('auth:api');
-        Route::post('back-warehouse/{order_detail_id}', 'OrderDetailController@backWarehouse')->name('api.order.backWarehouse')->middleware('auth:api');
+        Route::post('take/payment', 'OrderTakeController@startPaymentTake')->name('api.order.take.payment')->middleware('auth:api');
+        Route::post('take/{order_detail_id}', 'OrderTakeController@take')->name('api.order.take')->middleware('auth:api');
+        Route::post('back-warehouse/payment', 'OrderBackWarehouseController@startPaymentBackWarehouse')->name('api.order.backWarehouse.payment')->middleware('auth:api');
+        Route::post('back-warehouse/{order_detail_id}', 'OrderBackWarehouseController@backWarehouse')->name('api.order.backWarehouse')->middleware('auth:api');
 
     });
 
