@@ -97,8 +97,8 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
         Route::post('take/payment', 'OrderTakeController@startPaymentTake')->name('api.order.take.payment')->middleware('auth:api');
         Route::post('take/{order_detail_id}', 'OrderTakeController@take')->name('api.order.take')->middleware('auth:api');
-        Route::post('back-warehouse/payment', 'OrderBackWarehouseController@startPaymentBackWarehouse')->name('api.order.backWarehouse.payment')->middleware('auth:api');
-        Route::post('back-warehouse/{order_detail_id}', 'OrderBackWarehouseController@backWarehouse')->name('api.order.backWarehouse')->middleware('auth:api');
+        Route::post('backWarehouse/payment', 'OrderBackWarehouseController@startPaymentBackWarehouse')->name('api.order.backWarehouse.payment')->middleware('auth:api');
+        Route::post('backWarehouse/{order_detail_id}', 'OrderBackWarehouseController@store')->name('api.order.backWarehouse')->middleware('auth:api');
 
     });
 

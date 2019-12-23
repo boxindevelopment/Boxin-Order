@@ -8,6 +8,7 @@ use App\Http\Resources\TransactionLogResource;
 use App\Model\OrderTake;
 use App\Model\OrderTakePayment;
 use App\Model\TransactionLog;
+use App\Repositories\Contracts\OrderDetailRepository;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
@@ -15,9 +16,12 @@ use Validator;
 
 class OrderTakeController extends Controller
 {
+    
+    protected $orderDetail;
 
-    public function __construct()
+    public function __construct(OrderDetailRepository $orderDetail)
     {
+        $this->orderDetail = $orderDetail;
     }
 
     public function take($order_detail_id, Request $request)
@@ -54,6 +58,12 @@ class OrderTakeController extends Controller
               'message' => 'status failed'
           ]);
       }
+      if($orderDetails->place == 'house'){
+          return response()->json([
+              'status' => false,
+              'message' => 'your box is still at house'
+          ]);
+      }
 
       DB::beginTransaction();
       try {
@@ -64,7 +74,7 @@ class OrderTakeController extends Controller
         $orderTake                         = new OrderTake;
         $orderTake->types_of_pickup_id     = $request->types_of_pickup_id;                             // durasi inputan
         $orderTake->order_detail_id        = $order_detail_id;
-        $orderTake->user_id       = $user->id;                                     // durasi inputan
+        $orderTake->user_id                = $user->id;                                     // durasi inputan
         $orderTake->date                   = $request->date;                             // durasi inputan
         $orderTake->time                   = $request->time;                             // durasi inputan
         $orderTake->address                = $request->address;                             // durasi inputan

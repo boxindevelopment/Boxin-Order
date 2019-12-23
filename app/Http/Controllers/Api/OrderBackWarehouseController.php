@@ -7,6 +7,7 @@ use App\Http\Controllers\Vtdirect;
 use App\Http\Resources\TransactionLogResource;
 use App\Model\OrderBackWarehouse;
 use App\Model\TransactionLog;
+use App\Repositories\Contracts\OrderDetailRepository;
 use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
@@ -15,8 +16,11 @@ use Validator;
 class OrderBackWarehouseController extends Controller
 {
 
-    public function __construct()
+    protected $orderDetail;
+
+    public function __construct(OrderDetailRepository $orderDetail)
     {
+        $this->orderDetail = $orderDetail;
     }
 
     public function store($order_detail_id, Request $request)
@@ -46,23 +50,29 @@ class OrderBackWarehouseController extends Controller
               'message' => 'Data not found'
           ]);
       }
+      $orderDetails = $orderDetails->first();
       if($orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9){
           return response()->json([
               'status' => false,
               'message' => 'status failed'
           ]);
       }
+      if($orderDetails->place == 'warehouse'){
+          return response()->json([
+              'status' => false,
+              'message' => 'your box is still at warehouse'
+          ]);
+      }
 
       DB::beginTransaction();
       try {
 
-        $orderDetails = $orderDetails->first();
         $orderDetails->place = 'warehouse';
         $orderDetails->save();
 
         $orderBackWarehouse                         = new OrderBackWarehouse;
         $orderBackWarehouse->types_of_pickup_id     = $request->types_of_pickup_id;                             // durasi inputan
-        $orderBackWarehouse->order_detail_id        = $order_detail_id->id;
+        $orderBackWarehouse->order_detail_id        = $order_detail_id;
         $orderBackWarehouse->user_id                = $user->id;                            // durasi inputan
         $orderBackWarehouse->date                   = $request->date;                             // durasi inputan
         $orderBackWarehouse->time                   = $request->time;                             // durasi inputan
