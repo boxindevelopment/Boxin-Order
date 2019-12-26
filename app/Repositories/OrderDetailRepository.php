@@ -142,6 +142,33 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         return $orders;
     }
 
+    public function findPaginateMyBoxSpace($args = [])
+    {
+        $args = array_merge([
+            'perPage' => $args['limit'] != 0 ? $args['limit'] : 10,
+        ], $args);
+
+        $query = $this->model->query();
+        $query->select('order_details.*',
+            DB::raw('CASE WHEN order_details.types_of_box_room_id = 1 THEN boxes.code_box ELSE space_smalls.code_space_small END AS code_box_space'),
+            DB::raw('orders.user_id as user_id'),
+            DB::raw('DATEDIFF(day, order_details.start_date, order_details.end_date) as total_time'),
+            DB::raw('DATEDIFF(day, order_details.start_date, GETDATE()) as selisih'));
+        $query->leftJoin('orders', 'orders.id', '=', 'order_details.order_id');
+        $query->leftJoin('boxes', 'boxes.id', '=', 'order_details.room_or_box_id');
+        $query->leftJoin('space_smalls', 'space_smalls.id', '=', 'order_details.room_or_box_id');
+        $query->where('user_id', $args['user_id']);
+        if (isset($args['search'])) {
+          $query->where('order_details.name',  'like', '%' . $args['search'] . '%');
+        }
+        $query->orderBy('order_details.order_id', 'DESC');
+        $query->orderBy('order_details.id', 'DESC');
+
+        $orderDetails = $query->paginate($args['perPage']);
+
+        return $orderDetails;
+    }
+
     public function findPaginateMyItem($args = [])
     {
         $args = array_merge([

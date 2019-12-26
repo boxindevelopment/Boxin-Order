@@ -75,6 +75,7 @@ Route::group(['namespace' => 'Api'], function() {
 
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
         Route::get('my-space', 'OrderDetailController@my_space')->name('api.order.my_space')->middleware('auth:api');
+        Route::get('my-box-space', 'OrderDetailController@my_box_pace')->name('api.order.my_box_space')->middleware('auth:api');
         Route::get('my-item', 'OrderDetailController@my_item')->name('api.order.my_item')->middleware('auth:api');
         Route::get('my-history', 'OrderDetailController@my_history')->name('api.order.my_history')->middleware('auth:api');
 
