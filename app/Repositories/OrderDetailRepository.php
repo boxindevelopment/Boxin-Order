@@ -181,13 +181,13 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
             DB::raw('DATEDIFF(day, order_details.start_date, order_details.end_date) as total_time'),
             DB::raw('DATEDIFF(day, order_details.start_date, GETDATE()) as selisih'));
         $query->leftJoin('orders', 'orders.id', '=', 'order_details.order_id');
-        // $query->leftJoin('order_detail_boxes', 'order_detail_boxes.order_detail_id', '=', 'order_details.id');
+        $query->leftJoin('order_detail_boxes', 'order_detail_boxes.order_detail_id', '=', 'order_details.id');
         $query->where('user_id', '=',$args['user_id']);
         $query->where('is_returned', '<>', 1);
         $query->where('order_details.status_id', 4);
         if (isset($args['search'])) {
           $query->where('order_details.name',  'like', '%' . $args['search'] . '%');
-          // $query->orWhere('order_detail_boxes.item_name',  'like', '%' . $args['search'] . '%');
+          $query->orWhere('order_detail_boxes.item_name',  'like', '%' . $args['search'] . '%');
         }
         $query->orderBy('order_details.name', 'ASC');
 
