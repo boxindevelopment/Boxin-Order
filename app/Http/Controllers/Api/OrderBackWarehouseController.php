@@ -68,6 +68,11 @@ class OrderBackWarehouseController extends Controller
       try {
 
         $orderDetails->place = 'warehouse';
+        if($request->types_of_pickup_id > 1){
+            $orderDetails->status_id    = 14;
+        } else {
+            $orderDetails->status_id    = 26;
+        }
         $orderDetails->save();
 
         $orderBackWarehouse                         = new OrderBackWarehouse;
@@ -80,10 +85,10 @@ class OrderBackWarehouseController extends Controller
         $orderBackWarehouse->deliver_fee            = $request->deliver_fee;                              // durasi sebelumnya
         $orderBackWarehouse->time_pickup            = $request->time_pickup;
         $orderBackWarehouse->note                   = $request->note;
-        if($request->deliver_fee > 0){
+        if($request->types_of_pickup_id > 1){
             $orderBackWarehouse->status_id          = 14;
         } else {
-            $orderBackWarehouse->status_id          = 11;
+            $orderBackWarehouse->status_id          = 26;
         }
         $orderBackWarehouse->save();
 
@@ -92,10 +97,10 @@ class OrderBackWarehouseController extends Controller
         $transactionLog->user_id                        = $user->id;
         $transactionLog->transaction_type               = 'back warehouse';
         $transactionLog->order_id                       = $orderBackWarehouse->id;
-        if($request->deliver_fee > 0){
+        if($request->types_of_pickup_id > 1){
             $transactionLog->status                         = 'Pend Payment';
         } else {
-            $transactionLog->status                         = 'Pending';
+            $transactionLog->status                         = 'Return Request';
         }
         $transactionLog->location_warehouse             = 'house';
         $transactionLog->location_pickup                = 'warehouse';

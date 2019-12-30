@@ -32,6 +32,10 @@ class TransactionLog extends Model
             return $this->belongsTo('App\Model\OrderTake', 'order_id', 'id');
         } else if($this->transaction_type == 'back warehouse'){
             return $this->belongsTo('App\Model\OrderBackWarehouse', 'order_id', 'id');
+        } else if($this->transaction_type == 'extend'){
+            return $this->belongsTo('App\Model\ExtendOrderDetail', 'order_id', 'id');
+        } else if($this->transaction_type == 'terminate'){
+            return $this->belongsTo('App\Model\ReturnBoxes', 'order_id', 'id');
         }
         return null;
     }

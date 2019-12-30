@@ -297,6 +297,25 @@ class OrderDetailController extends Controller
         $extend_order->status_id              = 14;
         $extend_order->save();
 
+        // Transaction Log Create
+        $transactionLog = new TransactionLog;
+        $transactionLog->user_id                        = $user->id;
+        $transactionLog->transaction_type               = 'extend';
+        $transactionLog->order_id                       = $extend_order->id;
+        if($total_amount > 0){
+            $transactionLog->status                         = 'Pend Payment';
+        } else {
+            $transactionLog->status                         = 'Pending';
+        }
+        $transactionLog->location_warehouse             = 'warehouse';
+        $transactionLog->location_pickup                = 'warehouse';
+        $transactionLog->datetime_pickup                =  Carbon::now();
+        $transactionLog->types_of_box_space_small_id    = $orders->types_of_box_room_id;
+        $transactionLog->space_small_or_box_id          = $orders->room_or_box_id;
+        $transactionLog->amount                         = $total_amount;
+        $transactionLog->created_at                     =  Carbon::now();
+        $transactionLog->save();
+
         DB::commit();
       } catch (\Exception $x) {
         DB::rollback();

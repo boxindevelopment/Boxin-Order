@@ -16,7 +16,19 @@ class TransactionLogResource extends JsonResource
     {
         $boxOrSmallSpaceFee     = ($this->transaction_type == 'start storing') ? $this->order->order_detail->sum('amount') : 0;
         $voucherFee             = ($this->transaction_type == 'start storing') ? $this->order->voucher : 0;
-        $order                  = ($this->transaction_type == 'start storing') ? new OrderResource($this->order) : $this->order;
+        $order                  = $this->order;
+        if($this->transaction_type == 'start storing'){
+            $order              = new OrderResource($this->order);
+        } else if ($this->transaction_type == 'take'){
+            $order              = new OrderTakeResource($this->order);
+        } else if ($this->transaction_type == 'back warehouse'){
+            $order              = new OrderBackWarehouseResource($this->order);
+        } else if ($this->transaction_type == 'extend'){
+            $order              = new ExtendOrderDetailResource($this->order);
+        } else if ($this->transaction_type == 'terminate'){
+            $order              = new ReturnBoxesResource($this->order);
+        }
+
         $address_warehouse      = ($this->transaction_type == 'start storing') ? $this->order->area : null;
         $address_user           = ($this->transaction_type == 'start storing') ? $this->order->area : null;
         $pickup_order           = ($this->transaction_type == 'start storing') ? $this->order->pickup_order : null;
@@ -27,7 +39,7 @@ class TransactionLogResource extends JsonResource
             'transaction_type'              => $this->transaction_type,
             'order_id'                      => $this->order_id,
             'transaction'                   => $order,
-            'status'                        => $this->status,
+            'status'                        => $order->status->name,
             'location_warehouse'            => $this->location_warehouse,
             'location_pickup'               => $this->location_pickup,
             'datetime_pickup'               => $this->datetime_pickup,

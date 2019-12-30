@@ -16,7 +16,7 @@ use Validator;
 
 class OrderTakeController extends Controller
 {
-    
+
     protected $orderDetail;
 
     public function __construct(OrderDetailRepository $orderDetail)
@@ -69,6 +69,11 @@ class OrderTakeController extends Controller
       try {
 
         $orderDetails->place = 'house';
+        if($request->types_of_pickup_id > 1){
+            $orderDetails->status_id          = 14;
+        } else {
+            $orderDetails->status_id          = 27;
+        }
         $orderDetails->save();
 
         $orderTake                         = new OrderTake;
@@ -81,10 +86,10 @@ class OrderTakeController extends Controller
         $orderTake->deliver_fee            = $request->deliver_fee;                              // durasi sebelumnya
         $orderTake->time_pickup            = $request->time_pickup;
         $orderTake->note                   = $request->note;
-        if($request->deliver_fee > 0){
+        if($request->types_of_pickup_id > 1){
             $orderTake->status_id          = 14;
         } else {
-            $orderTake->status_id          = 11;
+            $orderTake->status_id          = 27;
         }
         $orderTake->save();
 
