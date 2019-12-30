@@ -64,7 +64,7 @@ class ReturnBoxController extends Controller
                 $return->order_detail_id        = $data['order_detail_id'.$a];
                 $return->longitude              = $data['longitude'];
                 $return->latitude               = $data['latitude'];
-                $return->deliver_fee            = 0;
+                $return->deliver_fee            = $data['types_of_pickup_id'] == '1' ? 50000 : 0;
                 $return->save();
 
                 //update status order detail to
