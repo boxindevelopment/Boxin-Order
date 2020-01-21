@@ -20,10 +20,7 @@ return array(
     'App\\Http\\Controllers\\Api\\DeliveryFeeController' => $baseDir . '/app/Http/Controllers/Api/DeliveryFeeController.php',
     'App\\Http\\Controllers\\Api\\HistoryItemController' => $baseDir . '/app/Http/Controllers/Api/HistoryItemController.php',
     'App\\Http\\Controllers\\Api\\MidtransNotifController' => $baseDir . '/app/Http/Controllers/Api/MidtransNotifController.php',
-<<<<<<< HEAD
-=======
     'App\\Http\\Controllers\\Api\\OrderBackWarehouseController' => $baseDir . '/app/Http/Controllers/Api/OrderBackWarehouseController.php',
->>>>>>> develop
     'App\\Http\\Controllers\\Api\\OrderController' => $baseDir . '/app/Http/Controllers/Api/OrderController.php',
     'App\\Http\\Controllers\\Api\\OrderDetailBoxController' => $baseDir . '/app/Http/Controllers/Api/OrderDetailBoxController.php',
     'App\\Http\\Controllers\\Api\\OrderDetailController' => $baseDir . '/app/Http/Controllers/Api/OrderDetailController.php',
@@ -3420,7 +3417,7 @@ return array(
     'Ramsey\\Uuid\\UuidFactory' => $vendorDir . '/ramsey/uuid/src/UuidFactory.php',
     'Ramsey\\Uuid\\UuidFactoryInterface' => $vendorDir . '/ramsey/uuid/src/UuidFactoryInterface.php',
     'Ramsey\\Uuid\\UuidInterface' => $vendorDir . '/ramsey/uuid/src/UuidInterface.php',
-<<<<<<< HEAD
+    'RegencyTableSeeder' => $baseDir . '/database/seeds/RegencyTableSeeder.php',
     'Requests' => $vendorDir . '/rmccue/requests/library/Requests.php',
     'Requests_Auth' => $vendorDir . '/rmccue/requests/library/Requests/Auth.php',
     'Requests_Auth_Basic' => $vendorDir . '/rmccue/requests/library/Requests/Auth/Basic.php',
@@ -3479,9 +3476,6 @@ return array(
     'Requests_Transport_fsockopen' => $vendorDir . '/rmccue/requests/library/Requests/Transport/fsockopen.php',
     'Requests_Utility_CaseInsensitiveDictionary' => $vendorDir . '/rmccue/requests/library/Requests/Utility/CaseInsensitiveDictionary.php',
     'Requests_Utility_FilteredIterator' => $vendorDir . '/rmccue/requests/library/Requests/Utility/FilteredIterator.php',
-=======
-    'RegencyTableSeeder' => $baseDir . '/database/seeds/RegencyTableSeeder.php',
->>>>>>> develop
     'RolesTableSeeder' => $baseDir . '/database/seeds/RolesTableSeeder.php',
     'Sabberworm\\CSS\\CSSList\\AtRuleBlockList' => $vendorDir . '/sabberworm/php-css-parser/lib/Sabberworm/CSS/CSSList/AtRuleBlockList.php',
     'Sabberworm\\CSS\\CSSList\\CSSBlockList' => $vendorDir . '/sabberworm/php-css-parser/lib/Sabberworm/CSS/CSSList/CSSBlockList.php',

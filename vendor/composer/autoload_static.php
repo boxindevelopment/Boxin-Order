@@ -485,10 +485,7 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
         'App\\Http\\Controllers\\Api\\DeliveryFeeController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/DeliveryFeeController.php',
         'App\\Http\\Controllers\\Api\\HistoryItemController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/HistoryItemController.php',
         'App\\Http\\Controllers\\Api\\MidtransNotifController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/MidtransNotifController.php',
-<<<<<<< HEAD
-=======
         'App\\Http\\Controllers\\Api\\OrderBackWarehouseController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/OrderBackWarehouseController.php',
->>>>>>> develop
         'App\\Http\\Controllers\\Api\\OrderController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/OrderController.php',
         'App\\Http\\Controllers\\Api\\OrderDetailBoxController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/OrderDetailBoxController.php',
         'App\\Http\\Controllers\\Api\\OrderDetailController' => __DIR__ . '/../..' . '/app/Http/Controllers/Api/OrderDetailController.php',
@@ -3885,7 +3882,7 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
         'Ramsey\\Uuid\\UuidFactory' => __DIR__ . '/..' . '/ramsey/uuid/src/UuidFactory.php',
         'Ramsey\\Uuid\\UuidFactoryInterface' => __DIR__ . '/..' . '/ramsey/uuid/src/UuidFactoryInterface.php',
         'Ramsey\\Uuid\\UuidInterface' => __DIR__ . '/..' . '/ramsey/uuid/src/UuidInterface.php',
-<<<<<<< HEAD
+        'RegencyTableSeeder' => __DIR__ . '/../..' . '/database/seeds/RegencyTableSeeder.php',
         'Requests' => __DIR__ . '/..' . '/rmccue/requests/library/Requests.php',
         'Requests_Auth' => __DIR__ . '/..' . '/rmccue/requests/library/Requests/Auth.php',
         'Requests_Auth_Basic' => __DIR__ . '/..' . '/rmccue/requests/library/Requests/Auth/Basic.php',
@@ -3944,9 +3941,6 @@ class ComposerStaticInit0742803b64cd03e31dba1a7f666c5e7e
         'Requests_Transport_fsockopen' => __DIR__ . '/..' . '/rmccue/requests/library/Requests/Transport/fsockopen.php',
         'Requests_Utility_CaseInsensitiveDictionary' => __DIR__ . '/..' . '/rmccue/requests/library/Requests/Utility/CaseInsensitiveDictionary.php',
         'Requests_Utility_FilteredIterator' => __DIR__ . '/..' . '/rmccue/requests/library/Requests/Utility/FilteredIterator.php',
-=======
-        'RegencyTableSeeder' => __DIR__ . '/../..' . '/database/seeds/RegencyTableSeeder.php',
->>>>>>> develop
         'RolesTableSeeder' => __DIR__ . '/../..' . '/database/seeds/RolesTableSeeder.php',
         'Sabberworm\\CSS\\CSSList\\AtRuleBlockList' => __DIR__ . '/..' . '/sabberworm/php-css-parser/lib/Sabberworm/CSS/CSSList/AtRuleBlockList.php',
         'Sabberworm\\CSS\\CSSList\\CSSBlockList' => __DIR__ . '/..' . '/sabberworm/php-css-parser/lib/Sabberworm/CSS/CSSList/CSSBlockList.php',
