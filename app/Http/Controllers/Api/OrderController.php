@@ -12,18 +12,21 @@ use App\Model\Price;
 use App\Model\Payment;
 use App\Model\ReturnBoxes;
 use App\Model\PickupOrder;
+use App\Model\TransactionLog;
 use App\Jobs\MessageInvoice;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\BoxResource;
 use App\Http\Resources\SpaceResource;
 use App\Http\Resources\OrderResource;
 use App\Http\Resources\PriceResource;
+use App\Http\Resources\TransactionLogResource;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Repositories\Contracts\BoxRepository;
 use App\Repositories\Contracts\SpaceSmallRepository;
 use App\Repositories\Contracts\PriceRepository;
 use App\Repositories\Contracts\VoucherRepository;
+use App\Repositories\Contracts\TransactionLogRepository;
 use DB;
 use PDF;
 use Exception;
@@ -40,13 +43,14 @@ class OrderController extends Controller
     CONST LOC_URL = 'http://localhost:5252/';
     CONST PROD_URL = 'https://boxin-prod-notification.azurewebsites.net/';
 
-    public function __construct(BoxRepository $boxes, SpaceSmallRepository $spaceSmall, PriceRepository $price, VoucherRepository $voucher)
+    public function __construct(BoxRepository $boxes, SpaceSmallRepository $spaceSmall, PriceRepository $price, VoucherRepository $voucher, TransactionLogRepository $transactionLog)
     {
-        $this->boxes      = $boxes;
-        $this->spaceSmall = $spaceSmall;
-        $this->price      = $price;
-        $this->voucher    = $voucher;
-        $this->url        = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
+        $this->boxes                = $boxes;
+        $this->spaceSmall           = $spaceSmall;
+        $this->price                = $price;
+        $this->voucher              = $voucher;
+        $this->url                  = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
+        $this->transactionLog       = $transactionLog;
     }
 
     public function chooseProduct($area_id)
@@ -230,6 +234,7 @@ class OrderController extends Controller
                 $order_detail->types_of_size_id     = $data['types_of_size_id'.$a];
                 $order_detail->duration             = $data['duration'.$a];
                 $order_detail->start_date           = $request->date;
+                $order_detail->place                = 'warehouse';
 
                 // weekly
                 if ($order_detail->types_of_duration_id == 2 || $order_detail->types_of_duration_id == '2') {
@@ -374,6 +379,21 @@ class OrderController extends Controller
             }
 
             Order::where('id', $order->id)->update(['total' => $tot, 'voucher_id' => $voucher_id, 'voucher_amount' => $voucher_price, 'deliver_fee' => intval($request->pickup_fee)]);
+            // Transaction Log Create
+            $transactionLog = new TransactionLog;
+            $transactionLog->user_id                        = $user->id;
+            $transactionLog->transaction_type               = 'start storing';
+            $transactionLog->order_id                       = $order->id;
+            $transactionLog->status                         = 'Pend Payment';
+            $transactionLog->location_warehouse             = 'warehouse';
+            $transactionLog->location_pickup                = 'house';
+            $transactionLog->datetime_pickup                =  Carbon::now();
+            $transactionLog->types_of_box_space_small_id    = $data['types_of_box_room_id1'];
+            $transactionLog->space_small_or_box_id          = $room_or_box_id;
+            $transactionLog->amount                         = $tot;
+            $transactionLog->created_at                     =  Carbon::now();
+            $transactionLog->save();
+
 
             // make payment
 
@@ -576,13 +596,13 @@ class OrderController extends Controller
       $lat                = null;
       $deliver_fee        = 0;
       $date_return        = Carbon::now()->toDateString();
-      
+
       $date_now      = Carbon::now()->toDateTimeString();
       $order_details = OrderDetail::whereDate('end_date', '<', $date_now)->get();
       // $array_id_order_detail = OrderDetail::whereDate('end_date', '>=', $date_now)->pluck('id')->toArray();
       // $query_id_order = OrderDetail::selectRaw('DISTINCT(order_id) as order_id')->whereDate('end_date', '>=', $date_now)->pluck('order_id')->toArray();
       // $array_id_order = array_map('intval', $query_id_order);
-      
+
       DB::beginTransaction();
       try {
 
@@ -612,13 +632,31 @@ class OrderController extends Controller
             ]]);
           }
         }
-        
+
         DB::commit();
         return response()->json(['status' => true, 'message' => 'Successfully running.']);
       } catch (\Exception $th) {
         DB::rollback();
         return response()->json([ 'status' =>false, 'message' => $th->getMessage()], 422);
       }
+    }
+
+    public function log(Request $request)
+    {
+
+        $user                       = $request->user();
+        $params                     = array();
+        $params['user_id']          = $user->id;
+        $params['place']            = ($request->place) ? $request->place : '';
+        $params['limit']            = intval($request->limit);
+
+        $transactionLogs            = $this->transactionLog->findPaginate($params);
+        if($transactionLogs) {
+            // $data = TransactionLogResource::collection($transactionLogs);
+            return TransactionLogResource::collection($transactionLogs);
+        } else {
+            return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
+        }
     }
 
 }

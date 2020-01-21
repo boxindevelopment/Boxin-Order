@@ -26,6 +26,7 @@ Route::group(['namespace' => 'Api'], function() {
     Route::get('/cron/order/expired', 'OrderController@cronOrderExpired');
 
     Route::post('test-email', 'TestController@mail')->name('api.test.mail');
+    Route::post('test-export', 'TestController@exportData')->name('api.test.exportData');
     Route::prefix('product')->group(function() {
         Route::get('size/{types_of_box_room_id}', 'TypeSizeController@list')->name('api.size.list');
         Route::get('list/{area_id}', 'OrderController@chooseProduct')->name('api.order.chooseProduct');
@@ -37,6 +38,7 @@ Route::group(['namespace' => 'Api'], function() {
     });
 
     Route::prefix('box')->group(function() {
+        Route::get('/', 'BoxController@getPagination')->name('api.box.getBoxPagination');
         Route::get('list-area/{area_id}', 'BoxController@listByArea')->name('api.box.listByArea');
         Route::get('list/{duration}', 'BoxController@getBox')->name('api.box.getBox');
     });
@@ -65,8 +67,15 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('list', 'CategoryController@index')->name('api.category.index');
     });
 
+    Route::prefix('transaction')->group(function() {
+        Route::get('log', 'OrderController@log')->name('api.order.log')->middleware('auth:api');
+    });
+
     Route::prefix('order')->group(function() {
+
         Route::get('my-box', 'OrderDetailController@my_box')->name('api.order.my_box')->middleware('auth:api');
+        Route::get('my-space', 'OrderDetailController@my_space')->name('api.order.my_space')->middleware('auth:api');
+        Route::get('my-box-space', 'OrderDetailController@my_box_pace')->name('api.order.my_box_space')->middleware('auth:api');
         Route::get('my-item', 'OrderDetailController@my_item')->name('api.order.my_item')->middleware('auth:api');
         Route::get('my-history', 'OrderDetailController@my_history')->name('api.order.my_history')->middleware('auth:api');
 
@@ -87,6 +96,11 @@ Route::group(['namespace' => 'Api'], function() {
         Route::post('extend-order/{order_detail_id}', 'OrderDetailController@extendOrderDetail')->name('api.order.extendOrderDetail')->middleware('auth:api');
         // route awal yang dimulai parameter harus dibawah dari route static
         Route::get('{order_detail_id}', 'OrderDetailController@getById')->name('api.order.getById')->middleware('auth:api');
+        Route::post('take/payment', 'OrderTakeController@startPaymentTake')->name('api.order.take.payment')->middleware('auth:api');
+        Route::post('take/{order_detail_id}', 'OrderTakeController@take')->name('api.order.take')->middleware('auth:api');
+        Route::post('backWarehouse/payment', 'OrderBackWarehouseController@startPaymentBackWarehouse')->name('api.order.backWarehouse.payment')->middleware('auth:api');
+        Route::post('backWarehouse/{order_detail_id}', 'OrderBackWarehouseController@store')->name('api.order.backWarehouse')->middleware('auth:api');
+
     });
 
     Route::prefix('additem')->group(function() {

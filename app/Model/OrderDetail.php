@@ -14,7 +14,7 @@ class OrderDetail extends Model
     protected $table = 'order_details';
 
     protected $fillable = [
-        'order_id', 'types_of_duration_id', 'room_or_box_id', 'types_of_box_room_id', 'types_of_size_id', 'name', 'duration', 'amount', 'start_date', 'end_date', 'status_id', 'is_returned', 'id_name'
+        'order_id', 'types_of_duration_id', 'room_or_box_id', 'types_of_box_room_id', 'types_of_size_id', 'name', 'duration', 'amount', 'start_date', 'end_date', 'status_id', 'is_returned', 'id_name', 'place'
     ];
 
     public function order()
@@ -91,7 +91,7 @@ class OrderDetail extends Model
     {
        return $this->hasMany('App\Model\ExtendOrderPayment', 'order_detail_id', 'id');
     }
-    
+
     public function add_item()
     {
        return $this->hasMany('App\Model\AddItemBox', 'order_detail_id', 'id');
@@ -377,6 +377,7 @@ class OrderDetail extends Model
             'amount'               => $this->amount,
             'start_date'           => $this->start_date,
             'end_date'             => $this->end_date,
+            'place'                => $this->place,
             'show_button_extend'   => $show,
             'room_or_box'          => $room_or_box,
             'status_id'            => $this->status->id,

@@ -22,6 +22,7 @@ use App\Model\AddItemBox;
 use App\Model\AddItemBoxPayment;
 use App\Model\ReturnBoxPayment;
 use App\Model\ReturnBoxes;
+use App\Model\OrderTakePayment;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentResource;
 use App\Http\Resources\ExtendOrderPaymentResource;
@@ -52,6 +53,8 @@ class PaymentController extends Controller
   // RTBOX
   // XTEND
   // ORDER
+  // TAKE
+  // RETURN
 
     public function startPayment(Request $request)
     {
@@ -77,14 +80,20 @@ class PaymentController extends Controller
             }
 
             $amount = (int) $request->amount;
-            $check = Payment::where('order_id', $request->order_id)->where('status_id', 14)->get();
-            if (count($check) > 0) {
-              // throw new Exception('Order has been paid.');
-              return response()->json([
-                'status'  => true,
-                'message' => 'Payment already created.',
-                'data'    => $check
-              ]);
+            $check = Payment::where('order_id', $request->order_id)->get();
+            if (count($check) > 0){
+                $payment = $check->first();
+              if($payment->status_id == 14){
+                  return response()->json([
+                      'status' => true,
+                      // 'message' => 'Please wait while our admin is confirming the payment (1x24 hours).',
+                      'message' => 'Payment created.',
+                      'data' => new PaymentResource($payment)
+                  ]);
+              } else {
+                  throw new Exception('Order has been paid.');
+              }
+              // return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
             }
 
             //* data payment baru
@@ -428,44 +437,37 @@ class PaymentController extends Controller
 
       $notif = null;
       if ($result) {
-        // Log::info("Order ID : " . $result->order_id);
         $notif = $midtrans->checkStatus($result->order_id);
-        // Log::info(print_r($notif, true));
       }
 
-      // Log::info(json_encode($notif));
+      $transaction = isset($notif->transaction_status) ? $notif->transaction_status : $notif['transaction_status'];
+      $type        = isset($notif->payment_type) ? $notif->payment_type : $notif['payment_type'];
+      $order_id    = isset($notif->order_id) ? $notif->order_id : $notif['order_id'];
+      $fraud       = isset($notif->fraud_status) ? $notif->fraud_status : $notif['fraud_status'];
 
-      $transaction = $notif['transaction_status'];
-      $type        = $notif['payment_type'];
-      $order_id    = $notif['order_id'];
-      $fraud       = $notif['fraud_status'];
-
-      if ($transaction == 'capture') {
-        if ($type == 'credit_card') {
-          if ($fraud == 'challenge') {
-              $d = "Transaction order_id: " . $order_id ." is challenged by FDS";
-              // Log::info($d);
-          } else {
-            self::konekDB($order_id, 'Success', $notif);
-          }
-        }
+      if ($transaction == 'pending') {
+        // do nothing
+        return response()->json([
+          'status'  => true,
+          'message' => 'pending',
+          'response' => $notif
+        ]);
+      } else if ($transaction == 'settlement') {
+        // sukses
+        self::konekDB($order_id, 'success', $notif);
+        return response()->json([
+          'status'  => true,
+          'message' => 'success',
+          'response' => $notif
+        ]);
       } else {
-        if ($transaction == 'pending') {
-          // do nothing
-          // Log::info("PENDING");
-          return "RECEIVEOK PENDING";
-        } else if ($transaction == 'settlement') {
-          // sukses
-          // Log::info("SUCCESS");
-          self::konekDB($order_id, 'Success', $notif);
-          return "RECEIVEOK Success";
-        } else {
-            // Log::info("ELSE");
-          self::konekDB($order_id, 'Reject', $notif);
-          return "RECEIVEOK Reject";
-        }
+        self::konekDB($order_id, 'reject', $notif);
+        return response()->status(422)->json([
+          'status'  => true,
+          'message' => 'Rejected',
+          'response' => $notif
+        ]);
       }
-      return "RECEIVEOK";
     }
 
 
@@ -485,28 +487,32 @@ class PaymentController extends Controller
             $varss = self::updatePaymentOrder($str, $status, $notif);
             break;
 
-            // PAY-XTEND-
           case 'XTEND':
             // Log::info("XTEND");
             $varss = self::updatePaymentExtend($str, $status, $notif);
             break;
 
-            // PAY-CHBOX-
           case 'CHBOX':
             // Log::info("CHBOX");
             $varss = self::updatePaymentChangebox($str, $status, $notif);
             break;
 
-            // PAY-ADDIT-
           case 'ADDIT':
             // Log::info("ADDIT");
             $varss = self::updatePaymentAdditem($str, $stat, $notif);
             break;
 
-            // PAY-RTBOX-
           case 'RTBOX':
             // Log::info("RTBOX");
             $varss = self::updatePaymentReturnbox($str, $stat, $notif);
+            break;
+
+          case 'TAKE':
+            $varss = self::updatePaymentTake($str, $stat, $notif);
+            break;
+
+          case 'BACK':
+            $varss = self::updatePaymentBackWarehouse($str, $stat, $notif);
             break;
 
           default:
@@ -525,7 +531,9 @@ class PaymentController extends Controller
       $status = 8;
       if ($stat == 'Success') {
         $status = 7;
-      }
+    } else if ($stat == 'success') {
+        $status = 5;
+    }
 
       DB::beginTransaction();
       try {
@@ -762,6 +770,101 @@ class PaymentController extends Controller
 
     }
 
+    protected function updatePaymentTake($str, $stat, $notif)
+    {
+        $status = 8;
+        if ($stat == 'approved') {
+            $status = 7;
+        } else if ($stat == 'success') {
+            $status = 5;
+        }
+
+        DB::beginTransaction();
+        try {
+            $orderTakePayment = OrderTakePayment::where('id_name', $str)->first();
+            if (empty($orderTakePayment)) {
+                throw new Exception("Edit status order take payment failed.");
+            }
+
+            $order_detail_id                        = $orderTakePayment->order_detail_id;
+            $orderTakePayment->status_id            = $status;
+            $orderTakePayment->midtrans_response    = json_encode($notif);
+            $orderTakePayment->save();
+
+            $orderdetail = OrderDetail::find($order_detail_id);
+            if (!empty($orderdetail)) {
+                $orderdetail->status_id = $status;
+                $orderdetail->save();
+            }
+
+            $order = Order::find($orderdetail->order_id);
+            if (!empty($order)) {
+                $order->status_id = $status;
+                $order->save();
+            }
+
+            $orderTake = OrderTake::where('order_detail_id', $order_detail_id)->first();
+            if (!empty($orderTake)) {
+                $orderTake->status_id = $status;
+                $orderTake->save();
+            }
+
+            DB::commit();
+            return true;
+        } catch (Exception $th) {
+            DB::rollback();
+            return false;
+        }
+
+    }
+
+    protected function updatePaymentBackWarehouse($str, $stat, $notif)
+    {
+        $status = 8;
+        if ($stat == 'approved') {
+            $status = 7;
+        } else if ($stat == 'success') {
+            $status = 5;
+        }
+
+        DB::beginTransaction();
+        try {
+            $orderBackWarehousePayment = OrderBackWarehousePayment::where('id_name', $str)->first();
+            if (empty($orderBackWarehousePayment)) {
+                throw new Exception("Edit status order back warehouse payment failed.");
+            }
+
+            $order_detail_id                                = $orderBackWarehousePayment->order_detail_id;
+            $orderBackWarehousePayment->status_id           = $status;
+            $orderBackWarehousePayment->midtrans_response   = json_encode($notif);
+            $orderBackWarehousePayment->save();
+
+            $orderdetail = OrderDetail::find($order_detail_id);
+            if (!empty($orderdetail)) {
+                $orderdetail->status_id = $status;
+                $orderdetail->save();
+            }
+
+            $order = Order::find($orderdetail->order_id);
+            if (!empty($order)) {
+                $order->status_id = $status;
+                $order->save();
+            }
+
+            $orderBackWarehouse = OrderBackWarehouse::where('order_detail_id', $order_detail_id)->first();
+            if (!empty($orderBackWarehouse)) {
+                $orderBackWarehouse->status_id = $status;
+                $orderBackWarehouse->save();
+            }
+
+            DB::commit();
+            return true;
+        } catch (Exception $th) {
+            DB::rollback();
+            return false;
+        }
+
+    }
 
     public function showFinish()
     {

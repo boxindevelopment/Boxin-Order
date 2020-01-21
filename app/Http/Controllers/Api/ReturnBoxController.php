@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Model\ReturnBoxes;
 use App\Model\Order;
 use App\Model\OrderDetail;
+use App\Model\TransactionLog;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReturnBoxesResource;
-use Illuminate\Http\Request;
-use DB;
 use App\Model\Setting;
 use App\Repositories\Contracts\ReturnBoxRepository;
+use Carbon\Carbon;
+use DB;
+use Illuminate\Http\Request;
 
 class ReturnBoxController extends Controller
 {
@@ -24,7 +26,7 @@ class ReturnBoxController extends Controller
     public function startReturnBox(Request $request)
     {
         $user = $request->user();
-        
+
         $validator = \Validator::make($request->all(), [
             'return_count'      => 'required',
         ]);
@@ -61,15 +63,31 @@ class ReturnBoxController extends Controller
                 $return->address                = $data['address'];
                 $return->order_detail_id        = $data['order_detail_id'.$a];
                 $return->longitude              = $data['longitude'];
-                $return->latitude               = $data['latitude'];        
-                $return->deliver_fee            = 0;
+                $return->latitude               = $data['latitude'];
+                $return->deliver_fee            = $data['types_of_pickup_id'] == '1' ? 50000 : 0;
                 $return->save();
 
                 //update status order detail to
                 $order_detail      = OrderDetail::findOrFail($return->order_detail_id);
                 if($order_detail){
-                    $data1["is_returned"]        = 1;                     
-                    $data1["status_id"]          = $data['types_of_pickup_id'] == '1' ? 14 : 16;      
+
+                    // Transaction Log Create
+                    $transactionLog = new TransactionLog;
+                    $transactionLog->user_id                        = $user->id;
+                    $transactionLog->transaction_type               = 'terminate';
+                    $transactionLog->order_id                       = $return->id;
+                    $transactionLog->status                         = $data['types_of_pickup_id'] == '1' ? 'Pend Payment' : 'Terminate Request';
+                    $transactionLog->location_warehouse             = 'warehouse';
+                    $transactionLog->location_pickup                = 'house';
+                    $transactionLog->datetime_pickup                =  Carbon::now();
+                    $transactionLog->types_of_box_space_small_id    = $order_detail->types_of_box_room_id;
+                    $transactionLog->space_small_or_box_id          = $order_detail->room_or_box_id;
+                    $transactionLog->amount                         = $return->deliver_fee;
+                    $transactionLog->created_at                     =  Carbon::now();
+                    $transactionLog->save();
+
+                    $data1["is_returned"]        = 1;
+                    $data1["status_id"]          = $data['types_of_pickup_id'] == '1' ? 14 : 16;
                     $order_detail->fill($data1)->save();
                 }
             }
@@ -89,7 +107,7 @@ class ReturnBoxController extends Controller
         $params['user_id'] = $user->id;
         $params['limit']   = intval($request->limit);
         $data  = $this->repository->findPaginate($params);
-        
+
         if($data) {
             foreach ($data as $k => $v) {
                 $data[$k] = $v->toSearchableArray();
@@ -118,18 +136,18 @@ class ReturnBoxController extends Controller
                         $order_detail->save();
                         //change status order
                         $status_order = DB::table('orders')->where('id', $order_detail->order_id)->update(['status_id' => 18]);
-                    }else{                        
+                    }else{
                         return response()->json(['status' => false, 'message' => 'Return box not found.'], 401);
                     }
                 }
-                
+
             }else {
                 return response()->json([
                     'status' => false,
                     'message' => 'Order Detail Id not found'
                 ], 401);
             }
-            
+
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
