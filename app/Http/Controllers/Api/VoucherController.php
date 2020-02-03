@@ -75,7 +75,7 @@ class VoucherController extends Controller
                 ]);
             }
             if($data->type_voucher == 2){
-                $result = $request->amount;
+                $result = $data->value;
             } else {
                 $result = ($data->value/100) * $request->amount;
                 if($result > $data->max_value){
