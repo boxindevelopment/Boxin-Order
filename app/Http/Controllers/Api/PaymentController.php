@@ -490,19 +490,19 @@ class PaymentController extends Controller
             break;
 
           case 'ADDIT':
-            $varss = self::updatePaymentAdditem($str, $stat, $notif);
+            $varss = self::updatePaymentAdditem($str, $status, $notif);
             break;
 
           case 'RTBOX':
-            $varss = self::updatePaymentReturnbox($str, $stat, $notif);
+            $varss = self::updatePaymentReturnbox($str, $status, $notif);
             break;
 
           case 'TAKE':
-            $varss = self::updatePaymentTake($str, $stat, $notif);
+            $varss = self::updatePaymentTake($str, $status, $notif);
             break;
 
           case 'BACK':
-            $varss = self::updatePaymentBackWarehouse($str, $stat, $notif);
+            $varss = self::updatePaymentBackWarehouse($str, $status, $notif);
             break;
 
           default:
@@ -563,7 +563,7 @@ class PaymentController extends Controller
         }
 
         foreach ($order_details as $key => $value) {
-          if ($status == 7 || $status == 8){
+          if ($status == 7 || $status == 8 || $status == 5){
             $params['status_id']       = $status;
             $params['order_detail_id'] = $value->id;
             $userDevice = UserDevice::where('user_id', $order->user_id)->get();
@@ -586,6 +586,8 @@ class PaymentController extends Controller
       $status = 8;
       if ($stat == 'approved') {
         $status = 7;
+      } else if ($stat == 'success') {
+          $status = 5;
       }
 
       DB::beginTransaction();
@@ -636,6 +638,8 @@ class PaymentController extends Controller
       $status = 8;
       if ($stat == 'approved') {
         $status = 7;
+      } else if ($stat == 'success') {
+          $status = 5;
       }
 
       DB::beginTransaction();
@@ -677,6 +681,8 @@ class PaymentController extends Controller
       $status = 8;
       if ($stat == 'approved') {
         $status = 7;
+      } else if ($stat == 'success') {
+          $status = 5;
       }
 
       DB::beginTransaction();
@@ -712,6 +718,8 @@ class PaymentController extends Controller
       $status = 8;
       if ($stat == 'approved') {
         $status = 7;
+      } else if ($stat == 'success') {
+          $status = 5;
       }
 
       DB::beginTransaction();
