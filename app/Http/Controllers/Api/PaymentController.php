@@ -453,11 +453,11 @@ class PaymentController extends Controller
         ]);
       } else {
         self::konekDB($order_id, 'reject', $notif);
-        return response()->status(422)->json([
+        return response()->json([
           'status'  => true,
           'message' => 'Rejected',
           'response' => $notif
-        ]);
+        ], 422);
       }
     }
 
@@ -568,7 +568,12 @@ class PaymentController extends Controller
             $params['order_detail_id'] = $value->id;
             $userDevice = UserDevice::where('user_id', $order->user_id)->get();
             if(count($userDevice) > 0){
-                $response = Requests::post($this->url . 'api/confirm-payment/' . $order->user_id, [], $params, []);
+                // $response = Requests::post($this->url . 'api/confirm-payment/' . $order->user_id, [], $params, []);
+              $client = new \GuzzleHttp\Client();
+              $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $order->user_id, ['form_params' => [
+                'status_id'       => $status,
+                'order_detail_id' => $value->id
+              ]]);
             }
           }
         }
@@ -615,12 +620,17 @@ class PaymentController extends Controller
                 $orderDetails->save();
             }
 
-            if ($status == 7 || $status == 8){
+            if ($status == 7 || $status == 8 || $status == 5){
               $params['status_id'] =  $status;
               $params['order_detail_id'] = $ex_order_details->order_detail_id;
               $userDevice = UserDevice::where('user_id', $ex_order_details->user_id)->get();
               if(count($userDevice) > 0){
-                  $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
+                  // $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $user_id, ['form_params' => [
+                  'status_id'       => $status,
+                  'order_detail_id' => $ex_order_details->order_detail_id
+                ]]);
               }
             }
         }
