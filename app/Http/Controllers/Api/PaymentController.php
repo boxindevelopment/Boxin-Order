@@ -462,11 +462,11 @@ class PaymentController extends Controller
         ]);
       } else {
         self::konekDB($order_id, 'reject', $notif);
-        return response()->status(422)->json([
+        return response()->json([
           'status'  => true,
           'message' => 'Rejected',
           'response' => $notif
-        ]);
+        ], 422);
       }
     }
 
@@ -498,21 +498,19 @@ class PaymentController extends Controller
             break;
 
           case 'ADDIT':
-            // Log::info("ADDIT");
-            $varss = self::updatePaymentAdditem($str, $stat, $notif);
+            $varss = self::updatePaymentAdditem($str, $status, $notif);
             break;
 
           case 'RTBOX':
-            // Log::info("RTBOX");
-            $varss = self::updatePaymentReturnbox($str, $stat, $notif);
+            $varss = self::updatePaymentReturnbox($str, $status, $notif);
             break;
 
           case 'TAKE':
-            $varss = self::updatePaymentTake($str, $stat, $notif);
+            $varss = self::updatePaymentTake($str, $status, $notif);
             break;
 
           case 'BACK':
-            $varss = self::updatePaymentBackWarehouse($str, $stat, $notif);
+            $varss = self::updatePaymentBackWarehouse($str, $status, $notif);
             break;
 
           default:
@@ -576,12 +574,17 @@ class PaymentController extends Controller
         }
 
         foreach ($order_details as $key => $value) {
-          if ($status == 7 || $status == 8){
+          if ($status == 7 || $status == 8 || $status == 5){
             $params['status_id']       = $status;
             $params['order_detail_id'] = $value->id;
             $userDevice = UserDevice::where('user_id', $order->user_id)->get();
             if(count($userDevice) > 0){
-                $response = Requests::post($this->url . 'api/confirm-payment/' . $order->user_id, [], $params, []);
+                // $response = Requests::post($this->url . 'api/confirm-payment/' . $order->user_id, [], $params, []);
+              $client = new \GuzzleHttp\Client();
+              $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $order->user_id, ['form_params' => [
+                'status_id'       => $status,
+                'order_detail_id' => $value->id
+              ]]);
             }
           }
         }
@@ -597,8 +600,10 @@ class PaymentController extends Controller
     protected function updatePaymentExtend($str, $stat, $notif)
     {
       $status = 8;
-      if ($stat == 'Success') {
-        $status = 5;
+      if ($stat == 'approved') {
+        $status = 7;
+      } else if ($stat == 'success') {
+          $status = 5;
       }
 
       DB::beginTransaction();
@@ -627,12 +632,17 @@ class PaymentController extends Controller
                 $orderDetails->save();
             }
 
-            if ($status == 7 || $status == 8){
+            if ($status == 7 || $status == 8 || $status == 5){
               $params['status_id'] =  $status;
               $params['order_detail_id'] = $ex_order_details->order_detail_id;
               $userDevice = UserDevice::where('user_id', $ex_order_details->user_id)->get();
               if(count($userDevice) > 0){
-                  $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
+                  // $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $user_id, ['form_params' => [
+                  'status_id'       => $status,
+                  'order_detail_id' => $ex_order_details->order_detail_id
+                ]]);
               }
             }
         }
@@ -648,8 +658,10 @@ class PaymentController extends Controller
     protected function updatePaymentChangebox($str, $stat, $notif)
     {
       $status = 8;
-      if ($stat == 'Success') {
-        $status = 5;
+      if ($stat == 'approved') {
+        $status = 7;
+      } else if ($stat == 'success') {
+          $status = 5;
       }
 
       DB::beginTransaction();
@@ -690,8 +702,10 @@ class PaymentController extends Controller
     protected function updatePaymentAdditem($str, $stat, $notif)
     {
       $status = 8;
-      if ($stat == 'Success') {
-        $status = 5;
+      if ($stat == 'approved') {
+        $status = 7;
+      } else if ($stat == 'success') {
+          $status = 5;
       }
 
       DB::beginTransaction();
@@ -726,8 +740,10 @@ class PaymentController extends Controller
     protected function updatePaymentReturnbox($str, $stat, $notif)
     {
       $status = 8;
-      if ($stat == 'Success') {
-        $status = 5;
+      if ($stat == 'approved') {
+        $status = 7;
+      } else if ($stat == 'success') {
+          $status = 5;
       }
 
       DB::beginTransaction();
