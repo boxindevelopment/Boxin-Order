@@ -75,8 +75,17 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
           $query->where('order_details.name',  'like', '%' . $args['search'] . '%');
         }
         $query->where('order_details.types_of_box_room_id', 2);
-        $query->where('order_details.status_id', '!=', 4);
-        $query->where('order_details.status_id', '!=', 18);
+        $query->where(function ($q) {
+                    $q->where('order_details.status_id', 4)
+                      ->orWhere('order_details.status_id', 9)
+                      ->orWhere('order_details.status_id', 10)
+                      ->orWhere('order_details.status_id', 16)
+                      ->orWhere('order_details.status_id', 18)
+                      ->orWhere('order_details.status_id', 19)
+                      ->orWhere('order_details.status_id', 22)
+                      ->orWhere('order_details.status_id', 23)
+                      ->orWhere('order_details.status_id', 25);
+                });
         $query->orderBy('order_details.order_id', 'DESC');
         $query->orderBy('order_details.id', 'DESC');
 
@@ -132,7 +141,17 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
           $query->where('order_details.name',  'like', '%' . $args['search'] . '%');
         }
         $query->where('order_details.types_of_box_room_id', 1);
-        $query->where('order_details.status_id', '!=', 18);
+        $query->where(function ($q) {
+                    $q->where('order_details.status_id', 4)
+                      ->orWhere('order_details.status_id', 9)
+                      ->orWhere('order_details.status_id', 10)
+                      ->orWhere('order_details.status_id', 16)
+                      ->orWhere('order_details.status_id', 18)
+                      ->orWhere('order_details.status_id', 19)
+                      ->orWhere('order_details.status_id', 22)
+                      ->orWhere('order_details.status_id', 23)
+                      ->orWhere('order_details.status_id', 25);
+                });
         $query->orderBy('order_details.order_id', 'DESC');
         $query->orderBy('order_details.id', 'DESC');
 
