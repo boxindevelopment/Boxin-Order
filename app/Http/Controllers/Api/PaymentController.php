@@ -536,7 +536,7 @@ class PaymentController extends Controller
       DB::beginTransaction();
       try {
         // Log::info("Payment Order");
-        $payment = Payment::where('id_name', $str)->first();
+        $payment = Payment::where('id_name', $str)->where('status_id', 14)->first();
         if (empty($payment)) {
           throw new Exception("Edit status order payment failed.");
           // Log::info("Payment Order");
@@ -608,7 +608,7 @@ class PaymentController extends Controller
 
       DB::beginTransaction();
       try {
-        $payment = ExtendOrderPayment::where('id_name', $str)->first();
+        $payment = ExtendOrderPayment::where('id_name', $str)->where('status_id', 14)->first();
         if (empty($payment)) {
           throw new Exception("Edit status extend payment failed.");
         }
@@ -666,7 +666,7 @@ class PaymentController extends Controller
 
       DB::beginTransaction();
       try {
-        $payment = ChangeBoxPayment::where('id_name', $str)->first();
+        $payment = ChangeBoxPayment::where('id_name', $str)->where('status_id', 14)->first();
         if (empty($payment)) {
           throw new Exception("Edit status change box payment failed.");
         }
@@ -710,7 +710,7 @@ class PaymentController extends Controller
 
       DB::beginTransaction();
       try {
-        $payment = AddItemBoxPayment::where('id_name', $str)->first();
+        $payment = AddItemBoxPayment::where('id_name', $str)->where('status_id', 14)->first();
         if (empty($payment)) {
           throw new Exception("Edit status change box payment failed.");
         }
@@ -748,7 +748,7 @@ class PaymentController extends Controller
 
       DB::beginTransaction();
       try {
-        $payment = ReturnBoxPayment::where('id_name', $str)->first();
+        $payment = ReturnBoxPayment::where('id_name', $str)->where('status_id', 14)->first();
         if (empty($payment)) {
           throw new Exception("Edit status return box payment failed.");
         }
@@ -797,7 +797,7 @@ class PaymentController extends Controller
 
         DB::beginTransaction();
         try {
-            $orderTakePayment = OrderTakePayment::where('id_name', $str)->first();
+            $orderTakePayment = OrderTakePayment::where('id_name', $str)->where('status_id', 14)->first();
             if (empty($orderTakePayment)) {
                 throw new Exception("Edit status order take payment failed.");
             }
@@ -845,7 +845,7 @@ class PaymentController extends Controller
 
         DB::beginTransaction();
         try {
-            $orderBackWarehousePayment = OrderBackWarehousePayment::where('id_name', $str)->first();
+            $orderBackWarehousePayment = OrderBackWarehousePayment::where('id_name', $str)->where('status_id', 14)->first();
             if (empty($orderBackWarehousePayment)) {
                 throw new Exception("Edit status order back warehouse payment failed.");
             }
