@@ -49,7 +49,7 @@ class TransactionLogResource extends JsonResource
             'amount'                        => $this->amount,
             'deliver_fee'                   => $this->order->deliver_fee,
             'status'                        => $order->status->name,
-            'box_id'                        => $this->boxOrSmallSpace->id,
+            'box_id'                        => $this->boxOrSmallSpace,
             'location_warehouse'            => $this->location_warehouse,
             'location_pickup'               => $this->location_pickup,
             'datetime_pickup'               => $this->datetime_pickup,
