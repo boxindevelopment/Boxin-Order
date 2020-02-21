@@ -69,7 +69,7 @@ class OrderTakeController extends Controller
       try {
 
         $orderDetails->place = 'house';
-        if($request->types_of_pickup_id > 1){
+        if($request->types_of_pickup_id == 1){
             $orderDetails->status_id          = 14;
         } else {
             $orderDetails->status_id          = 27;
@@ -86,7 +86,7 @@ class OrderTakeController extends Controller
         $orderTake->deliver_fee            = $request->deliver_fee;                              // durasi sebelumnya
         $orderTake->time_pickup            = $request->time_pickup;
         $orderTake->note                   = $request->note;
-        if($request->types_of_pickup_id > 1){
+        if($request->types_of_pickup_id == 1){
             $orderTake->status_id          = 14;
         } else {
             $orderTake->status_id          = 27;
