@@ -18,21 +18,27 @@ class TransactionLogResource extends JsonResource
         $voucherFee             = ($this->transaction_type == 'start storing') ? $this->order->voucher : 0;
         $order                  = $this->order;
         $code                   = '';
+        $order_detail_id        = null;
         if($this->transaction_type == 'start storing'){
             $order              = new OrderResource($this->order);
             $code               = $order->order_detail[0]->id_name;
+            $order_detail_id    = $order->order_detail[0]->id;
         } else if ($this->transaction_type == 'take'){
             $order              = new OrderTakeResource($this->order);
             $code               = $order->order_detail->id_name;
+            $order_detail_id    = $order->order_detail->id;
         } else if ($this->transaction_type == 'back warehouse'){
             $order              = new OrderBackWarehouseResource($this->order);
             $code               = $order->order_detail[0]->id_name;
+            $order_detail_id    = $order->order_detail[0]->id;
         } else if ($this->transaction_type == 'extend'){
             $order              = new ExtendOrderDetailResource($this->order);
             $code               = $order->order_detail->id_name;
+            $order_detail_id    = $order->order_detail->id;
         } else if ($this->transaction_type == 'terminate'){
             $order              = new ReturnBoxesResource($this->order);
             $code               = $order->order_detail[0]->id_name;
+            $order_detail_id    = $order->order_detail[0]->id;
         }
 
         $address_warehouse      = ($this->transaction_type == 'start storing') ? $this->order->area : null;
@@ -50,6 +56,7 @@ class TransactionLogResource extends JsonResource
             'deliver_fee'                   => $this->order->deliver_fee,
             'status'                        => $order->status->name,
             'box_id'                        => $this->boxOrSmallSpace,
+            'order_detail_id'               => $order_detail_id,
             'location_warehouse'            => $this->location_warehouse,
             'location_pickup'               => $this->location_pickup,
             'datetime_pickup'               => $this->datetime_pickup,
