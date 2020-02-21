@@ -14,7 +14,7 @@ class ExtendOrderDetailResource extends JsonResource
      */
     public function toArray($request)
     {
-      
+
       return [
         'id'                     => $this->id,
         'order_detail_id'        => $this->order_detail_id,
@@ -31,7 +31,7 @@ class ExtendOrderDetailResource extends JsonResource
         'total_amount'           => $this->total_amount,
         'status'                 => new StatusResource($this->status),
         // 'order'                  => $this->order,
-        // 'order_detail'           => $this->order_detail
+        'order_detail'           => $this->order_detail
       ];
 
     }

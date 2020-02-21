@@ -17,16 +17,22 @@ class TransactionLogResource extends JsonResource
         $boxOrSmallSpaceFee     = ($this->transaction_type == 'start storing') ? $this->order->order_detail->sum('amount') : 0;
         $voucherFee             = ($this->transaction_type == 'start storing') ? $this->order->voucher : 0;
         $order                  = $this->order;
+        $code                   = '';
         if($this->transaction_type == 'start storing'){
             $order              = new OrderResource($this->order);
+            $code               = $order->order_detail[0]->id_name;
         } else if ($this->transaction_type == 'take'){
             $order              = new OrderTakeResource($this->order);
+            $code               = $order->order_detail->id_name;
         } else if ($this->transaction_type == 'back warehouse'){
             $order              = new OrderBackWarehouseResource($this->order);
+            $code               = $order->order_detail[0]->id_name;
         } else if ($this->transaction_type == 'extend'){
             $order              = new ExtendOrderDetailResource($this->order);
+            $code               = $order->order_detail->id_name;
         } else if ($this->transaction_type == 'terminate'){
             $order              = new ReturnBoxesResource($this->order);
+            $code               = $order->order_detail[0]->id_name;
         }
 
         $address_warehouse      = ($this->transaction_type == 'start storing') ? $this->order->area : null;
@@ -37,6 +43,7 @@ class TransactionLogResource extends JsonResource
             'id'                            => $this->id,
             'user_id'                       => $this->user_id,
             'order_id'                      => $this->order_id,
+            'code'                          => $code,
             'transaction_type'              => $this->transaction_type,
             'storage_fee'                   => $this->amount-($voucherFee+$this->order->deliver_fee),
             'amount'                        => $this->amount,
