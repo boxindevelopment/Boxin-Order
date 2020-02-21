@@ -36,21 +36,17 @@ class TransactionLogResource extends JsonResource
         $data = [
             'id'                            => $this->id,
             'user_id'                       => $this->user_id,
-            'transaction_type'              => $this->transaction_type,
             'order_id'                      => $this->order_id,
-            'transaction'                   => $order,
+            'transaction_type'              => $this->transaction_type,
+            'storage_fee'                   => $this->amount-($voucherFee+$this->order->deliver_fee),
+            'amount'                        => $this->amount,
+            'deliver_fee'                   => $this->order->deliver_fee,
             'status'                        => $order->status->name,
+            'box_id'                        => $boxOrSmallSpaceFee,
             'location_warehouse'            => $this->location_warehouse,
             'location_pickup'               => $this->location_pickup,
             'datetime_pickup'               => $this->datetime_pickup,
-            'types_of_box_space_small_id'   => $this->types_of_box_space_small_id,
-            'space_small_or_box_id'         => $this->space_small_or_box_id,
-            'space_small_or_box'            => $this->boxOrSmallSpace,
-            'amount'                        => $this->amount,
-            'deliver_fee'                   => $this->order->deliver_fee,
-            'box_small_space'               => $boxOrSmallSpaceFee,
-            'pickup_order'                  => $pickup_order,
-            'type_pickup'                   => $type_pickup,
+            'discount'                      => $voucherFee,
             'created_at'                    => $this->created_at
         ];
 
