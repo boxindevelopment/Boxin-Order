@@ -150,7 +150,9 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
                       ->orWhere('order_details.status_id', 19)
                       ->orWhere('order_details.status_id', 22)
                       ->orWhere('order_details.status_id', 23)
-                      ->orWhere('order_details.status_id', 25);
+                      ->orWhere('order_details.status_id', 25)
+                      ->orWhere('order_details.status_id', 26)
+                      ->orWhere('order_details.status_id', 27);
                 });
         $query->orderBy('order_details.order_id', 'DESC');
         $query->orderBy('order_details.id', 'DESC');
