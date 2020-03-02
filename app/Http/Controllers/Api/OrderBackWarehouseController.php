@@ -54,7 +54,8 @@ class OrderBackWarehouseController extends Controller
       if($orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9){
           return response()->json([
               'status' => false,
-              'message' => 'status failed'
+              'message' => 'status failed',
+              'status_transaction' => $orderDetails->status
           ]);
       }
       if($orderDetails->place == 'warehouse'){
@@ -67,7 +68,7 @@ class OrderBackWarehouseController extends Controller
       DB::beginTransaction();
       try {
 
-        $orderDetails->place = 'warehouse';
+        $orderDetails->place = 'house';
         if($request->types_of_pickup_id > 1){
             $orderDetails->status_id    = 14;
         } else {

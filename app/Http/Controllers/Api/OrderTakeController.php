@@ -26,7 +26,8 @@ class OrderTakeController extends Controller
 
     public function take($order_detail_id, Request $request)
     {
-      $user = $request->user();
+      $user                 = $request->user();
+      $message              = '';
 
       $validator = Validator::make($request->all(), [
         'types_of_pickup_id' => 'required',
@@ -58,17 +59,17 @@ class OrderTakeController extends Controller
               'message' => 'status failed'
           ]);
       }
-      if($orderDetails->place == 'house'){
+      if($orderDetails->place == 'warehouse'){
           return response()->json([
               'status' => false,
-              'message' => 'your box is still at house'
+              'message' => 'your box is still at warehouse'
           ]);
       }
 
       DB::beginTransaction();
       try {
 
-        $orderDetails->place = 'house';
+        $orderDetails->place = 'warehouse';
         if($request->types_of_pickup_id == 1){
             $orderDetails->status_id          = 14;
         } else {
@@ -82,12 +83,17 @@ class OrderTakeController extends Controller
         $orderTake->user_id                = $user->id;                                     // durasi inputan
         $orderTake->date                   = $request->date;                             // durasi inputan
         $orderTake->time                   = $request->time;                             // durasi inputan
-        $orderTake->address                = $request->address;                             // durasi inputan
-        $orderTake->deliver_fee            = $request->deliver_fee;                              // durasi sebelumnya
+        $orderTake->address                = $request->address;
+        if($request->types_of_pickup_id == 1){                          // durasi inputan
+            $orderTake->deliver_fee            = $request->deliver_fee;
+        } else {
+            $orderTake->deliver_fee            = 0;
+        }                           // durasi sebelumnya
         $orderTake->time_pickup            = $request->time_pickup;
         $orderTake->note                   = $request->note;
         if($request->types_of_pickup_id == 1){
             $orderTake->status_id          = 14;
+            $message                       = 'Please complete the payment.';
         } else {
             $orderTake->status_id          = 27;
         }
@@ -125,7 +131,7 @@ class OrderTakeController extends Controller
 
       return response()->json([
         'status' => true,
-        'message' => 'Your order has been made. Please complete the payment.',
+        'message' => 'Your order has been made.' . $message,
         'data' => new TransactionLogResource($transactionLog)
       ]);
     }

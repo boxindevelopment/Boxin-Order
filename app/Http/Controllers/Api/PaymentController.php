@@ -439,7 +439,6 @@ class PaymentController extends Controller
       if ($result) {
         $notif = $midtrans->checkStatus($result->order_id);
       }
-
       $transaction = isset($notif->transaction_status) ? $notif->transaction_status : $notif['transaction_status'];
       $type        = isset($notif->payment_type) ? $notif->payment_type : $notif['payment_type'];
       $order_id    = isset($notif->order_id) ? $notif->order_id : $notif['order_id'];
@@ -563,7 +562,8 @@ class PaymentController extends Controller
             'room_or_box_id'       => $value->room_or_box_id,
             'types_of_box_room_id' => $value->types_of_box_room_id
           );
-          $value->status_id = $status;
+          $value->status_id         = $status;
+          $value->place             = 'warehouse';
           $value->save();
         }
 
