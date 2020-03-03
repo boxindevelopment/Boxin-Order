@@ -77,6 +77,8 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         $query->where('order_details.types_of_box_room_id', 2);
         $query->where(function ($q) {
                     $q->where('order_details.status_id', 4)
+                      ->orWhere('order_details.status_id', 5)
+                      ->orWhere('order_details.status_id', 7)
                       ->orWhere('order_details.status_id', 9)
                       ->orWhere('order_details.status_id', 10)
                       ->orWhere('order_details.status_id', 16)
@@ -143,6 +145,8 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         $query->where('order_details.types_of_box_room_id', 1);
         $query->where(function ($q) {
                     $q->where('order_details.status_id', 4)
+                      ->orWhere('order_details.status_id', 5)
+                      ->orWhere('order_details.status_id', 7)
                       ->orWhere('order_details.status_id', 9)
                       ->orWhere('order_details.status_id', 10)
                       ->orWhere('order_details.status_id', 16)
@@ -183,6 +187,8 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         }
         $query->where(function ($q) {
                     $q->where('order_details.status_id', 4)
+                      ->orWhere('order_details.status_id', 5)
+                      ->orWhere('order_details.status_id', 7)
                       ->orWhere('order_details.status_id', 9)
                       ->orWhere('order_details.status_id', 10)
                       ->orWhere('order_details.status_id', 16)
