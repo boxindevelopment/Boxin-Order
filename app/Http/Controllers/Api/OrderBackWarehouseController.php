@@ -51,7 +51,7 @@ class OrderBackWarehouseController extends Controller
           ], 404);
       }
       $orderDetails = $orderDetails->first();
-      if($orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9){
+      if($orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9 && $orderDetails->status_id != 16){
           return response()->json([
               'status' => false,
               'message' => 'status failed',
