@@ -29,8 +29,8 @@ class TransactionLogResource extends JsonResource
             $order_detail_id    = $order->order_detail->id;
         } else if ($this->transaction_type == 'back warehouse'){
             $order              = new OrderBackWarehouseResource($this->order);
-            $code               = $order->order_detail->id_name;
-            $order_detail_id    = $order->order_detail->id;
+            $code               = $order->order_detail[0]->id_name;
+            $order_detail_id    = $order->order_detail[0]->id;
         } else if ($this->transaction_type == 'extend'){
             $order              = new ExtendOrderDetailResource($this->order);
             $code               = $order->order_detail->id_name;
