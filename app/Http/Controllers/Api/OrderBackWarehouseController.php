@@ -51,7 +51,7 @@ class OrderBackWarehouseController extends Controller
           ], 404);
       }
       $orderDetails = $orderDetails->first();
-      if($orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9 && $orderDetails->status_id != 16){
+      if($orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9 && $orderDetails->status_id != 16 && $orderDetails->status_id != 4){
           return response()->json([
               'status' => false,
               'message' => 'status failed',
@@ -69,7 +69,7 @@ class OrderBackWarehouseController extends Controller
       try {
 
         $orderDetails->place = 'house';
-        if($request->types_of_pickup_id > 1){
+        if($request->types_of_pickup_id == 1){
             $orderDetails->status_id    = 14;
         } else {
             $orderDetails->status_id    = 26;
@@ -86,7 +86,7 @@ class OrderBackWarehouseController extends Controller
         $orderBackWarehouse->deliver_fee            = $request->deliver_fee;                              // durasi sebelumnya
         $orderBackWarehouse->time_pickup            = $request->time_pickup;
         $orderBackWarehouse->note                   = $request->note;
-        if($request->types_of_pickup_id > 1){
+        if($request->types_of_pickup_id == 1){
             $orderBackWarehouse->status_id          = 14;
         } else {
             $orderBackWarehouse->status_id          = 26;
