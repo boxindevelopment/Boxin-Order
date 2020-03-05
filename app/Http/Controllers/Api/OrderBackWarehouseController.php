@@ -40,7 +40,7 @@ class OrderBackWarehouseController extends Controller
           return response()->json([
               'status' => false,
               'message' => $validator->errors()
-          ]);
+          ], 400);
       }
 
       $orderDetails = $this->orderDetail->getById($order_detail_id);
@@ -48,7 +48,7 @@ class OrderBackWarehouseController extends Controller
           return response()->json([
               'status' => false,
               'message' => 'Data not found'
-          ]);
+          ], 404);
       }
       $orderDetails = $orderDetails->first();
       if($orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9){
@@ -56,13 +56,13 @@ class OrderBackWarehouseController extends Controller
               'status' => false,
               'message' => 'status failed',
               'status_transaction' => $orderDetails->status
-          ]);
+          ], 400);
       }
       if($orderDetails->place == 'warehouse'){
           return response()->json([
               'status' => false,
               'message' => 'your box is still at warehouse'
-          ]);
+          ], 405);
       }
 
       DB::beginTransaction();
