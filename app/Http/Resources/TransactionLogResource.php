@@ -37,8 +37,8 @@ class TransactionLogResource extends JsonResource
             $order_detail_id    = $order->order_detail->id;
         } else if ($this->transaction_type == 'terminate'){
             $order              = new ReturnBoxesResource($this->order);
-            $code               = $order->order_detail[0]->id_name;
-            $order_detail_id    = $order->order_detail[0]->id;
+            $code               = $order->order_detail->id_name;
+            $order_detail_id    = $order->order_detail->id;
         }
 
         $address_warehouse      = ($this->transaction_type == 'start storing') ? $this->order->area : null;
