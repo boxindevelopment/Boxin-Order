@@ -59,10 +59,10 @@ class OrderTakeController extends Controller
               'message' => 'status failed'
           ]);
       }
-      if($orderDetails->place == 'warehouse'){
+      if($orderDetails->place == 'home'){
           return response()->json([
               'status' => false,
-              'message' => 'your box is still at warehouse'
+              'message' => 'your box is still at user'
           ]);
       }
 
