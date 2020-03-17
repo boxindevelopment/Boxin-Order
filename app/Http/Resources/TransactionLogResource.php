@@ -51,7 +51,7 @@ class TransactionLogResource extends JsonResource
             'order_id'                      => $this->order_id,
             'code'                          => $code,
             'transaction_type'              => $this->transaction_type,
-            'storage_fee'                   => $this->amount-($voucherFee+$this->order->deliver_fee),
+            'storage_fee'                   => $this->amount,
             'amount'                        => $this->amount,
             'deliver_fee'                   => $this->order->deliver_fee,
             'status'                        => $order->status->name,
