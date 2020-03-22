@@ -127,7 +127,10 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         $query->where('user_id', $args['user_id']);
         if($args['place'] != ''){
             if($args['place'] == 'house'){
-                $query->where('order_details.place', 'house');
+                $query->where(function ($query) {
+                    $query->where('order_details.place', 'house')
+                          ->orWhere('order_details.place', 'user');
+                });
             } else {
                 $query->where(function ($query) {
                     $query->where('order_details.place', 'warehouse')
@@ -140,7 +143,10 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         }
 
         if (isset($args['search'])) {
-          $query->where('order_details.name',  'like', '%' . $args['search'] . '%');
+            $query->where(function ($q) use ($args) {
+                $q->where('order_details.name',  'like', '%' . $args['search'] . '%')
+                    ->orWhere('order_details.id_name',  'like', '%' . $args['search'] . '%');
+            });
         }
         $query->where('order_details.types_of_box_room_id', 1);
         $query->where(function ($q) {
