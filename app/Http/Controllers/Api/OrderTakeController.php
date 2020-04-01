@@ -144,7 +144,7 @@ class OrderTakeController extends Controller
             'order_detail_id' => $orderDetails->id
             ]]);
             Log::info('OK');
-            Log::info($response);
+            Log::info(json_encode($response));
         }
 
 
