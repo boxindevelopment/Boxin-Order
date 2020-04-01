@@ -129,6 +129,8 @@ class OrderTakeController extends Controller
             'status_id'       => $orderTake->status_id,
             'order_detail_id' => $orderDetails->id
             ]]);
+            Log::info('OK');
+            Log::inf($response);
         }
 
 
