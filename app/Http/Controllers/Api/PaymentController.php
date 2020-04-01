@@ -534,11 +534,9 @@ class PaymentController extends Controller
 
       DB::beginTransaction();
       try {
-        // Log::info("Payment Order");
         $payment = Payment::where('id_name', $str)->where('status_id', 14)->first();
         if (empty($payment)) {
           throw new Exception("Edit status order payment failed.");
-          // Log::info("Payment Order");
         }
 
         $order_id                   = $payment->order_id;
@@ -689,6 +687,19 @@ class PaymentController extends Controller
         // if (count($order_detail_box) > 0) {
         //     ChangeBox::whereIn('order_detail_box_id', $order_detail_box)->where('order_detail_id', $order_detail_id)->update(['status_id' => $status]);
         // }
+        
+        if($status == 5 || $status == 7) {
+          $params['status_id'] =  $status;
+          $params['order_detail_id'] = $order_detail_id;
+          $userDevice = UserDevice::where('user_id', $payment->user_id)->get();
+          if(count($userDevice) > 0){
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $payment->user_id, ['form_params' => [
+              'status_id'       => $status,
+              'order_detail_id' => $order_detail_id
+            ]]);
+          }
+        }
 
         DB::commit();
         return true;
@@ -727,6 +738,19 @@ class PaymentController extends Controller
         if (!empty($add_item)) {
           $add_item->status_id = $status;
           $add_item->save();
+        }
+
+        if($status == 5 || $status == 7) {
+          $params['status_id'] =  $status;
+          $params['order_detail_id'] = $order_detail_id;
+          $userDevice = UserDevice::where('user_id', $payment->user_id)->get();
+          if(count($userDevice) > 0){
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $payment->user_id, ['form_params' => [
+              'status_id'       => $status,
+              'order_detail_id' => $order_detail_id
+            ]]);
+          }
         }
 
         DB::commit();
@@ -777,6 +801,26 @@ class PaymentController extends Controller
           $return_box->save();
         }
 
+        if($status == 5 || $status == 7) {
+
+          $params['status_id'] =  $status;
+          $params['order_detail_id'] = $order_detail_id;
+          $userDevice = UserDevice::where('user_id', $payment->user_id)->get();
+          if(count($userDevice) > 0){
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $payment->user_id, ['form_params' => [
+              'status_id'       => $status,
+              'order_detail_id' => $order_detail_id
+            ]]);
+          }
+          
+          $client = new \GuzzleHttp\Client();
+          $response = $client->request('POST', env('APP_NOTIF') . 'api/terminate/' . $return_box->id, ['form_params' => [
+          'status_id'       => $return_box->status_id,
+          'order_detail_id' => $order_detail_id
+          ]]);
+        }
+
         DB::commit();
         return true;
       } catch (Exception $th) {
@@ -823,6 +867,28 @@ class PaymentController extends Controller
             if (!empty($orderTake)) {
                 $orderTake->status_id = $status;
                 $orderTake->save();
+
+                //Notification take request
+                if($status == 5 || $status == 7) {
+                  $client = new \GuzzleHttp\Client();
+                  $response = $client->request('POST', env('APP_NOTIF') . 'api/take/' . $orderTakePayment->user_id, ['form_params' => [
+                  'status_id'       => $orderTake->status_id,
+                  'order_detail_id' => $order_detail_id
+                  ]]);
+                }
+            }
+
+            if($status == 5 || $status == 7) {
+              $params['status_id'] =  $status;
+              $params['order_detail_id'] = $order_detail_id;
+              $userDevice = UserDevice::where('user_id', $orderTakePayment->user_id)->get();
+              if(count($userDevice) > 0){
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $orderTakePayment->user_id, ['form_params' => [
+                  'status_id'       => $status,
+                  'order_detail_id' => $order_detail_id
+                ]]);
+              }
             }
 
             DB::commit();
@@ -871,6 +937,29 @@ class PaymentController extends Controller
             if (!empty($orderBackWarehouse)) {
                 $orderBackWarehouse->status_id = $status;
                 $orderBackWarehouse->save();
+
+                if($status == 5 || $status == 7) {
+                  //Notification back warehouse request
+                  $client = new \GuzzleHttp\Client();
+                  $response = $client->request('POST', env('APP_NOTIF') . 'api/backWarehouse/' . $orderBackWarehouse->id, ['form_params' => [
+                  'status_id'       => $orderBackWarehouse->status_id,
+                  'order_detail_id' => $order_detail_id
+                  ]]);
+                }
+            }
+            
+
+            if($status == 5 || $status == 7) {
+              $params['status_id'] =  $status;
+              $params['order_detail_id'] = $order_detail_id;
+              $userDevice = UserDevice::where('user_id', $orderBackWarehouse->user_id)->get();
+              if(count($userDevice) > 0){
+                $client = new \GuzzleHttp\Client();
+                $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $orderBackWarehouse->user_id, ['form_params' => [
+                  'status_id'       => $status,
+                  'order_detail_id' => $order_detail_id
+                ]]);
+              }
             }
 
             DB::commit();

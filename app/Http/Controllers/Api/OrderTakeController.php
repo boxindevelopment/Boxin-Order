@@ -55,8 +55,9 @@ class OrderTakeController extends Controller
       $orderDetails = $orderDetails->first();
       if($orderDetails->status_id != 4 && $orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9){
           return response()->json([
-              'status' => false,
-              'message' => 'status failed'
+              'status'      => false,
+              'message'     => 'status failed',
+              'status_id'   => $orderDetails->status_id
           ]);
       }
       if($orderDetails->place == 'home'){
@@ -117,6 +118,14 @@ class OrderTakeController extends Controller
         $transactionLog->amount                         = $request->deliver_fee;
         $transactionLog->created_at                     =  Carbon::now();
         $transactionLog->save();
+
+        if($request->types_of_pickup_id > 1){
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', env('APP_NOTIF') . 'api/take/' . $orderTake->id, ['form_params' => [
+            'status_id'       => $orderTake->status_id,
+            'order_detail_id' => $orderDetails->id
+            ]]);
+        }
 
 
 

@@ -89,6 +89,15 @@ class ReturnBoxController extends Controller
                     $data1["is_returned"]        = 1;
                     $data1["status_id"]          = $data['types_of_pickup_id'] == '1' ? 14 : 16;
                     $order_detail->fill($data1)->save();
+
+                    if($request->types_of_pickup_id != 1){
+                        $client = new \GuzzleHttp\Client();
+                        $response = $client->request('POST', env('APP_NOTIF') . 'api/terminate/' . $return->id, ['form_params' => [
+                        'status_id'       => $return->status_id,
+                        'order_detail_id' => $order_detail->id
+                        ]]);
+                    }
+
                 }
             }
 
