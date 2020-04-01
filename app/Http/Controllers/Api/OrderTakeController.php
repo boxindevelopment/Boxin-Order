@@ -45,8 +45,18 @@ class OrderTakeController extends Controller
               'message' => $validator->errors()
           ]);
       }
-
+      
       $orderDetails = $this->orderDetail->getById($order_detail_id);
+
+      Log::info('test');
+      $client = new \GuzzleHttp\Client();
+        $response = $client->request('POST', env('APP_NOTIF') . 'api/take/28', ['form_params' => [
+        'status_id'       => 27,
+        'order_detail_id' => $orderDetails->id
+        ]]);
+        Log::info('OK');
+        Log::info($response);
+
       if (count($orderDetails) < 1) {
           return response()->json([
               'status' => false,
