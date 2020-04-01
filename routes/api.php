@@ -133,6 +133,14 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('banner/list', 'BannerController@index')->name('api.banner.index');
     });
 
+    Route::prefix('notification')->group(function() {
+        Route::post('confirm-payment', 'NotificationController@confirmPayment')->name('api.notification.confirmPayment');
+        Route::post('terminate', 'NotificationController@terminate')->name('api.notification.terminate');
+        Route::post('take', 'NotificationController@take')->name('api.notification.take');
+        Route::post('extend', 'NotificationController@extend')->name('api.notification.extend');
+        Route::post('backwarehouse', 'NotificationController@backwarehouse')->name('api.notification.backwarehouse');
+    });
+
 
     // midtrans
     // Route::get('/vtweb', 'PagesController@vtweb');
