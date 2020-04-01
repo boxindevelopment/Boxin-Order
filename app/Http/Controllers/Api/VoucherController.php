@@ -95,4 +95,21 @@ class VoucherController extends Controller
         ]);
     }
 
+    public function FindOne($id){
+        $voucher = $this->repository->find($id);
+        if ($voucher){
+            $data = new VoucherResource($voucher);
+
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        }
+        
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
+        ]);
+    }
+
 }
