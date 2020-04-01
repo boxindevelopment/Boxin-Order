@@ -571,6 +571,8 @@ class PaymentController extends Controller
           }
         }
 
+        DB::commit();
+
         foreach ($order_details as $key => $value) {
           if ($status == 7 || $status == 8 || $status == 5){
             $params['status_id']       = $status;
@@ -587,7 +589,6 @@ class PaymentController extends Controller
           }
         }
 
-        DB::commit();
         return true;
       } catch (Exception $th) {
         DB::rollback();
@@ -630,22 +631,24 @@ class PaymentController extends Controller
                 $orderDetails->save();
             }
 
-            if ($status == 7 || $status == 8 || $status == 5){
-              $params['status_id'] =  $status;
-              $params['order_detail_id'] = $ex_order_details->order_detail_id;
-              $userDevice = UserDevice::where('user_id', $ex_order_details->user_id)->get();
-              if(count($userDevice) > 0){
-                // $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
-                $client = new \GuzzleHttp\Client();
-                $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $ex_order_details->user_id, ['form_params' => [
-                  'status_id'       => $status,
-                  'order_detail_id' => $ex_order_details->order_detail_id
-                ]]);
-              }
-            }
         }
 
         DB::commit();
+        
+        if ($status == 7 || $status == 8 || $status == 5){
+          $params['status_id'] =  $status;
+          $params['order_detail_id'] = $ex_order_details->order_detail_id;
+          $userDevice = UserDevice::where('user_id', $ex_order_details->user_id)->get();
+          if(count($userDevice) > 0){
+            // $response = Requests::post($this->url . 'api/confirm-payment/' . $user_id, [], $params, []);
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', env('APP_NOTIF') . 'api/confirm-payment/' . $ex_order_details->user_id, ['form_params' => [
+              'status_id'       => $status,
+              'order_detail_id' => $ex_order_details->order_detail_id
+            ]]);
+          }
+        }
+
         return true;
       } catch (\Exception $th) {
         DB::rollback();
@@ -687,6 +690,8 @@ class PaymentController extends Controller
         // if (count($order_detail_box) > 0) {
         //     ChangeBox::whereIn('order_detail_box_id', $order_detail_box)->where('order_detail_id', $order_detail_id)->update(['status_id' => $status]);
         // }
+
+        DB::commit();
         
         if($status == 5 || $status == 7) {
           $params['status_id'] =  $status;
@@ -700,8 +705,6 @@ class PaymentController extends Controller
             ]]);
           }
         }
-
-        DB::commit();
         return true;
       } catch (Exception $th) {
         DB::rollback();
@@ -740,6 +743,8 @@ class PaymentController extends Controller
           $add_item->save();
         }
 
+        DB::commit();
+
         if($status == 5 || $status == 7) {
           $params['status_id'] =  $status;
           $params['order_detail_id'] = $order_detail_id;
@@ -752,8 +757,6 @@ class PaymentController extends Controller
             ]]);
           }
         }
-
-        DB::commit();
         return true;
       } catch (Exception $th) {
         DB::rollback();
@@ -801,6 +804,8 @@ class PaymentController extends Controller
           $return_box->save();
         }
 
+        DB::commit();
+
         if($status == 5 || $status == 7) {
 
           $params['status_id'] =  $status;
@@ -821,7 +826,6 @@ class PaymentController extends Controller
           ]]);
         }
 
-        DB::commit();
         return true;
       } catch (Exception $th) {
         DB::rollback();
@@ -863,6 +867,8 @@ class PaymentController extends Controller
                 $order->save();
             }
 
+            DB::commit();
+            
             $orderTake = OrderTake::where('order_detail_id', $order_detail_id)->first();
             if (!empty($orderTake)) {
                 $orderTake->status_id = $status;
@@ -891,7 +897,6 @@ class PaymentController extends Controller
               }
             }
 
-            DB::commit();
             return true;
         } catch (Exception $th) {
             DB::rollback();
@@ -933,6 +938,8 @@ class PaymentController extends Controller
                 $order->save();
             }
 
+            DB::commit();
+            
             $orderBackWarehouse = OrderBackWarehouse::where('order_detail_id', $order_detail_id)->first();
             if (!empty($orderBackWarehouse)) {
                 $orderBackWarehouse->status_id = $status;
@@ -962,7 +969,6 @@ class PaymentController extends Controller
               }
             }
 
-            DB::commit();
             return true;
         } catch (Exception $th) {
             DB::rollback();
