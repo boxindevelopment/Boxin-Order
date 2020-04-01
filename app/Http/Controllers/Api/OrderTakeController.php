@@ -141,7 +141,7 @@ class OrderTakeController extends Controller
             $client = new \GuzzleHttp\Client();
             $response = $client->request('POST', env('APP_NOTIF') . 'api/take/' . $orderTake->id, ['form_params' => [
             'status_id'       => $orderTake->status_id,
-            'order_detail_id' => $orderDetails->id
+            'order_detail_id' => $order_detail_id
             ]]);
             Log::info('OK');
             Log::info(json_encode($response));
