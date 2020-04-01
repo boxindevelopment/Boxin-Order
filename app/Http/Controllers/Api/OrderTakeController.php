@@ -55,8 +55,9 @@ class OrderTakeController extends Controller
       $orderDetails = $orderDetails->first();
       if($orderDetails->status_id != 4 && $orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9){
           return response()->json([
-              'status' => false,
-              'message' => 'status failed'
+              'status'      => false,
+              'message'     => 'status failed',
+              'status_id'   => $orderDetails->status_id
           ]);
       }
       if($orderDetails->place == 'home'){
