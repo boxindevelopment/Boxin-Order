@@ -802,6 +802,7 @@ class PaymentController extends Controller
         }
 
         if($status == 5 || $status == 7) {
+
           $params['status_id'] =  $status;
           $params['order_detail_id'] = $order_detail_id;
           $userDevice = UserDevice::where('user_id', $payment->user_id)->get();
@@ -812,6 +813,12 @@ class PaymentController extends Controller
               'order_detail_id' => $order_detail_id
             ]]);
           }
+          
+          $client = new \GuzzleHttp\Client();
+          $response = $client->request('POST', env('APP_NOTIF') . 'api/terminate/' . $return_box->id, ['form_params' => [
+          'status_id'       => $return_box->status_id,
+          'order_detail_id' => $order_detail_id
+          ]]);
         }
 
         DB::commit();
