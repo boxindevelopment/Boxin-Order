@@ -112,6 +112,7 @@ class OrderBackWarehouseController extends Controller
         $transactionLog->created_at                     =  Carbon::now();
         $transactionLog->save();
 
+        DB::commit();
         
         if($request->types_of_pickup_id != 1){
             $client = new \GuzzleHttp\Client();
@@ -121,7 +122,6 @@ class OrderBackWarehouseController extends Controller
             ]]);
         }
 
-        DB::commit();
       } catch (\Exception $x) {
         DB::rollback();
         return response()->json([
