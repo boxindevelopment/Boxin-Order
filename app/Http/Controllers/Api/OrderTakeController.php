@@ -119,27 +119,17 @@ class OrderTakeController extends Controller
         $transactionLog->amount                         = $request->deliver_fee;
         $transactionLog->created_at                     =  Carbon::now();
         $transactionLog->save();
-
-        Log::info('Diluar');
+        
+        DB::commit();
         
         if($request->types_of_pickup_id != 1){
-            Log::info('Didalam');
-            Log::info('take id: ' . $orderTake->id);
-            Log::info('take status: ' . $orderTake->status_id);
-            Log::info('order detail id: ' . $orderDetails->id);
-            Log::info('+++++++++++++++++++++++');
             $client = new \GuzzleHttp\Client();
             $response = $client->request('POST', env('APP_NOTIF') . 'api/take/' . $orderTake->id, ['form_params' => [
             'status_id'       => $orderTake->status_id,
             'order_detail_id' => $order_detail_id
             ]]);
-            Log::info('OK');
-            Log::info(json_encode($response));
         }
-
-
-
-        DB::commit();
+        
       } catch (\Exception $x) {
         DB::rollback();
         return response()->json([
