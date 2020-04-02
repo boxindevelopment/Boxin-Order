@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Validator;
+use Log;
 
 class OrderTakeController extends Controller
 {
@@ -44,7 +45,7 @@ class OrderTakeController extends Controller
               'message' => $validator->errors()
           ]);
       }
-
+          
       $orderDetails = $this->orderDetail->getById($order_detail_id);
       if (count($orderDetails) < 1) {
           return response()->json([
@@ -118,18 +119,17 @@ class OrderTakeController extends Controller
         $transactionLog->amount                         = $request->deliver_fee;
         $transactionLog->created_at                     =  Carbon::now();
         $transactionLog->save();
-
-        if($request->types_of_pickup_id > 1){
+        
+        DB::commit();
+        
+        if($request->types_of_pickup_id != 1){
             $client = new \GuzzleHttp\Client();
             $response = $client->request('POST', env('APP_NOTIF') . 'api/take/' . $orderTake->id, ['form_params' => [
             'status_id'       => $orderTake->status_id,
-            'order_detail_id' => $orderDetails->id
+            'order_detail_id' => $order_detail_id
             ]]);
         }
-
-
-
-        DB::commit();
+        
       } catch (\Exception $x) {
         DB::rollback();
         return response()->json([
