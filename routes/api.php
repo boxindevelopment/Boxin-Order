@@ -69,6 +69,7 @@ Route::group(['namespace' => 'Api'], function() {
 
     Route::prefix('transaction')->group(function() {
         Route::get('log', 'OrderController@log')->name('api.order.log')->middleware('auth:api');
+        Route::get('log/{id}', 'OrderController@FindOne')->name('api.order.log')->middleware('auth:api');
     });
 
     Route::prefix('order')->group(function() {

@@ -661,4 +661,12 @@ class OrderController extends Controller
         }
     }
 
+    public function FindOne($id){
+        $transactionLog = $this->transactionLog->find($id);
+        if($transactionLog){
+            return new TransactionLogResource($transactionLog);
+        }
+        return response()->json(['status' => false, 'data' => 'Data not found.', 301]);
+    }
+
 }
