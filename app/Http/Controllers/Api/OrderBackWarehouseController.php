@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\Vtdirect;
 use App\Http\Resources\TransactionLogResource;
 use App\Model\OrderBackWarehouse;
+use App\Model\OrderBackWarehousePayment;
 use App\Model\TransactionLog;
 use App\Repositories\Contracts\OrderDetailRepository;
 use Carbon\Carbon;
@@ -168,7 +169,7 @@ class OrderBackWarehouseController extends Controller
             }
 
             $amount = (int) $request->amount;
-            $check = OrderBackWarehouse::where('order_back_warehouse_id', $request->order_back_warehouse_id)->get();
+            $check = OrderBackWarehousePayment::where('id', $orderBackWarehouse->id)->get();
             if (count($check) > 0){
                 $payment = $check->first();
               if($payment->status_id == 14){
@@ -188,9 +189,9 @@ class OrderBackWarehouseController extends Controller
             }
 
             //* data payment baru
-            $invoice = 'PAY-BACK-' . $request->order_back_warehouse_id . $this->code();
-            $itemID = 'BACKID-'. $request->order_back_warehouse_id;
-            $info = 'Payment for order back warehouse id ' . $request->order_back_warehouse_id;
+            $invoice = 'PAY-BACK-' . $orderBackWarehouse->id . $this->code();
+            $itemID = 'BACKID-'. $orderBackWarehouse->id;
+            $info = 'Payment for order back warehouse id ' . $orderBackWarehouse->id;
             $url_redirect = $midtrans->purchase($user, $orderBackWarehouse->created_at, $invoice, $amount, $itemID, $info);
             if (empty($url_redirect)) {
               throw new Exception('Server is busy, please try again later');
@@ -204,9 +205,9 @@ class OrderBackWarehouseController extends Controller
             $start_transaction      = Carbon::parse($orderBackWarehouse->created_at);
             $expired_transaction    = Carbon::parse($orderBackWarehouse->created_at)->addDays(1);
 
-            $orderBackWarehousePayment                               = new OrderBackWarehouse;
+            $orderBackWarehousePayment                               = new OrderBackWarehousePayment;
             $orderBackWarehousePayment->order_detail_id              = $orderBackWarehouse->order_detail_id;
-            $orderBackWarehousePayment->order_back_warehouse_id      = $request->order_back_warehouse_id;
+            $orderBackWarehousePayment->order_back_warehouse_id      = $orderBackWarehouse->id;
             $orderBackWarehousePayment->user_id                      = $user->id;
             $orderBackWarehousePayment->payment_type                 = 'midtrans';
             $orderBackWarehousePayment->bank                         = null;
@@ -224,7 +225,8 @@ class OrderBackWarehouseController extends Controller
             DB::rollback();
             return response()->json([
                 'status'  => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'ss' => 's'
             ], 401);
         }
 
@@ -239,7 +241,7 @@ class OrderBackWarehouseController extends Controller
 
     private function code()
     {
-        $sql    = OrderBackWarehouse::orderBy('number', 'desc')->whereRaw("MONTH(created_at) = " . date('m'))->first(['id_name', DB::raw('substring(id_name, len(id_name)-2,len(id_name)) as number')]);
+        $sql    = OrderBackWarehousePayment::orderBy('number', 'desc')->whereRaw("MONTH(created_at) = " . date('m'))->first(['id_name', DB::raw('substring(id_name, len(id_name)-2,len(id_name)) as number')]);
         $number = isset($sql->number) ? $sql->number : 0;
         $code   = date('ymd') . str_pad($number + 1, 3, "0", STR_PAD_LEFT);
         return $code;
