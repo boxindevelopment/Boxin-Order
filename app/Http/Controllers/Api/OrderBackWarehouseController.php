@@ -143,7 +143,7 @@ class OrderBackWarehouseController extends Controller
         $midtrans = new Vtdirect();
         $user = $request->user();
         $validator = \Validator::make($request->all(), [
-            'order_back_warehouse_id'   => 'required',
+            'order_detail_id'   => 'required',
             'amount'                    => 'required'
         ]);
 
@@ -156,7 +156,9 @@ class OrderBackWarehouseController extends Controller
 
         DB::beginTransaction();
         try {
-            $orderBackWarehouse = OrderBackWarehouse::find($request->order_back_warehouse_id);
+            $orderBackWarehouse = OrderBackWarehouse::where('order_detail_id', $request->order_detail_id)
+                                                    ->orderBy('id', 'desc')
+                                                    ->first();
             if (!$orderBackWarehouse) {
               // throw new Exception('Order take id not found');
                   return response()->json([
