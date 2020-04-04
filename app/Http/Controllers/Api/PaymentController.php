@@ -23,6 +23,7 @@ use App\Model\AddItemBoxPayment;
 use App\Model\ReturnBoxPayment;
 use App\Model\ReturnBoxes;
 use App\Model\OrderTakePayment;
+use App\Model\OrderBackWarehousePayment;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PaymentResource;
 use App\Http\Resources\ExtendOrderPaymentResource;
