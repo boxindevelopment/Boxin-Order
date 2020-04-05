@@ -789,26 +789,28 @@ class PaymentController extends Controller
         $payment->save();
 
         $orderdetail = OrderDetail::find($order_detail_id);
-        if (!empty($orderdetail)) {
-          $orderdetail->status_id = $status;
+        if (!empty($orderdetail) && ($status == 5 || $status == 7)) {
+          $orderdetail->status_id = 16;
           $orderdetail->save();
         }
 
-        $order = Order::find($orderdetail->order_id);
-        if (!empty($order)) {
-          $order->status_id = $status;
-          $order->save();
-        }
+        // $order = Order::find($orderdetail->order_id);
+        // if (!empty($order)) {
+        //   $order->status_id = $status;
+        //   $order->save();
+        // }
 
         $return_box = ReturnBoxes::where('order_detail_id', $order_detail_id)->first();
         if (!empty($return_box)) {
-          $return_box->status_id = $status;
-          $return_box->save();
+          if($status == 5 || $status == 7) {  
+            $return_box->status_id = 16;
+            $return_box->save();
+          }
         }
 
         DB::commit();
 
-        if($status == 5 || $status == 7) {
+        if($status == 5 || $status == 7) {  
 
           $params['status_id'] =  $status;
           $params['order_detail_id'] = $order_detail_id;
@@ -858,26 +860,21 @@ class PaymentController extends Controller
             $orderTakePayment->save();
 
             $orderdetail = OrderDetail::find($order_detail_id);
-            if (!empty($orderdetail)) {
-                $orderdetail->status_id = $status;
+            if (!empty($orderdetail) && ($status == 5 || $status == 7)) {
+                $orderdetail->status_id = 27;
                 $orderdetail->save();
-            }
-
-            $order = Order::find($orderdetail->order_id);
-            if (!empty($order)) {
-                $order->status_id = $status;
-                $order->save();
             }
 
             DB::commit();
             
             $orderTake = OrderTake::where('order_detail_id', $order_detail_id)->first();
             if (!empty($orderTake)) {
-                $orderTake->status_id = $status;
-                $orderTake->save();
 
                 //Notification take request
                 if($status == 5 || $status == 7) {
+                  $orderTake->status_id = 27;
+                  $orderTake->save();
+
                   $client = new \GuzzleHttp\Client();
                   $response = $client->request('POST', env('APP_NOTIF') . 'api/take/' . $orderTakePayment->user_id, ['form_params' => [
                   'status_id'       => $orderTake->status_id,
@@ -929,25 +926,19 @@ class PaymentController extends Controller
             $orderBackWarehousePayment->save();
 
             $orderdetail = OrderDetail::find($order_detail_id);
-            if (!empty($orderdetail)) {
-                $orderdetail->status_id = $status;
+            if (!empty($orderdetail) && ($status == 5 || $status == 7)) {
+                $orderdetail->status_id = 26;
                 $orderdetail->save();
-            }
-
-            $order = Order::find($orderdetail->order_id);
-            if (!empty($order)) {
-                $order->status_id = $status;
-                $order->save();
             }
 
             DB::commit();
             
             $orderBackWarehouse = OrderBackWarehouse::where('order_detail_id', $order_detail_id)->first();
             if (!empty($orderBackWarehouse)) {
-                $orderBackWarehouse->status_id = $status;
-                $orderBackWarehouse->save();
-
                 if($status == 5 || $status == 7) {
+                  $orderBackWarehouse->status_id = 26;
+                  $orderBackWarehouse->save();
+
                   //Notification back warehouse request
                   $client = new \GuzzleHttp\Client();
                   $response = $client->request('POST', env('APP_NOTIF') . 'api/backWarehouse/' . $orderBackWarehouse->id, ['form_params' => [
