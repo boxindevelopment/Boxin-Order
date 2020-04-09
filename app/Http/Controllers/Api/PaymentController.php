@@ -931,10 +931,10 @@ class PaymentController extends Controller
                 $orderdetail->status_id = 26;
                 $orderdetail->save();
             }
+            $orderBackWarehouse = OrderBackWarehouse::where('order_detail_id', $order_detail_id)->first();
 
             DB::commit();
             
-            $orderBackWarehouse = OrderBackWarehouse::where('order_detail_id', $order_detail_id)->first();
             if (!empty($orderBackWarehouse)) {
                 if($status == 5 || $status == 7) {
                   $orderBackWarehouse->status_id = 26;
@@ -942,7 +942,7 @@ class PaymentController extends Controller
 
                   //Notification back warehouse request
                   $client = new \GuzzleHttp\Client();
-                  $response = $client->request('POST', env('APP_NOTIF') . 'api/backWarehouse/' . $orderBackWarehouse->id, ['form_params' => [
+                  $response = $client->request('POST', env('APP_NOTIF') . 'api/backwarehouse/' . $orderBackWarehouse->id, ['form_params' => [
                   'status_id'       => $orderBackWarehouse->status_id,
                   'order_detail_id' => $order_detail_id
                   ]]);
