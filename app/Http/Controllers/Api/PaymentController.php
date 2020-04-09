@@ -22,6 +22,7 @@ use App\Model\AddItemBox;
 use App\Model\AddItemBoxPayment;
 use App\Model\ReturnBoxPayment;
 use App\Model\ReturnBoxes;
+use App\Model\OrderTake;
 use App\Model\OrderTakePayment;
 use App\Model\OrderBackWarehouse;
 use App\Model\OrderBackWarehousePayment;
@@ -876,7 +877,7 @@ class PaymentController extends Controller
                   $orderTake->save();
 
                   $client = new \GuzzleHttp\Client();
-                  $response = $client->request('POST', env('APP_NOTIF') . 'api/take/' . $orderTakePayment->user_id, ['form_params' => [
+                  $response = $client->request('POST', env('APP_NOTIF') . 'api/take/' . $orderTake->id, ['form_params' => [
                   'status_id'       => $orderTake->status_id,
                   'order_detail_id' => $order_detail_id
                   ]]);
