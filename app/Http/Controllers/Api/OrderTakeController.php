@@ -151,30 +151,30 @@ class OrderTakeController extends Controller
         $midtrans = new Vtdirect();
         $user = $request->user();
         $validator = \Validator::make($request->all(), [
-            'order_take_id' => 'required',
-            'amount'        => 'required'
+            'order_detail_id'   => 'required',
+            'amount'            => 'required'
         ]);
 
         if($validator->fails()) {
           return response()->json([
-            'status'  => false,
-            'message' => $validator->errors()
+            'status'            => false,
+            'message'           => $validator->errors()
           ]);
         }
 
         DB::beginTransaction();
         try {
-            $take = OrderTake::find($request->order_take_id);
+            $take = OrderTake::where('order_detail_id', $request->order_detail_id)->orderBy('id', 'desc')->first();
             if (!$take) {
               // throw new Exception('Order take id not found');
-                  return response()->json([
-                      'status' => false,
-                      'message' => 'Order take id not found'
-                  ], 422);
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Order take id not found'
+                ], 422);
             }
 
             $amount = (int) $request->amount;
-            $check = OrderTakePayment::where('order_take_id', $request->order_take_id)->get();
+            $check = OrderTakePayment::where('order_take_id', $take->id)->get();
             if (count($check) > 0){
                 $payment = $check->first();
               if($payment->status_id == 14){
@@ -187,16 +187,17 @@ class OrderTakeController extends Controller
                     // throw new Exception('Order take id not found');
                     return response()->json([
                         'status' => false,
-                        'message' => 'Order take payment has been paid.'
+                        'message' => 'Order take payment has been paid.',
+                        'data' => $payment 
                     ], 422);
               }
               // return response()->json(['status' => false, 'message' => 'Order has been paid.'], 401);
             }
 
             //* data payment baru
-            $invoice = 'PAY-TAKE-' . $request->order_take_id . $this->code();
-            $itemID = 'TAKEID-'. $request->order_take_id;
-            $info = 'Payment for order take box id ' . $request->order_take_id;
+            $invoice = 'PAY-TAKE-' . $take->id . $this->code();
+            $itemID = 'TAKEID-'. $take->id;
+            $info = 'Payment for order take box id ' . $take->id;
             $url_redirect = $midtrans->purchase($user, $take->created_at, $invoice, $amount, $itemID, $info);
             if (empty($url_redirect)) {
               throw new Exception('Server is busy, please try again later');
@@ -212,7 +213,7 @@ class OrderTakeController extends Controller
 
             $orderTakePayment                               = new OrderTakePayment;
             $orderTakePayment->order_detail_id              = $take->order_detail_id;
-            $orderTakePayment->order_take_id                = $request->order_take_id;
+            $orderTakePayment->order_take_id                = $take->id;
             $orderTakePayment->user_id                      = $user->id;
             $orderTakePayment->payment_type                 = 'midtrans';
             $orderTakePayment->bank                         = null;
