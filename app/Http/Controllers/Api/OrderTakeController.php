@@ -117,6 +117,8 @@ class OrderTakeController extends Controller
         $transactionLog->types_of_box_space_small_id    = $orderDetails->types_of_box_room_id;
         $transactionLog->space_small_or_box_id          = $orderDetails->room_or_box_id;
         $transactionLog->amount                         = $request->deliver_fee;
+        $transactionLog->types_of_pickup_id             = $request->types_of_pickup_id;
+        $transactionLog->order_detail_id                = $order_detail_id;
         $transactionLog->created_at                     =  Carbon::now();
         $transactionLog->save();
         

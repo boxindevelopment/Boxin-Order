@@ -391,6 +391,8 @@ class OrderController extends Controller
             $transactionLog->types_of_box_space_small_id    = $data['types_of_box_room_id1'];
             $transactionLog->space_small_or_box_id          = $room_or_box_id;
             $transactionLog->amount                         = $tot;
+            $transactionLog->types_of_pickup_id             = $request->types_of_pickup_id;
+            $transactionLog->order_detail_id                = $order_detail->id;
             $transactionLog->created_at                     =  Carbon::now();
             $transactionLog->save();
 
