@@ -124,7 +124,12 @@ class ReturnBoxPaymentController extends Controller
         }
 
         //? check return box
-        $returnbox = ReturnBoxes::where('order_detail_id', $request->order_detail_id)->where('status_id', 14)->first();
+        $returnbox = ReturnBoxes::where('order_detail_id', $request->order_detail_id)
+                                ->where(function($query){
+                                  $query->where('status_id', 14);
+                                  $query->orWhere('status_id', 16);
+                                })
+                                ->first();
         if (empty($returnbox)) {
           return response()->json([
             'status' => false,

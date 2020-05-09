@@ -8,7 +8,6 @@ class VoucherResource extends JsonResource
 {
     public function toArray($request)
     {
-        $url = (env('DB_DATABASE') == 'coredatabase') ? 'https://boxin-dev-webbackend.azurewebsites.net/' : 'https://boxin-prod-webbackend.azurewebsites.net/';
 
         $data = [
             'id'                => $this->id,
@@ -22,7 +21,7 @@ class VoucherResource extends JsonResource
             'end_date'          => $this->end_date->format('Y-m-d'),
             'description'       => $this->description,
             'term_condition'    => $this->term_condition,
-            'image'             => is_null($this->image) ? null : $url.'images/voucher'.'/'.$this->image,
+            'image'             => is_null($this->image) ? null : env('APP_ADMIN') . 'images/voucher'.'/'.$this->image,
             'status'            => new StatusResource($this->status),
         ];
 

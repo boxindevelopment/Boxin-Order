@@ -165,6 +165,67 @@ class BoxRepository implements BoxRepositoryInterface
         return $boxs;
     }
 
+    public function getBoxPagination($args = [])
+    {
+        // Set default args
+        $args = array_merge([
+            'perPage' => 6,
+            'sortBy' => null,
+            'sortOrder' => null
+        ], $args);
+
+        $query = $this->model->with('categories', 'itemPrice.units')->select('items.*', DB::raw('(SELECT SUM(`in`) - SUM(`out`) as stock FROM `item_stocks` WHERE `item`=`items`.`id`) AS stock'));
+
+        if (!in_array('category', $args)) {
+            if (isset($args['category'])) {
+                if($args['category']){
+                    $query
+                        ->leftJoin('categories', 'items.category', '=', 'categories.id');
+                }
+            }
+        }
+
+        if (isset($args['name'])) {
+            if($args['name']){
+                $query->where('name', 'like', '%'.$args['name'].'%');
+            }
+        }
+
+        if (isset($args['populer'])) {
+            if($args['populer']){
+                $query->where('items.populer', $args['populer']);
+            }
+        }
+
+        if (isset($args['categories'])) {
+            if($args['categories']){
+                $query->where('items.category', $args['categories']);
+            }
+        }
+
+        if (isset($args['search'])) {
+            if($args['search']){
+                $query->whereRaw("(name LIKE '%".$args['search']."%' OR code LIKE '%".$args['search']."%')");
+            }
+        }
+
+        if (isset($args['sortBy']) && isset($args['sortOrder'])) {
+            if($args['sortBy'] && $args['sortOrder']){
+                $query->orderBy($args['sortBy'], $args['sortOrder']);
+            }
+        }
+
+        if (isset($args['random'])) {
+            if($args['random']){
+                $query->orderByRaw('RAND()');
+            }
+        }
+
+        $boxs = $query->paginate($args['perPage']);
+
+        return $boxs;
+    }
+
     public function create(array $data)
     {
         return $this->model->create($data);

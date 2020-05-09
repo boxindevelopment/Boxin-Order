@@ -4,9 +4,13 @@ namespace App\Http\Controllers\Api;
 
 use App\Model\OrderDetail;
 use App\Model\ExtendOrderDetail;
+use App\Model\OrderTake;
+use App\Model\TransactionLog;
+use App\Model\OrderBackWarehouse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\OrderDetailResource;
 use App\Http\Resources\ExtendOrderDetailResource;
+use App\Http\Resources\TransactionLogResource;
 use Illuminate\Http\Request;
 use App\Http\Resources\AuthResource;
 use App\Repositories\Contracts\OrderDetailRepository;
@@ -27,12 +31,50 @@ class OrderDetailController extends Controller
         $this->price = $price;
     }
 
-    public function my_box(Request $request)
+    public function my_space(Request $request)
     {
         $user   = $request->user();
         $params = array();
         $params['user_id'] = $user->id;
         $params['limit']   = intval($request->limit);
+        $params['status_disable']   = 14;
+        $params['search'] = ($request->search) ? $request->search : '';
+        $orders = $this->orderDetail->findPaginateMySpace($params);
+        $orderArrays = array();
+
+        if($orders) {
+            $cekOrderId = 0;
+            $no = 0;
+            foreach ($orders as $k => $v) {
+                if (in_array($v->status_id, array(8, 10, 11, 14, 15, 24))) {
+                    if($cekOrderId != $v->order_id){
+                        $orders[$k] = $v->toSearchableArray();
+                        $no++;
+                    } else {
+                        unset($orders[$k]);
+                    }
+                } else {
+                    $orders[$k] = $v->toSearchableArray();
+                    $no++;
+                }
+                $cekOrderId = $v->order_id;
+            }
+        } else {
+            return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
+        }
+
+        return response()->json($orders);
+    }
+
+    public function my_box(Request $request)
+    {
+        $user   = $request->user();
+        $params = array();
+        $params['user_id'] = $user->id;
+        $params['place'] = ($request->place) ? $request->place : '';
+        $params['search'] = ($request->search) ? $request->search : '';
+        $params['limit']   = intval($request->limit);
+        $params['status_disable']   = 14;
         $orders = $this->orderDetail->findPaginateMyBox($params);
         $orderArrays = array();
 
@@ -58,6 +100,40 @@ class OrderDetailController extends Controller
         }
 
         return response()->json($orders);
+    }
+
+    public function my_box_pace(Request $request)
+    {
+        $user   = $request->user();
+        $params = array();
+        $params['user_id'] = $user->id;
+        $params['search'] = ($request->search) ? $request->search : '';
+        $params['limit']   = intval($request->limit);
+        $orderDetails = $this->orderDetail->findPaginateMyBoxSpace($params);
+        $orderArrays = array();
+
+        if($orderDetails) {
+            $cekOrderId = 0;
+            $no = 0;
+            foreach ($orderDetails as $k => $v) {
+                if (in_array($v->status_id, array(8, 10, 11, 14, 15, 24))) {
+                    if($cekOrderId != $v->order_id){
+                        $orderDetails[$k] = $v->toSearchableArray();
+                        $no++;
+                    } else {
+                        unset($orderDetails[$k]);
+                    }
+                } else {
+                    $orderDetails[$k] = $v->toSearchableArray();
+                    $no++;
+                }
+                $cekOrderId = $v->order_id;
+            }
+        } else {
+            return response()->json(['status' => false, 'message' => 'Data not found.'], 301);
+        }
+
+        return response()->json($orderDetails);
     }
 
     public function my_item(Request $request)
@@ -221,6 +297,35 @@ class OrderDetailController extends Controller
         $extend_order->status_id              = 14;
         $extend_order->save();
 
+        // Transaction Log Create
+        $transactionLog = new TransactionLog;
+        $transactionLog->user_id                        = $user->id;
+        $transactionLog->transaction_type               = 'extend';
+        $transactionLog->order_id                       = $extend_order->id;
+        if($total_amount > 0){
+            $transactionLog->status                         = 'Pend Payment';
+        } else {
+            $transactionLog->status                         = 'Pending';
+        }
+        $transactionLog->location_warehouse             = 'warehouse';
+        $transactionLog->location_pickup                = 'warehouse';
+        $transactionLog->datetime_pickup                =  Carbon::now();
+        $transactionLog->types_of_box_space_small_id    = $orders->types_of_box_room_id;
+        $transactionLog->space_small_or_box_id          = $orders->room_or_box_id;
+        $transactionLog->amount                         = $total_amount;
+        $transactionLog->types_of_pickup_id             = 2;
+        $transactionLog->order_detail_id                = $order_detail_id;
+        $transactionLog->created_at                     =  Carbon::now();
+        $transactionLog->save();
+
+        
+        $client = new \GuzzleHttp\Client();
+        $response = $client->request('POST', env('APP_NOTIF') . 'api/extend', ['form_params' => [
+        'status_id'       => $extend_order->status_id,
+        'order_detail_id' => $order_detail_id,
+        'extend_order_id' => $extend_order->id
+        ]]);
+
         DB::commit();
       } catch (\Exception $x) {
         DB::rollback();
@@ -234,6 +339,207 @@ class OrderDetailController extends Controller
         'status' => true,
         'message' => 'Your order has been made. Please complete the payment.',
         'data' => new ExtendOrderDetailResource($extend_order)
+      ]);
+    }
+
+    public function take($order_detail_id, Request $request)
+    {
+      $user = $request->user();
+
+      $validator = Validator::make($request->all(), [
+        'types_of_pickup_id' => 'required',
+        'date'               => 'required',
+        'time'               => 'required',
+        'address'            => 'required',
+        'deliver_fee'        => 'required',
+        'time_pickup'        => 'required'
+      ]);
+
+      if ($validator->fails()) {
+          return response()->json([
+              'status' => false,
+              'message' => $validator->errors()
+          ]);
+      }
+
+      $orderDetails = $this->orderDetail->getById($order_detail_id);
+      if (count($orderDetails) < 1) {
+          return response()->json([
+              'status' => false,
+              'message' => 'Data not found'
+          ]);
+      }
+      $orderDetails = $orderDetails->first();
+      if($orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9){
+          return response()->json([
+              'status' => false,
+              'message' => 'status failed'
+          ]);
+      }
+
+      DB::beginTransaction();
+      try {
+
+        $orderDetails->place = 'house';
+        $orderDetails->save();
+
+        $orderTake                         = new OrderTake;
+        $orderTake->types_of_pickup_id     = $request->types_of_pickup_id;                             // durasi inputan
+        $orderTake->order_detail_id        = $order_detail_id;
+        $orderTake->user_id       = $user->id;                                     // durasi inputan
+        $orderTake->date                   = $request->date;                             // durasi inputan
+        $orderTake->time                   = $request->time;                             // durasi inputan
+        $orderTake->address                = $request->address;                             // durasi inputan
+        $orderTake->deliver_fee            = $request->deliver_fee;                              // durasi sebelumnya
+        $orderTake->time_pickup            = $request->time_pickup;
+        $orderTake->note                   = $request->note;
+        if($request->deliver_fee > 0){
+            $orderTake->status_id          = 14;
+        } else {
+            $orderTake->status_id          = 11;
+        }
+        $orderTake->save();
+
+        // Transaction Log Create
+        $transactionLog = new TransactionLog;
+        $transactionLog->user_id                        = $user->id;
+        $transactionLog->transaction_type               = 'take';
+        $transactionLog->order_id                       = $orderTake->id;
+        if($request->deliver_fee > 0){
+            $transactionLog->status                         = 'Pend Payment';
+        } else {
+            $transactionLog->status                         = 'Pending';
+        }
+        $transactionLog->location_warehouse             = 'house';
+        $transactionLog->location_pickup                = 'warehouse';
+        $transactionLog->datetime_pickup                =  Carbon::now();
+        $transactionLog->types_of_box_space_small_id    = $orderDetails->types_of_box_room_id;
+        $transactionLog->space_small_or_box_id          = $orderDetails->room_or_box_id;
+        $transactionLog->amount                         = $request->deliver_fee;
+        $transactionLog->types_of_pickup_id             = $request->types_of_pickup_id;
+        $transactionLog->order_detail_id                = $orderDetails->id;
+        $transactionLog->created_at                     =  Carbon::now();
+        $transactionLog->save();
+
+        
+        if($request->types_of_pickup_id > 1){
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', env('APP_NOTIF') . 'api/take/' . $orderTake->id, ['form_params' => [
+            'status_id'       => $orderTake->status_id,
+            'order_detail_id' => $orderDetails->id
+            ]]);
+        }
+
+
+
+        DB::commit();
+      } catch (\Exception $x) {
+        DB::rollback();
+        return response()->json([
+          'status' =>false,
+          'message' => $x->getMessage()
+        ], 422);
+      }
+
+      return response()->json([
+        'status' => true,
+        'message' => 'Your order has been made. Please complete the payment.',
+        'data' => new TransactionLogResource($transactionLog)
+      ]);
+    }
+
+    public function backWarehouse($order_detail_id, Request $request)
+    {
+      $user = $request->user();
+
+      $validator = Validator::make($request->all(), [
+        'types_of_pickup_id' => 'required',
+        'date'               => 'required',
+        'time'               => 'required',
+        'address'            => 'required',
+        'deliver_fee'        => 'required',
+        'time_pickup'        => 'required'
+      ]);
+
+      if ($validator->fails()) {
+          return response()->json([
+              'status' => false,
+              'message' => $validator->errors()
+          ]);
+      }
+
+      $orderDetails = $this->orderDetail->getById($order_detail_id);
+      if (count($orderDetails) < 1) {
+          return response()->json([
+              'status' => false,
+              'message' => 'Data not found'
+          ]);
+      }
+      if($orderDetails->status_id != 5 && $orderDetails->status_id != 7 && $orderDetails->status_id != 9){
+          return response()->json([
+              'status' => false,
+              'message' => 'status failed'
+          ]);
+      }
+
+      DB::beginTransaction();
+      try {
+
+        $orderDetails = $orderDetails->first();
+        $orderDetails->place = 'warehouse';
+        $orderDetails->save();
+
+        $orderBackWarehouse                         = new OrderBackWarehouse;
+        $orderBackWarehouse->types_of_pickup_id     = $request->types_of_pickup_id;                             // durasi inputan
+        $orderBackWarehouse->order_detail_id        = $order_detail_id->id;
+        $orderBackWarehouse->user_id                = $user->id;                            // durasi inputan
+        $orderBackWarehouse->date                   = $request->date;                             // durasi inputan
+        $orderBackWarehouse->time                   = $request->time;                             // durasi inputan
+        $orderBackWarehouse->address                = $request->address;                             // durasi inputan
+        $orderBackWarehouse->deliver_fee            = $request->deliver_fee;                              // durasi sebelumnya
+        $orderBackWarehouse->time_pickup            = $request->time_pickup;
+        $orderBackWarehouse->note                   = $request->note;
+        if($request->deliver_fee > 0){
+            $orderBackWarehouse->status_id          = 14;
+        } else {
+            $orderBackWarehouse->status_id          = 11;
+        }
+        $orderBackWarehouse->save();
+
+        // Transaction Log Create
+        $transactionLog = new TransactionLog;
+        $transactionLog->user_id                        = $user->id;
+        $transactionLog->transaction_type               = 'back warehouse';
+        $transactionLog->order_id                       = $orderBackWarehouse->id;
+        if($request->deliver_fee > 0){
+            $transactionLog->status                         = 'Pend Payment';
+        } else {
+            $transactionLog->status                         = 'Pending';
+        }
+        $transactionLog->location_warehouse             = 'house';
+        $transactionLog->location_pickup                = 'warehouse';
+        $transactionLog->datetime_pickup                =  Carbon::now();
+        $transactionLog->types_of_box_space_small_id    = $orderDetails->types_of_box_room_id;
+        $transactionLog->space_small_or_box_id          = $orderDetails->room_or_box_id;
+        $transactionLog->amount                         = $request->deliver_fee;
+        $transactionLog->types_of_pickup_id             = $request->types_of_pickup_id;
+        $transactionLog->order_detail_id                = $orderDetails->id;
+        $transactionLog->created_at                     =  Carbon::now();
+        $transactionLog->save();
+
+        DB::commit();
+      } catch (\Exception $x) {
+        DB::rollback();
+        return response()->json([
+          'status' =>false,
+          'message' => $x->getMessage()
+        ], 422);
+      }
+
+      return response()->json([
+        'status' => true,
+        'message' => 'Your order has been made. Please complete the payment.',
+        'data' => new TransactionLogResource($transactionLog)
       ]);
     }
 

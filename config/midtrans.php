@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'is_production' => false,
-    'client_key' => 'SB-Mid-client-YSOTFjf0lq_E3LyO',
-    'server_key' => 'SB-Mid-server-8EPMaViFTi3UFeVE3vjuHDH4'
+    'is_production' => env('IS_PRODUCTION', 'semua-tetang-kita'),
+    'client_key' => env('CLIENT_KEY', 'semua-tetang-kita'),
+    'server_key' => env('SERVER_KEY', 'semua-tetang-kita')
 ];

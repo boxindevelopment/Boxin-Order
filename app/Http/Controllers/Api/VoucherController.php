@@ -75,7 +75,7 @@ class VoucherController extends Controller
                 ]);
             }
             if($data->type_voucher == 2){
-                $result = $request->amount;
+                $result = $data->value;
             } else {
                 $result = ($data->value/100) * $request->amount;
                 if($result > $data->max_value){
@@ -89,6 +89,23 @@ class VoucherController extends Controller
             ]);
         }
 
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
+        ]);
+    }
+
+    public function FindOne($id){
+        $voucher = $this->repository->find($id);
+        if ($voucher){
+            $data = new VoucherResource($voucher);
+
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        }
+        
         return response()->json([
             'status' => false,
             'message' => 'Data not found'
