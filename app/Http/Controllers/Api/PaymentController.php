@@ -445,7 +445,9 @@ class PaymentController extends Controller
       $transaction = isset($notif->transaction_status) ? $notif->transaction_status : $notif['transaction_status'];
       $type        = isset($notif->payment_type) ? $notif->payment_type : $notif['payment_type'];
       $order_id    = isset($notif->order_id) ? $notif->order_id : $notif['order_id'];
-      $fraud       = isset($notif->fraud_status) ? $notif->fraud_status : $notif['fraud_status'];
+      if(isset($notif->fraud_status) || isset($notif['fraud_status'])){
+      	$fraud       = isset($notif->fraud_status) ? $notif->fraud_status : $notif['fraud_status'];
+      }
 
       if ($transaction == 'pending') {
         // do nothing
