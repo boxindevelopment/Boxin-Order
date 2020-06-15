@@ -150,7 +150,8 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
         }
         $query->where('order_details.types_of_box_room_id', 1);
         $query->where(function ($q) {
-                    $q->where('order_details.status_id', 4)
+                    $q->where('order_details.status_id', 2)
+                      ->orWhere('order_details.status_id', 4)
                       ->orWhere('order_details.status_id', 5)
                       ->orWhere('order_details.status_id', 7)
                       ->orWhere('order_details.status_id', 9)
@@ -192,7 +193,8 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
           $query->where('order_details.name',  'like', '%' . $args['search'] . '%');
         }
         $query->where(function ($q) {
-                    $q->where('order_details.status_id', 4)
+                    $q->where('order_details.status_id', 2)
+                      ->orWhere('order_details.status_id', 4)
                       ->orWhere('order_details.status_id', 5)
                       ->orWhere('order_details.status_id', 7)
                       ->orWhere('order_details.status_id', 9)
