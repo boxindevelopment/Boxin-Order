@@ -933,7 +933,7 @@ class PaymentController extends Controller
                 $orderdetail->status_id = 26;
                 $orderdetail->save();
             }
-            $orderBackWarehouse = OrderBackWarehouse::where('order_detail_id', $order_detail_id)->first();
+            $orderBackWarehouse = OrderBackWarehouse::find($orderBackWarehousePayment->order_back_warehouse_id);
 
             DB::commit();
             
