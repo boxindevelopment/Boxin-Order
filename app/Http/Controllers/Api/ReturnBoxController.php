@@ -84,7 +84,7 @@ class ReturnBoxController extends Controller
                     $transactionLog->space_small_or_box_id          = $order_detail->room_or_box_id;
                     $transactionLog->amount                         = $return->deliver_fee;
                     $transactionLog->types_of_pickup_id             = $request->types_of_pickup_id;
-                    $transactionLog->order_detail_id                = $order_detail_id;
+                    $transactionLog->order_detail_id                = $return->order_detail_id;
                     $transactionLog->created_at                     =  Carbon::now();
                     $transactionLog->save();
 
