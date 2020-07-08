@@ -46,7 +46,7 @@ class OrderDetailController extends Controller
             $cekOrderId = 0;
             $no = 0;
             foreach ($orders as $k => $v) {
-                if (in_array($v->status_id, array(8, 10, 11, 14, 15, 24))) {
+                if (in_array($v->status_id, array(8, 10, 11, 15, 24))) {
                     if($cekOrderId != $v->order_id){
                         $orders[$k] = $v->toSearchableArray();
                         $no++;
@@ -82,7 +82,7 @@ class OrderDetailController extends Controller
             $cekOrderId = 0;
             $no = 0;
             foreach ($orders as $k => $v) {
-                if (in_array($v->status_id, array(8, 10, 11, 14, 15, 24))) {
+                if (in_array($v->status_id, array(8, 10, 11, 15, 24))) {
                     if($cekOrderId != $v->order_id){
                         $orders[$k] = $v->toSearchableArray();
                         $no++;
@@ -116,7 +116,7 @@ class OrderDetailController extends Controller
             $cekOrderId = 0;
             $no = 0;
             foreach ($orderDetails as $k => $v) {
-                if (in_array($v->status_id, array(8, 10, 11, 14, 15, 24))) {
+                if (in_array($v->status_id, array(8, 10, 11, 15, 24))) {
                     if($cekOrderId != $v->order_id){
                         $orderDetails[$k] = $v->toSearchableArray();
                         $no++;
