@@ -19,7 +19,7 @@ class BoxResource extends JsonResource
             'size'          => $this->type_size->size,
             'image'         => is_null($this->type_size->image) ? null : $url.'images/types_of_size'.'/'.$this->type_size->image,
             'types_of_box_room' => new TypeBoxRoomResource($this->type_size->type_box_room),
-            'area'          => new AreaResource($this->shelves->space->area),
+            'area'          => new AreaResource($this->shelves->area),
         ];
 
         return $data;
