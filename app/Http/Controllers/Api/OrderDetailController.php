@@ -154,12 +154,12 @@ class OrderDetailController extends Controller
             $no = 0;
             foreach ($orders as $k => $v) {
                 if (in_array($v->status_id, array(4))) {
-                    if($cekOrderId != $v->order_id){
+                    //if($cekOrderId != $v->order_id){
                         $orders[$k] = $v->toSearchableArray();
                         $no++;
-                    } else {
-                        unset($orders[$k]);
-                    }
+                    //} else {
+                    //    unset($orders[$k]);
+                    //}
                 } else {
                     $orders[$k] = $v->toSearchableArray();
                     $no++;
