@@ -58,7 +58,7 @@ class SpaceSmallRepository implements SpaceSmallRepositoryInterface
             $query->take($args['length']);
         }
         $query->where('space_smalls.deleted_at', NULL);
-        $spaceSmall = $query->first();
+        $spaceSmall = $query->get();
 
         return $spaceSmall;
 
