@@ -15,17 +15,17 @@ class Shelves extends Model
 
     public function area()
     {
-        return $this->belongsTo('App\Model\Space', 'area_id', 'id');
-    }
-
-    public function area()
-    {
         return $this->belongsTo('App\Model\Area', 'area_id', 'id');
     }
 
     public function box()
     {
         return $this->hasMany('App\Model\Box', 'shelves_id', 'id');
+    }
+
+    public function space_small()
+    {
+        return $this->hasMany('App\Model\SpaceSmall', 'area_id', 'id');
     }
 
     public function order_detail()
