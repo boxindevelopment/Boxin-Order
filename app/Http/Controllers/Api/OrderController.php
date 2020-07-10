@@ -308,7 +308,7 @@ class OrderController extends Controller
 
                 // order room
                 if ($order_detail->types_of_box_room_id == 2 || $order_detail->types_of_box_room_id == "2") {
-                    $type = 'space';
+                    $type = 'Room';
                     // get space small
                     $spaceSmall = $this->spaceSmall->getData(['status_id' => 10, 'area_id' => $request->area_id, 'types_of_size_id' => $data['types_of_size_id'.$a]]);
                     if(!empty($spaceSmall->id)){
