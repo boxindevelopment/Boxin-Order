@@ -190,21 +190,21 @@ class OrderDetail extends Model
                 ];
             } else if($this->pickup == 'take'){
                 $pickup_delivery = [
-                    'note'          => $this->order_take->where('status_id', 2)->first()->note,
-                    'driver_name'   => $this->order_take->where('status_id', 2)->first()->driver_name,
-                    'driver_phone'  => $this->order_take->where('status_id', 2)->first()->driver_phone
+                    'note'          => $this->order_take->note,
+                    'driver_name'   => $this->order_take->driver_name,
+                    'driver_phone'  => $this->order_take->driver_phone
                 ];
             } else if($this->pickup == 'return'){
                 $pickup_delivery = [
-                    'note'          => $this->order_back_warehouse->where('status_id', 2)->first()->note,
-                    'driver_name'   => $this->order_back_warehouse->where('status_id', 2)->first()->driver_name,
-                    'driver_phone'  => $this->order_back_warehouse->where('status_id', 2)->first()->driver_phone
+                    'note'          => $this->order_back_warehouse->note,
+                    'driver_name'   => $this->order_back_warehouse->driver_name,
+                    'driver_phone'  => $this->order_back_warehouse->driver_phone
                 ];
-            } else if($this->pickup == 'terminate'){{
+            } else if($this->pickup == 'terminate'){
                 $pickup_delivery = [
-                    'note'              => $this->return_box->where('status_id', 2)->first()->note,
-                    'driver_name'       => $this->return_box->where('status_id', 2)->first()->driver_name,
-                    'driver_phone'      => $this->return_box->where('status_id', 2)->first()->driver_phone,
+                    'note'              => $this->return_box->note,
+                    'driver_name'       => $this->return_box->driver_name,
+                    'driver_phone'      => $this->return_box->driver_phone,
                 ];
             }
         }
@@ -428,6 +428,7 @@ class OrderDetail extends Model
             'location'             => $location,
             'duration'             => $duration,
             'pickup'               => $pick_up,
+            'pickup_delivery'      => $pickup_delivery,
             'payment'              => $payment,
             'return_box'           => $return_box,
             'return_box_payment'   => $return_box_payment,
