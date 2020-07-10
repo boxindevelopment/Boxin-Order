@@ -67,10 +67,8 @@ class SpaceSmallRepository implements SpaceSmallRepositoryInterface
     public function getDataCount($args = [])
     {
         $query = $this->model->query();
+        $query->leftJoin('shelves', 'shelves.id', '=', 'space_smalls.shelves_id');
 
-        if(isset($args['orderColumns']) && isset($args['orderDir'])){
-            $query->orderBy($args['orderColumns'], $args['orderDir']);
-        }
         if(isset($args['status_id'])){
             $query->where('space_smalls.status_id', $args['status_id']);
         }
@@ -79,12 +77,6 @@ class SpaceSmallRepository implements SpaceSmallRepositoryInterface
         }
         if(isset($args['types_of_size_id'])){
             $query->where('space_smalls.types_of_size_id', $args['types_of_size_id']);
-        }
-        if(isset($args['start'])){
-            $query->skip($args['start']);
-        }
-        if(isset($args['length'])){
-            $query->take($args['length']);
         }
         $query->where('space_smalls.deleted_at', NULL);
         $count = $query->count();
