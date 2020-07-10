@@ -14,7 +14,7 @@ class OrderDetail extends Model
     protected $table = 'order_details';
 
     protected $fillable = [
-        'order_id', 'types_of_duration_id', 'room_or_box_id', 'types_of_box_room_id', 'types_of_size_id', 'name', 'duration', 'amount', 'start_date', 'end_date', 'status_id', 'is_returned', 'id_name', 'place'
+        'order_id', 'types_of_duration_id', 'room_or_box_id', 'types_of_box_room_id', 'types_of_size_id', 'name', 'duration', 'amount', 'start_date', 'end_date', 'status_id', 'is_returned', 'id_name', 'place', 'pickup'
     ];
 
     public function order()
@@ -66,45 +66,56 @@ class OrderDetail extends Model
     {
         return $this->hasMany('App\Model\ReturnBoxes', 'order_detail_id', 'id');
     }
-
+    
     public function return_box_payment()
     {
         return $this->hasMany('App\Model\ReturnBoxPayment', 'order_detail_id', 'id');
     }
-
+    
     public function change_box_payment()
     {
         return $this->hasMany('App\Model\ChangeBoxPayment', 'order_detail_id', 'id');
     }
-
+    
     public function change_box()
     {
         return $this->hasMany('App\Model\ChangeBox', 'order_detail_id', 'id');
     }
-
+    
     public function extend()
     {
-       return $this->hasMany('App\Model\ExtendOrderDetail', 'order_detail_id', 'id');
+        return $this->hasMany('App\Model\ExtendOrderDetail', 'order_detail_id', 'id');
     }
-
+    
     public function extend_payment()
     {
-       return $this->hasMany('App\Model\ExtendOrderPayment', 'order_detail_id', 'id');
+        return $this->hasMany('App\Model\ExtendOrderPayment', 'order_detail_id', 'id');
     }
-
+    
     public function add_item()
     {
-       return $this->hasMany('App\Model\AddItemBox', 'order_detail_id', 'id');
+        return $this->hasMany('App\Model\AddItemBox', 'order_detail_id', 'id');
     }
-
+    
     public function add_item_payment()
     {
-       return $this->hasMany('App\Model\AddItemBoxPayment', 'order_detail_id', 'id');
+        return $this->hasMany('App\Model\AddItemBoxPayment', 'order_detail_id', 'id');
     }
 
+    public function order_back_warehouse()
+    {
+        return $this->hasMany('App\Model\OrderBackWarehouse', 'order_detail_id', 'id');
+    }
+
+    public function order_take()
+    {
+        return $this->hasMany('App\Model\OrderTake', 'order_detail_id', 'id');
+    }
+    
     public function toSearchableArray()
     {
-        $url = (env('DB_DATABASE') == 'coredatabase') ? 'https://boxin-dev-webbackend.azurewebsites.net/' : 'https://boxin-prod-webbackend.azurewebsites.net/';
+        // $url = (env('DB_DATABASE') == 'coredatabase') ? 'https://boxin-dev-webbackend.azurewebsites.net/' : 'https://boxin-prod-webbackend.azurewebsites.net/';
+        $url = env('APP_ADMIN');
 
         if (!is_null($this->order_id)) {
             $order = [
@@ -165,6 +176,35 @@ class OrderDetail extends Model
                     'time_pickup'       => $this->order->pickup_order->time_pickup,
                     'type_pickup_id'    => $this->order->pickup_order->type_pickup->id,
                     'type_pickup_name'  => $this->order->pickup_order->type_pickup->name,
+                ];
+            }
+        }
+
+        $pickup_delivery = null;
+        if($this->pickup != null){
+            if($this->pickup == 'order'){
+                $pickup_delivery = [
+                    'note'          => $this->order->pickup_order->note,
+                    'driver_name'   => $this->order->pickup_order->driver_name,
+                    'driver_phone'  => $this->order->pickup_order->driver_phone
+                ];
+            } else if($this->pickup == 'take'){
+                $pickup_delivery = [
+                    'note'          => $this->order_take->where('status_id', 2)->first()->note,
+                    'driver_name'   => $this->order_take->where('status_id', 2)->first()->driver_name,
+                    'driver_phone'  => $this->order_take->where('status_id', 2)->first()->driver_phone
+                ];
+            } else if($this->pickup == 'return'){
+                $pickup_delivery = [
+                    'note'          => $this->order_back_warehouse->where('status_id', 2)->first()->note,
+                    'driver_name'   => $this->order_back_warehouse->where('status_id', 2)->first()->driver_name,
+                    'driver_phone'  => $this->order_back_warehouse->where('status_id', 2)->first()->driver_phone
+                ];
+            } else if($this->pickup == 'terminate'){{
+                $pickup_delivery = [
+                    'note'              => $this->return_box->where('status_id', 2)->first()->note,
+                    'driver_name'       => $this->return_box->where('status_id', 2)->first()->driver_name,
+                    'driver_phone'      => $this->return_box->where('status_id', 2)->first()->driver_phone,
                 ];
             }
         }
