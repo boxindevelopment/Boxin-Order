@@ -16,6 +16,7 @@ class TransactionLogResource extends JsonResource
     {
         $boxOrSmallSpaceFee     = ($this->transaction_type == 'start storing') ? $this->order->order_detail->sum('amount') : 0;
         $voucherFee             = ($this->transaction_type == 'start storing') ? $this->order->voucher : 0;
+        $voucherFee             = ($voucherFee) ? $voucherFee->value : 0;
         $order                  = $this->order;
         $code                   = '';
         $order_detail_id        = null;
