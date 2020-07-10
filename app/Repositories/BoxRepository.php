@@ -64,6 +64,33 @@ class BoxRepository implements BoxRepositoryInterface
 
     }
 
+    public function getDataCount($args = [])
+    {
+        $query = $this->model->query();
+        if(isset($args['orderColumns']) && isset($args['orderDir'])){
+            $query->orderBy($args['orderColumns'], $args['orderDir']);
+        }
+        if(isset($args['status_id'])){
+            $query->where('boxes.status_id', $args['status_id']);
+        }
+        if(isset($args['area_id'])){
+            $query->where('shelves.area_id', $args['area_id']);
+        }
+        if(isset($args['types_of_size_id'])){
+            $query->where('boxes.types_of_size_id', $args['types_of_size_id']);
+        }
+        if(isset($args['start'])){
+            $query->skip($args['start']);
+        }
+        if(isset($args['length'])){
+            $query->take($args['length']);
+        }
+        $query->where('boxes.deleted_at', NULL);
+        $count = $query->count();
+
+        return $count;
+    }
+
     public function getAvailable($types_of_size_id, $city_id)
     {
         $box = $this->model->select('boxes.types_of_size_id', 'boxes.shelves_id', DB::raw('COUNT(boxes.types_of_size_id) as available'))

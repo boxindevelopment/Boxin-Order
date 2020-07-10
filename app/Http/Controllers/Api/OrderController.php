@@ -86,30 +86,50 @@ class OrderController extends Controller
     public function checkOrder($types_of_box_room_id, $area_id, $types_of_size_id)
     {
         if($types_of_box_room_id == 1) {
-            $check = $this->boxes->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
-        } else if ($types_of_box_room_id == 2) {
-            $totalSpace = $this->spaceSmall->getData(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
-            if(count($totalSpace) > 0){
-                $check = $totalSpace;
-            } else {
+            $count = $this->boxes->getDataCount(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
+            if($count == 0){
                 return response()->json([
                     'status' => false,
                     'message' => 'Kapasitas penuh, Anda dapat menyewa di...'
                 ]);
+            } else {
+                return response()->json([
+                    'status'    => true,
+                    'count'      => $count
+                ]);
             }
+        } else if ($types_of_box_room_id == 2) {
+            $count = $this->spaceSmall->getDataCount(['status_id' => 10, 'area_id' => $area_id, 'types_of_size_id' => $types_of_size_id]);
+            if($count == 0){
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Kapasitas penuh, Anda dapat menyewa di...'
+                ]);
+            } else {
+                return response()->json([
+                    'status'    => true,
+                    'count'      => $count
+                ]);
+            }
+        } else {
+            return response()->json([
+                'status' => false,
+                'message' => 'bad request'
+            ]);
+
         }
 
-        if(count($check) > 0) {
-            if($types_of_box_room_id == 1) {
-                $data = BoxResource::collection($check);
-            } else if ($types_of_box_room_id == 2) {
-                $data = SpaceResource::collection($check);
-            }
-            return response()->json([
-                'status'    => true,
-                'data'      => $data
-            ]);
-        }
+        // if(count($check) > 0) {
+        //     if($types_of_box_room_id == 1) {
+        //         $data = BoxResource::collection($check);
+        //     } else if ($types_of_box_room_id == 2) {
+        //         $data = SpaceResource::collection($check);
+        //     }
+        //     return response()->json([
+        //         'status'    => true,
+        //         'data'      => $data
+        //     ]);
+        // }
 
         return response()->json([
             'status' => false,
