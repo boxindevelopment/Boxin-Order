@@ -189,22 +189,25 @@ class OrderDetail extends Model
                     'driver_phone'  => $this->order->pickup_order->driver_phone
                 ];
             } else if($this->pickup == 'take'){
+                $deliveryTake = $this->order_take->where('status_id', 2)->first();
                 $pickup_delivery = [
-                    'note'          => $this->order_take->note,
-                    'driver_name'   => $this->order_take->driver_name,
-                    'driver_phone'  => $this->order_take->driver_phone
+                    'note'          => ($deliveryTake) ? $deliveryTake->note : null,
+                    'driver_name'   => ($deliveryTake) ? $deliveryTake->driver_name : null,
+                    'driver_phone'  => ($deliveryTake) ? $deliveryTake->driver_phone : null
                 ];
             } else if($this->pickup == 'return'){
+                $deliveryReturn = $this->order_back_warehouse->where('status_id', 2)->first();
                 $pickup_delivery = [
-                    'note'          => $this->order_back_warehouse->note,
-                    'driver_name'   => $this->order_back_warehouse->driver_name,
-                    'driver_phone'  => $this->order_back_warehouse->driver_phone
+                    'note'          => ($deliveryReturn) ? $deliveryReturn->note : null,
+                    'driver_name'   => ($deliveryReturn) ? $deliveryReturn->driver_name : null,
+                    'driver_phone'  => ($deliveryReturn) ? $deliveryReturn->driver_phone : null
                 ];
             } else if($this->pickup == 'terminate'){
+                $deliveryTerminate = $this->order_back_warehouse->where('status_id', 2)->first();
                 $pickup_delivery = [
-                    'note'              => $this->return_box->note,
-                    'driver_name'       => $this->return_box->driver_name,
-                    'driver_phone'      => $this->return_box->driver_phone,
+                    'note'              => ($deliveryTerminate) ? $deliveryTerminate->note : null,
+                    'driver_name'       => ($deliveryTerminate) ? $deliveryTerminate->river_name : null,
+                    'driver_phone'      => ($deliveryTerminate) ? $deliveryTerminate->driver_phone : null
                 ];
             }
         }
