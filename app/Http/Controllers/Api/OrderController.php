@@ -193,7 +193,6 @@ class OrderController extends Controller
             'date'              => 'required',
             'time'              => 'required',
             'pickup_fee'        => 'required',
-            'address_id'        => 'required|exists:user_addresses,id',
         ]);
 
         if($validator->fails()) {
@@ -353,15 +352,19 @@ class OrderController extends Controller
                 //     }
                 // }
             }
-            $address = UserAddress::find($request->address_id);
+            if($request->types_of_pickup_id == 1){
+                $address = UserAddress::find($request->address_id);
+            }
             
             $pickup                     = new PickupOrder;
             $pickup->date               = $request->date;
             $pickup->order_id           = $order_id_today;
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
-            $pickup->address_id         = $request->address_id;
-            $pickup->address            = $address->address;
-            $pickup->village_id         = $address->village_id;
+            if($request->types_of_pickup_id == 1){
+                $pickup->address_id         = $request->address_id;
+                $pickup->address            = $address->address;
+                $pickup->village_id         = $address->village_id;
+            }
             $pickup->longitude          = $request->longitude;
             $pickup->latitude           = $request->latitude;
             $pickup->time               = $request->time;
