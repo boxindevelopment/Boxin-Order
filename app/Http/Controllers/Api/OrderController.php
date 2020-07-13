@@ -425,17 +425,18 @@ class OrderController extends Controller
             $order = Order::with('order_detail.type_size', 'payment')->findOrFail($order->id);
             // MessageInvoice::dispatch($order, $user)->onQueue('processing');
 
+            DB::commit();
+
             $client = new \GuzzleHttp\Client();
-            // $response = $client->request('POST', $this->url . 'api/payment-email/' . $order->id, ['form_params' => [
-            //   'order_id' => $order->id,
-            //   'status_id' =>  $order->status_id
-            // ]]);
             $response = $client->request('POST', $this->url . 'api/new-order/' . $order->id, ['form_params' => [
               'order_id' => $order->id,
               'status_id' =>  $order->status_id
             ]]);
-
-            DB::commit();
+            // $response = $client->request('POST', $this->url . 'api/payment-email/' . $order->id, ['form_params' => [
+            //   'order_id' => $order->id,
+            //   'status_id' =>  $order->status_id
+            // ]]);
+            
         } catch (Exception $e) {
             // delete order when order_detail failed to create
             // Order::where('id', $order->id)->delete();
