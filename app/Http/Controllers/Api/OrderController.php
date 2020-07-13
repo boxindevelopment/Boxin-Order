@@ -40,9 +40,6 @@ class OrderController extends Controller
     protected $voucher;
 
     private $url;
-    CONST DEV_URL = 'https://boxin-dev-notification.azurewebsites.net/';
-    CONST LOC_URL = 'http://localhost:5252/';
-    CONST PROD_URL = 'https://boxin-prod-notification.azurewebsites.net/';
 
     public function __construct(BoxRepository $boxes, SpaceSmallRepository $spaceSmall, PriceRepository $price, VoucherRepository $voucher, TransactionLogRepository $transactionLog)
     {
@@ -50,7 +47,7 @@ class OrderController extends Controller
         $this->spaceSmall           = $spaceSmall;
         $this->price                = $price;
         $this->voucher              = $voucher;
-        $this->url                  = (env('DB_DATABASE') == 'coredatabase') ? self::DEV_URL : self::PROD_URL;
+        $this->url                  = env('APP_NOTIF');
         $this->transactionLog       = $transactionLog;
     }
 
@@ -427,7 +424,17 @@ class OrderController extends Controller
 
             $order = Order::with('order_detail.type_size', 'payment')->findOrFail($order->id);
             // MessageInvoice::dispatch($order, $user)->onQueue('processing');
-            // $response = Requests::post($this->url . 'api/payment-email/' . $order->id, [], $params, []);
+
+            $client = new \GuzzleHttp\Client();
+            $response = $client->request('POST', $this->url . 'api/payment-email/' . $order->id, ['form_params' => [
+              'order_id' => $order->id,
+              'status_id' =>  $order->status_id
+            ]]);
+            $response = $client->request('POST', $this->url . 'api/new-order/' . $order->id, ['form_params' => [
+              'order_id' => $order->id,
+              'status_id' =>  $order->status_id
+            ]]);
+            
             DB::commit();
         } catch (Exception $e) {
             // delete order when order_detail failed to create
