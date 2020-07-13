@@ -35,7 +35,6 @@ class OrderBackWarehouseController extends Controller
         'time'               => 'required',
         'deliver_fee'        => 'required',
         'time_pickup'        => 'required',
-        'address_id'         => 'required|exists:user_addresses,id',
       ]);
 
       if ($validator->fails()) {
@@ -77,17 +76,21 @@ class OrderBackWarehouseController extends Controller
             $orderDetails->status_id    = 26;
         }
         $orderDetails->save();
-        $address = UserAddress::find($request->address_id);
+        if($request->types_of_pickup_id == 1){
+            $address = UserAddress::find($request->address_id);
+        }
 
         $orderBackWarehouse                         = new OrderBackWarehouse;
         $orderBackWarehouse->types_of_pickup_id     = $request->types_of_pickup_id;                             // durasi inputan
         $orderBackWarehouse->order_detail_id        = $order_detail_id;
         $orderBackWarehouse->user_id                = $user->id;                            // durasi inputan
         $orderBackWarehouse->date                   = $request->date;                             // durasi inputan
-        $orderBackWarehouse->time                   = $request->time;                             // durasi inputan
-        $orderBackWarehouse->address                = $address->address;                             // durasi inputan
-        $orderBackWarehouse->village_id             = $address->village_id;                             // durasi inputan
-        $orderBackWarehouse->address_id             = $request->address_id;                            // durasi inputan
+        $orderBackWarehouse->time                   = $request->time;
+        if($request->types_of_pickup_id == 1){                             // durasi inputan
+            $orderBackWarehouse->address                = $address->address;                             // durasi inputan
+            $orderBackWarehouse->village_id             = $address->village_id;                             // durasi inputan
+            $orderBackWarehouse->address_id             = $request->address_id;                            // durasi inputan
+        }
         $orderBackWarehouse->deliver_fee            = $request->deliver_fee;                              // durasi sebelumnya
         $orderBackWarehouse->time_pickup            = $request->time_pickup;
         $orderBackWarehouse->note                   = $request->note;
