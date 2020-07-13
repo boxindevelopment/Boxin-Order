@@ -362,8 +362,10 @@ class OrderController extends Controller
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
             if($request->types_of_pickup_id == 1){
                 $pickup->address_id         = $request->address_id;
-                $pickup->address            = $address->address;
-                $pickup->village_id         = $address->village_id;
+                if($address){
+                    $pickup->address            = $address->address;
+                    $pickup->village_id         = $address->village_id;
+                }
             }
             $pickup->longitude          = $request->longitude;
             $pickup->latitude           = $request->latitude;

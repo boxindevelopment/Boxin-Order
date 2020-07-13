@@ -89,14 +89,16 @@ class OrderTakeController extends Controller
         $orderTake->date                   = $request->date;                             // durasi inputan
         $orderTake->time                   = $request->time;                             // durasi inputan
         if($request->types_of_pickup_id == 1){
-            $orderTake->address                = $address->address;
-            $orderTake->village_id             = $address->village_id;
-            $orderTake->address_id             = $request->address_id;
+            if($address){
+                $orderTake->address        = $address->address;
+                $orderTake->village_id     = $address->village_id;
+            }
+            $orderTake->address_id         = $request->address_id;
         }
         if($request->types_of_pickup_id == 1){                          // durasi inputan
-            $orderTake->deliver_fee            = $request->deliver_fee;
+            $orderTake->deliver_fee        = $request->deliver_fee;
         } else {
-            $orderTake->deliver_fee            = 0;
+            $orderTake->deliver_fee        = 0;
         }                           // durasi sebelumnya
         $orderTake->time_pickup            = $request->time_pickup;
         $orderTake->note                   = $request->note;

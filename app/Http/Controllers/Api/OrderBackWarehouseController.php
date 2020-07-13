@@ -87,9 +87,11 @@ class OrderBackWarehouseController extends Controller
         $orderBackWarehouse->date                   = $request->date;                             // durasi inputan
         $orderBackWarehouse->time                   = $request->time;
         if($request->types_of_pickup_id == 1){                             // durasi inputan
-            $orderBackWarehouse->address                = $address->address;                             // durasi inputan
-            $orderBackWarehouse->village_id             = $address->village_id;                             // durasi inputan
-            $orderBackWarehouse->address_id             = $request->address_id;                            // durasi inputan
+            if($address){
+                $orderBackWarehouse->address        = $address->address;                             // durasi inputan
+                $orderBackWarehouse->village_id     = $address->village_id;                             // durasi inputan
+            }
+            $orderBackWarehouse->address_id         = $request->address_id;                            // durasi inputan
         }
         $orderBackWarehouse->deliver_fee            = $request->deliver_fee;                              // durasi sebelumnya
         $orderBackWarehouse->time_pickup            = $request->time_pickup;

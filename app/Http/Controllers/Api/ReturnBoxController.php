@@ -67,9 +67,11 @@ class ReturnBoxController extends Controller
                 $return->note                   = $data['note'];
                 $return->status_id              = $data['types_of_pickup_id'] == '1' ? 14 : 16;
                 if($data['types_of_pickup_id'] == 1){
-                    $return->address                = $address->address;
-                    $return->village_id             = $address->village_id;
-                    $return->address_id             = $data['address_id'];
+                    if($address){
+                        $return->address        = $address->address;
+                        $return->village_id     = $address->village_id;
+                    }
+                    $return->address_id         = $data['address_id'];
                 }
                 $return->order_detail_id        = $data['order_detail_id'.$a];
                 $return->longitude              = $data['longitude'];
