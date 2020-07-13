@@ -58,7 +58,7 @@ class BoxRepository implements BoxRepositoryInterface
             $query->take($args['length']);
         }
         $query->where('boxes.deleted_at', NULL);
-        $box = $query->get();
+        $box = $query->first();
 
         return $box;
 
