@@ -77,6 +77,7 @@ class OrderBackWarehouseController extends Controller
             $orderDetails->status_id    = 26;
         }
         $orderDetails->save();
+        $address = UserAddress::find($request->address_id);
 
         $orderBackWarehouse                         = new OrderBackWarehouse;
         $orderBackWarehouse->types_of_pickup_id     = $request->types_of_pickup_id;                             // durasi inputan
