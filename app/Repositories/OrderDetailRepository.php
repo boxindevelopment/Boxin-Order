@@ -119,6 +119,7 @@ class OrderDetailRepository implements OrderDetailRepositoryInterface
                       'order_details.end_date',
                       'order_details.status_id',
                       'order_details.place',
+                      'order_details.pickup',
             DB::raw('boxes.code_box as code_box'),
             DB::raw('orders.user_id as user_id'),
             DB::raw('DATEDIFF(day, order_details.start_date, order_details.end_date) as total_time'),
