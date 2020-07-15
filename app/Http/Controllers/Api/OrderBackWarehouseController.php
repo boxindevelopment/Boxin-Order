@@ -76,9 +76,6 @@ class OrderBackWarehouseController extends Controller
             $orderDetails->status_id    = 26;
         }
         $orderDetails->save();
-        if($request->types_of_pickup_id == 1){
-            $address = UserAddress::find($request->address_id);
-        }
 
         $orderBackWarehouse                         = new OrderBackWarehouse;
         $orderBackWarehouse->types_of_pickup_id     = $request->types_of_pickup_id;                             // durasi inputan
@@ -86,12 +83,16 @@ class OrderBackWarehouseController extends Controller
         $orderBackWarehouse->user_id                = $user->id;                            // durasi inputan
         $orderBackWarehouse->date                   = $request->date;                             // durasi inputan
         $orderBackWarehouse->time                   = $request->time;
-        if($request->types_of_pickup_id == 1){                             // durasi inputan
+        if($request->address_id){
+            $address = UserAddress::find($request->address_id);
             if($address){
                 $orderBackWarehouse->address        = $address->address;                             // durasi inputan
                 $orderBackWarehouse->village_id     = $address->village_id;                             // durasi inputan
             }
             $orderBackWarehouse->address_id         = $request->address_id;                            // durasi inputan
+        }
+        if($request->address){
+            $orderBackWarehouse->address            = $request->address;
         }
         $orderBackWarehouse->deliver_fee            = $request->deliver_fee;                              // durasi sebelumnya
         $orderBackWarehouse->time_pickup            = $request->time_pickup;

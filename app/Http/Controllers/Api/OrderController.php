@@ -352,20 +352,21 @@ class OrderController extends Controller
                 //     }
                 // }
             }
-            if($request->types_of_pickup_id == 1){
-                $address = UserAddress::find($request->address_id);
-            }
             
             $pickup                     = new PickupOrder;
             $pickup->date               = $request->date;
             $pickup->order_id           = $order_id_today;
             $pickup->types_of_pickup_id = $request->types_of_pickup_id;
-            if($request->types_of_pickup_id == 1){
+            if($request->address_id){
+                $address = UserAddress::find($request->address_id);
                 $pickup->address_id         = $request->address_id;
                 if($address){
                     $pickup->address            = $address->address;
                     $pickup->village_id         = $address->village_id;
                 }
+            }
+            if($request->address){
+                $pickup->address            = $request->address;
             }
             $pickup->longitude          = $request->longitude;
             $pickup->latitude           = $request->latitude;

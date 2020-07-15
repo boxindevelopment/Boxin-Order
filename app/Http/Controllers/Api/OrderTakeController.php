@@ -78,22 +78,23 @@ class OrderTakeController extends Controller
             $orderDetails->status_id          = 27;
         }
         $orderDetails->save();
-        if($request->types_of_pickup_id == 1){
-            $address = UserAddress::find($request->address_id);
-        }
 
         $orderTake                         = new OrderTake;
         $orderTake->types_of_pickup_id     = $request->types_of_pickup_id;                             // durasi inputan
         $orderTake->order_detail_id        = $order_detail_id;
         $orderTake->user_id                = $user->id;                                     // durasi inputan
         $orderTake->date                   = $request->date;                             // durasi inputan
-        $orderTake->time                   = $request->time;                             // durasi inputan
-        if($request->types_of_pickup_id == 1){
-            if($address){
-                $orderTake->address        = $address->address;
-                $orderTake->village_id     = $address->village_id;
-            }
+        $orderTake->time                   = $request->time;  
+        if($request->address_id){
+            $address                       = UserAddress::find($request->address_id);
             $orderTake->address_id         = $request->address_id;
+            if($address){
+                $orderTake->address            = $address->address;
+                $orderTake->village_id         = $address->village_id;
+            }
+        }
+        if($request->address){
+            $orderTake->address            = $request->address;
         }
         if($request->types_of_pickup_id == 1){                          // durasi inputan
             $orderTake->deliver_fee        = $request->deliver_fee;

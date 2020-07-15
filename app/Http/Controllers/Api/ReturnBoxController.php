@@ -55,10 +55,6 @@ class ReturnBoxController extends Controller
         try {
             for ($a = 1; $a <= $data['return_count']; $a++) {
                 
-                if($data['types_of_pickup_id'] == 1){
-                    $address = UserAddress::find($data['address_id']);
-                }
-
                 $return                         = new ReturnBoxes;
                 $return->types_of_pickup_id     = $data['types_of_pickup_id'];
                 $return->date                   = $data['date'];
@@ -66,12 +62,16 @@ class ReturnBoxController extends Controller
                 $return->time_pickup            = $data['time_pickup'];
                 $return->note                   = $data['note'];
                 $return->status_id              = $data['types_of_pickup_id'] == '1' ? 14 : 16;
-                if($data['types_of_pickup_id'] == 1){
+                if($data['address_id']){
+                    $address = UserAddress::find($data['address_id']);
                     if($address){
                         $return->address        = $address->address;
                         $return->village_id     = $address->village_id;
                     }
                     $return->address_id         = $data['address_id'];
+                }
+                if($data['address']){
+                    $return->address            = $data['address'];
                 }
                 $return->order_detail_id        = $data['order_detail_id'.$a];
                 $return->longitude              = $data['longitude'];
