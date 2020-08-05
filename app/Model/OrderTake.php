@@ -12,7 +12,7 @@ class OrderTake extends Model
     protected $hidden = ['created_at', 'updated_at'];
 
     protected $fillable = [
-        'types_of_pickup_id', 'order_detail_id', 'user_id', 'status_id', 'date', 'time', 'address', 'deliver_fee', 'time_pickup', 'note'
+        'types_of_pickup_id', 'order_detail_id', 'user_id', 'status_id', 'date', 'time', 'address', 'deliver_fee', 'time_pickup', 'note', 'address_id', 'village_id'
     ];
 
     public function order_detail()
