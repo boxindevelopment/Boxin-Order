@@ -198,7 +198,7 @@ class OrderDetailController extends Controller
         $orderArrays = array();
 
         if($orders) {
-            $order = $order->toSearchableArray();
+            $order = $orders->toSearchableArray();
             return response()->json([
                 'status' => true,
                 'data' => $order
