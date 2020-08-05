@@ -198,26 +198,10 @@ class OrderDetailController extends Controller
         $orderArrays = array();
 
         if($orders) {
-            $cekOrderId = 0;
-            $no = 0;
-            foreach ($orders as $k => $v) {
-                if (in_array($v->status_id, array(8, 10, 11, 15, 24))) {
-                    if($cekOrderId != $v->order_id){
-                        $orders[$k] = $v->toSearchableArray();
-                        $no++;
-                    } else {
-                        unset($orders[$k]);
-                    }
-                } else {
-                    $orders[$k] = $v->toSearchableArray();
-                    $no++;
-                }
-                $cekOrderId = $v->order_id;
-            }
-            $data = OrderDetailResource::collection($orders);
+            $order = $order->toSearchableArray();
             return response()->json([
                 'status' => true,
-                'data' => $data
+                'data' => $order
             ]);
         } else {
             return response()->json(['status' => false, 'message' => 'Data not found.'], 404);
