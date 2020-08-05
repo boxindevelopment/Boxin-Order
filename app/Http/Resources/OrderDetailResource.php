@@ -163,6 +163,55 @@ class OrderDetailResource extends JsonResource
           $show = false;
         }
 
+        $room_or_box = null;
+        if($this->types_of_box_room_id == 1){
+            if ($this->box) {
+                $room_or_box = [
+                    'id'   => $this->box->code_box,
+                    'name' => $this->box->name
+                ];
+            }
+        } else if($this->types_of_box_room_id == 2){
+            if ($this->space_small) {
+                $room_or_box = [
+                    'id'   => $this->space_small->code_space_small,
+                    'name' => $this->space_small->name
+                ];
+            }
+        }
+
+        $pickup_delivery = null;
+        if($this->pickup != null){
+            if($this->pickup == 'order'){
+                $pickup_delivery = [
+                    'note'          => $this->order->pickup_order->note,
+                    'driver_name'   => $this->order->pickup_order->driver_name,
+                    'driver_phone'  => $this->order->pickup_order->driver_phone
+                ];
+            } else if($this->pickup == 'take'){
+                $deliveryTake = $this->order_take->where('status_id', 2)->first();
+                $pickup_delivery = [
+                    'note'          => ($deliveryTake) ? $deliveryTake->note : null,
+                    'driver_name'   => ($deliveryTake) ? $deliveryTake->driver_name : null,
+                    'driver_phone'  => ($deliveryTake) ? $deliveryTake->driver_phone : null
+                ];
+            } else if($this->pickup == 'return'){
+                $deliveryReturn = $this->order_back_warehouse->where('status_id', 2)->first();
+                $pickup_delivery = [
+                    'note'          => ($deliveryReturn) ? $deliveryReturn->note : null,
+                    'driver_name'   => ($deliveryReturn) ? $deliveryReturn->driver_name : null,
+                    'driver_phone'  => ($deliveryReturn) ? $deliveryReturn->driver_phone : null
+                ];
+            } else if($this->pickup == 'terminate'){
+                $deliveryTerminate = $this->order_back_warehouse->where('status_id', 2)->first();
+                $pickup_delivery = [
+                    'note'              => ($deliveryTerminate) ? $deliveryTerminate->note : null,
+                    'driver_name'       => ($deliveryTerminate) ? $deliveryTerminate->river_name : null,
+                    'driver_phone'      => ($deliveryTerminate) ? $deliveryTerminate->driver_phone : null
+                ];
+            }
+        }
+
         $data = [
             'id'                   => $this->id,
             'code'                 => $this->id_name,
@@ -170,7 +219,9 @@ class OrderDetailResource extends JsonResource
             'amount'               => $this->amount,
             'start_date'           => $this->start_date,
             'end_date'             => $this->end_date,
+            'place'                => $this->place,
             'show_button_extend'   => $show,
+            'room_or_box'          => $room_or_box,
             'status_id'            => $this->status->id,
             'status'               => $this->status->name,
             'types_of_box_room_id' => $type_box_room,
@@ -179,6 +230,7 @@ class OrderDetailResource extends JsonResource
             'location'             => $location,
             'duration'             => $duration,
             'pickup'               => $pick_up,
+            'pickup_delivery'      => $pickup_delivery,
             'payment'              => $payment,
             'return_box'           => $return_box,
             'return_box_payment'   => $return_box_payment,
