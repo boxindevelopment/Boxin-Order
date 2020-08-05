@@ -195,22 +195,19 @@ class OrderDetailController extends Controller
     public function getById($order_detail_id)
     {
         $orders = $this->orderDetail->getById($order_detail_id);
-        $orderArrays = array();
 
-        if($orders) {
-            $order = $orders->toSearchableArray();
+        if(count($orders) > 0) {
+            $data = OrderDetailResource::collection($orders);
             return response()->json([
                 'status' => true,
-                'data' => $order
+                'data' => $data
             ]);
-        } else {
-            return response()->json(['status' => false, 'message' => 'Data not found.'], 404);
         }
 
         return response()->json([
             'status' => false,
             'message' => 'Data not found'
-        ], 404);
+        ]);
     }
 
     public function extendOrderDetail($order_detail_id, Request $request)
