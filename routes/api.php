@@ -46,7 +46,7 @@ Route::group(['namespace' => 'Api'], function() {
     Route::prefix('room')->group(function() {
         Route::get('/', 'SpaceController@getPagination')->name('api.room.getBoxPagination');
         Route::get('list-area/{area_id}', 'SpaceController@listByArea')->name('api.room.listByArea');
-        Route::get('list/{duration}', 'SpaceController@getBox')->name('api.room.getRoom');
+        Route::get('list/{duration}', 'SpaceController@getRoom')->name('api.room.getRoom');
     });
 
     Route::prefix('space')->group(function() {
