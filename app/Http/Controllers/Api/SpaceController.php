@@ -42,8 +42,8 @@ class SpaceController extends Controller
     {
         $spaces = $this->space->getSpaceSmall($duration);
 
-        if(count($space) > 0) {
-            $data =PriceResource::collection($space);
+        if(count($spaces) > 0) {
+            $data =PriceResource::collection($spaces);
 
             return response()->json([
                 'status' => true,
