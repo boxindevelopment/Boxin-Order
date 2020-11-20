@@ -37,4 +37,50 @@ class SpaceController extends Controller
 
     }
 
+
+    public function getRoom($duration)
+    {
+        $spaces = $this->space->getSpaceSmall($duration);
+
+        if(count($space) > 0) {
+            $data =PriceResource::collection($space);
+
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
+        ]);
+
+    }
+
+    public function getPagination(Request $request)
+    {
+        $params = array();
+        $params['user_id'] = $user->id;
+        $params['limit']   = intval($request->limit);
+        $params['status_disable']   = 14;
+        $params['search'] = ($request->search) ? $request->search : '';
+        $spaces = $this->space->findPaginate($params);
+
+        if(count($spaces) > 0) {
+            $data =PriceResource::collection($spaces);
+
+            return response()->json([
+                'status' => true,
+                'data' => $data
+            ]);
+        }
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Data not found'
+        ]);
+
+    }
+
 }

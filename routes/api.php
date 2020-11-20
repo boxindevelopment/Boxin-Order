@@ -43,6 +43,12 @@ Route::group(['namespace' => 'Api'], function() {
         Route::get('list/{duration}', 'BoxController@getBox')->name('api.box.getBox');
     });
 
+    Route::prefix('room')->group(function() {
+        Route::get('/', 'SpaceController@getPagination')->name('api.room.getBoxPagination');
+        Route::get('list-area/{area_id}', 'SpaceController@listByArea')->name('api.room.listByArea');
+        Route::get('list/{duration}', 'SpaceController@getBox')->name('api.room.getRoom');
+    });
+
     Route::prefix('space')->group(function() {
         Route::get('list/{area_id}', 'SpaceController@listByArea')->name('api.space.listByArea');
     });
