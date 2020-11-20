@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\SpaceSmallResource;
+use App\Http\Resources\PriceResource;
 use App\Repositories\Contracts\SpaceSmallRepository;
 
 class SpaceController extends Controller
