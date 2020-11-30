@@ -119,8 +119,7 @@ class SpaceSmallRepository implements SpaceSmallRepositoryInterface
         $spaceSmall = $this->price->select('prices.*', DB::raw('prices.price as price'), DB::raw('types_of_size.name as size_name'), DB::raw('types_of_size.size as size'), DB::raw('types_of_duration.name as duration_name'), DB::raw('types_of_duration.alias as duration_alias'))
                 ->leftJoin('types_of_size', 'types_of_size.id', '=', 'prices.types_of_size_id')
                 ->leftJoin('types_of_duration', 'types_of_duration.id', '=', 'prices.types_of_duration_id')
-                ->where('prices.types_of_box_room_id', 1)
-                ->where('types_of_size.types_of_box_room_id', 1)
+                ->where('prices.types_of_box_room_id', 2)
                 ->where('types_of_duration.id', $duration)
                 ->get();
         return $spaceSmall;
